@@ -19,6 +19,9 @@
 
 .undated-list{border-top:1px solid var(--line);padding-top:18px}.undated-list>summary{font-weight:700;cursor:pointer;padding:8px 0}
 .expense-amount{display:inline-block;font-size:14px;font-weight:650;color:#6450ad;white-space:nowrap}
+.quick-common{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:650px}.quick-common .field{margin:12px 0}.quick-row{display:grid;grid-template-columns:130px minmax(0,1fr) 145px 42px;gap:10px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}.quick-row label{font-size:13px;margin-bottom:6px}.quick-row input,.quick-row select{width:100%;border:1px solid #d9dbea;border-radius:10px;padding:11px;background:#fcfcff;color:var(--ink)}.quick-row>div{min-width:0}.quick-row .quick-remove{margin-top:27px;padding:10px}.quick-add{margin:16px 0}.quick-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.quick-heading .secondary{font-size:13px}.quick-count{font-size:13px;color:var(--purple)}.calendar-event[data-module="dining"]{background:#fff0db;color:#8a5e21}.quick-guide{font-size:13px;color:var(--muted);margin:8px 0 12px}@media(max-width:600px){.quick-row{grid-template-columns:minmax(0,1fr) 110px 40px}.quick-row .quick-title-cell{grid-column:1/-1;grid-row:1}.quick-common{gap:12px}.quick-row .quick-remove{margin-top:27px}}
+
+.quick-saved-group>h3{font-size:16px;color:#68637f;margin:8px 0 10px}.quick-saved-list{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden}.quick-saved-row{padding:18px 22px;border-bottom:1px solid var(--line)}.quick-saved-row:last-child{border-bottom:0}.quick-saved-main{display:flex;justify-content:space-between;gap:18px;align-items:baseline}.quick-saved-main strong{overflow-wrap:anywhere;min-width:0}.quick-saved-meta{font-size:13px;color:var(--muted);margin:5px 0}.quick-saved-row .record-actions{margin-top:10px}.quick-saved-row .record-actions button{padding:4px 10px;font-size:12px}.quick-extra{font-size:13px;color:var(--muted);margin-top:7px}.quick-extra summary{cursor:pointer}.quick-extra p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.quick-saved-row:focus{outline:3px solid #b0a0ed;outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -65,7 +68,7 @@
 <section id="calendarArea" class="card" hidden aria-label="總表"></section>
 <div id="moduleLayout" class="module-layout">
 <section class="card"><div class="detail-heading"><h2 id="moduleTitle"></h2><button id="showFormBtn" type="button" class="primary" aria-expanded="false" aria-controls="recordForm">＋ 新增</button></div><p id="moduleDescription"></p>
-<form id="recordForm" hidden><fieldset id="recordFields" style="border:0;padding:0;margin:0;min-width:0"><div id="moduleFields" class="module-fields"></div><div class="form-actions"><button id="saveRecordBtn" class="primary" type="submit">＋ 新增</button><button id="cancelEditBtn" type="button" class="secondary">取消</button></div></fieldset></form>
+<form id="recordForm" hidden><fieldset id="recordFields" style="border:0;padding:0;margin:0;min-width:0"><div id="quickEntryArea" hidden></div><div id="moduleFields" class="module-fields"></div><div class="form-actions"><button id="saveRecordBtn" class="primary" type="submit">＋ 新增</button><button id="useQuickBtn" type="button" class="secondary" hidden>改用快速新增</button><button id="cancelEditBtn" type="button" class="secondary">取消</button></div></fieldset></form>
 <p id="recordFeedback" class="form-status" role="status" aria-live="polite"></p></section>
 <section aria-label="模組紀錄"><div class="section-heading"><h2 id="recordsHeading">紀錄清單</h2><span id="recordCount" class="count">0 筆</span></div>
 <div id="dayFilterArea" class="filter" hidden><label for="dayFilter">依日期篩選</label><input id="dayFilter" type="date"><button id="clearFilterBtn" type="button" class="secondary">顯示全部</button></div>
@@ -228,13 +231,14 @@ const moduleDefinitions = {
   itinerary:{label:'🗓️ 每日行程',description:'依日期與時間安排每天的活動。時間皆為當地時間。',fields:[F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
-  transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','座位／車輛資訊'),F('reference','預約編號'),commonNotes]},
+  transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
+  dining:{label:'🍽️ 餐飲',description:'連續記錄餐廳、咖啡與小吃，一次儲存多筆。',fields:[F('title','餐廳／餐點名稱','text',true),F('date','日期','date',true),F('time','用餐時間','time'),F('location','地點'),F('detail','餐別／類型'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
   todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','截止日期','date'),commonNotes]},
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
 const currencyOptions={TWD:'TWD 新台幣',JPY:'JPY 日圓',USD:'USD 美元',EUR:'EUR 歐元',KRW:'KRW 韓元',HKD:'HKD 港幣',CNY:'CNY 人民幣',GBP:'GBP 英鎊',SGD:'SGD 新加坡幣',THB:'THB 泰銖',AUD:'AUD 澳幣',CAD:'CAD 加幣'};
-for(const key of ['itinerary','flights','lodging','transport','activities']){
+for(const key of ['itinerary','flights','lodging','transport','dining','activities']){
   const fields=moduleDefinitions[key].fields;
   fields.splice(fields.length-1,0,F('amount','消費金額','decimal',false,12),F('currency','幣別','currency',false,3));
 }
@@ -269,6 +273,7 @@ function abandonDraft() {
   return true;
 }
 function isDirty() {
+  if(quickMode && isQuickModule())return quickEntryIsDirty();
   if(activeModule==='packing' && !editingEntryId && $('packingRows')){
     if([...$('packingRows').children].some(row=>row.querySelector('.packing-name').value.trim() || row.querySelector('.packing-quantity').value!=='1'))return true;
   }
@@ -284,7 +289,7 @@ function isDirty() {
 }
 function closeDetail() {
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
-  selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
+  quickMode=false;selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
   $('tripDialog').close(); $('deleteDialog').close();
   $('tripEditFields').disabled=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;
   $('detailArea').hidden=true; $('overviewArea').hidden=false;
@@ -303,6 +308,86 @@ function openTrip(id) {
   selectedTripId=id; $('overviewArea').hidden=true;$('detailArea').hidden=false;
   calendarMonth='';calendarDay='';pendingRecordId=null;refreshSelectedTrip(); switchModule('calendar',true); $('backBtn').focus();
 }
+let quickMode=false, quickRowCounter=0,quickDefaultDate='',quickDefaultCurrency='TWD';
+const quickTypes={transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲']};
+function isQuickModule(){return activeModule==='transport' || activeModule==='dining';}
+function configureQuickEntry(enabled){
+  quickMode=!!enabled && isQuickModule();
+  const area=$('quickEntryArea');area.hidden=!quickMode;for(const input of area.querySelectorAll('input,select,textarea,button'))input.disabled=!quickMode;$('moduleFields').hidden=quickMode;
+  for(const input of $('moduleFields').querySelectorAll('input,select,textarea')){
+    input.disabled=quickMode;
+    if(!quickMode && input.id.endsWith('_minute'))input.disabled=!$(input.id.replace(/_minute$/,'_hour'))?.value;
+  }
+  $('useQuickBtn').hidden=!isQuickModule() || quickMode || !!editingEntryId;
+  if(!quickMode)return;
+  const trip=tripsById.get(selectedTripId) || {};
+  quickDefaultDate=validDate(calendarDay || '')?calendarDay:validDate(trip.startDate || '')?trip.startDate:dateKey(new Date());quickDefaultCurrency='TWD';
+  area.replaceChildren();
+  const heading=node('div',undefined,'quick-heading');heading.append(node('h3','連續新增'));
+  const detail=node('button','改用詳細新增','secondary');detail.type='button';detail.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();configureQuickEntry(false);setFormOpen(true);focusEntryInput();});heading.append(detail);area.append(heading);
+  const common=node('div',undefined,'quick-common');
+  for(const [key,label] of [['quickDate','日期'],['quickCurrency','幣別']]){
+    const wrap=node('div',undefined,'field'),title=node('label',label);title.htmlFor=key;
+    const input=node(key==='quickDate'?'input':'select');input.id=key;
+    if(key==='quickDate'){input.type='date';input.min='1900-01-01';input.max='2199-12-31';input.value=quickDefaultDate;input.required=true;}
+    else{input.className='category-select';for(const [value,label] of Object.entries(currencyOptions)){const option=node('option',label);option.value=value;input.append(option);}input.value='TWD';}
+    wrap.append(title,input);common.append(wrap);
+  }
+  area.append(common,node('p','日期與幣別共用；每列記錄一筆。金額可先留白，其他細節可儲存後按「編輯」補上。','quick-guide'));
+  const rows=node('div');rows.id='quickRows';area.append(rows);
+  const add=node('button','＋ 再加一筆','secondary quick-add');add.type='button';add.addEventListener('click',()=>{if(rows.children.length>=50){feedback('一次最多 50 筆。','error');return;}appendQuickRow().querySelector('.quick-name').focus();});
+  const count=node('p',undefined,'quick-count');count.id='quickCount';count.setAttribute('aria-live','polite');area.append(add,count);
+  appendQuickRow();$('saveRecordBtn').textContent='儲存全部';
+}
+function appendQuickRow(){
+  const row=node('div',undefined,'quick-row'),id=++quickRowCounter;
+  for(const [key,label,type] of [['type','類型','select'],['name',activeModule==='transport'?'路線／交通內容':'餐廳／餐點','text'],['amount','消費金額','number']]){
+    const cell=node('div',undefined,key==='name'?'quick-title-cell':'');
+    const title=node('label',label);const input=node(type==='select'?'select':'input');input.className='quick-'+key;input.id='quick_'+key+id;title.htmlFor=input.id;
+    if(type==='select')for(const name of quickTypes[activeModule]){const option=node('option',name);option.value=name;input.append(option);}
+    else{input.type=type;if(key==='name'){input.maxLength=160;input.placeholder=activeModule==='transport'?'例如：京都站 → 清水寺':'例如：拉麵午餐';}else{input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填';}}
+    input.addEventListener('input',updateQuickCount);cell.append(title,input);row.append(cell);
+  }
+  const remove=node('button','×','secondary quick-remove');remove.type='button';remove.setAttribute('aria-label','移除這筆');remove.addEventListener('click',()=>{if($('quickRows').children.length===1){row.querySelector('.quick-name').value='';row.querySelector('.quick-amount').value='';}else row.remove();updateQuickCount();});row.append(remove);$('quickRows').append(row);updateQuickCount();return row;
+}
+function updateQuickCount(){
+  if(!$('quickRows'))return;
+  const rows=[...$('quickRows').children].filter(row=>row.querySelector('.quick-name').value.trim());
+  $('quickCount').textContent=`待新增 ${rows.length} 筆`;
+}
+function quickEntryIsDirty(){
+  if(!$('quickRows'))return false;
+  return [...$('quickRows').children].some(row=>row.querySelector('.quick-name').value.trim() || row.querySelector('.quick-amount').value!=='') || $('quickDate').value!==quickDefaultDate || $('quickCurrency').value!==quickDefaultCurrency;
+}
+function collectQuickEntries(){
+  const date=$('quickDate').value,currency=$('quickCurrency').value;
+  if(!validDate(date))throw new Error('請選擇有效日期。');
+  if(!Object.hasOwn(currencyOptions,currency))throw new Error('請選擇有效幣別。');
+  const rows=[...$('quickRows').children];if(rows.length>50)throw new Error('一次最多 50 筆。');
+  const items=[];
+  for(const [i,row] of rows.entries()){
+    const title=row.querySelector('.quick-name').value.trim(),amount=row.querySelector('.quick-amount').value.trim(),detail=row.querySelector('.quick-type').value;
+    if(!title && !amount)continue;
+    if(!title || title.length>160)throw new Error(`第 ${i+1} 筆請填寫內容（最多 160 字）。`);
+    if(amount && !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(amount))throw new Error(`第 ${i+1} 筆金額需為非負數，最多兩位小數。`);
+    if(!quickTypes[activeModule].includes(detail))throw new Error(`第 ${i+1} 筆類型不正確。`);
+    const data={module:activeModule,quantity:1,done:false};for(const key of entryTextKeys)data[key]='';
+    items.push({...data,title,date,currency,amount,detail});
+  }
+  if(!items.length)throw new Error('請至少填寫一筆內容。');return items;
+}
+async function saveQuickEntries(){
+  let items;try{items=collectQuickEntries();}catch(error){feedback(error.message,'error');return;}
+  const date=$('quickDate').value,currency=$('quickCurrency').value;
+  await mutateEntry(()=>{
+    const batch=writeBatch(db),target=collection(db,'users',currentUser.uid,'trips',selectedTripId,'entries');
+    for(const item of items)batch.set(doc(target),{...item,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});return batch.commit();
+  },()=>{
+    resetRecordForm();$('quickDate').value=date;$('quickCurrency').value=currency;quickDefaultDate=date;quickDefaultCurrency=currency;setFormOpen(true);
+    feedback(`已儲存 ${items.length} 筆，可以繼續新增。`);focusEntryInput();
+  });
+}
+
 function mapLink(place){
   const link=node('a',place+' ↗','map-link');
   link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place);
@@ -311,7 +396,7 @@ function mapLink(place){
 function setFormOpen(open){
   $('recordForm').hidden=!open;$('showFormBtn').setAttribute('aria-expanded',String(open));$('showFormBtn').textContent=open?'收起表單':'＋ 新增';
 }
-function focusEntryInput(){if(activeModule==='packing')$('packingRows')?.querySelector('.packing-name')?.focus();else $('entry_title')?.focus();}
+function focusEntryInput(){if(quickMode && isQuickModule()){$('quickRows')?.querySelector('.quick-name')?.focus();return;}if(activeModule==='packing')$('packingRows')?.querySelector('.packing-name')?.focus();else $('entry_title')?.focus();}
 function dateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
 function datesForEntry(data){
   if(!moduleDefinitions[data.module] || data.module==='calendar')return [];
@@ -419,7 +504,7 @@ function setTimeValue(key,value) {
 function resetRecordForm() {
   editingEntryId=null; $('recordForm').reset();
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
-  $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');setFormOpen(false);
+  $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');configureQuickEntry(isQuickModule());setFormOpen(false);
 }
 function switchModule(key,force=false) {
   if(!moduleDefinitions[key] || (!force && !abandonDraft()))return;
@@ -639,11 +724,41 @@ function renderChecklist(items){
   $('recordList').replaceChildren(visibleGroups?fragment:node('p',checklistFilter==='done'?'還沒有已完成項目。':'全部完成了！','empty'));
 }
 
+function renderQuickRecords(items){
+  $('recordCount').textContent=items.length+' 筆';
+  if(!items.length){$('recordList').replaceChildren(node('p','還沒有紀錄，按「新增」開始連續記錄。','empty'));return;}
+  const groups=new Map();
+  for(const item of items){const date=safeString(item.data.date,10,'未排日期');if(!groups.has(date))groups.set(date,[]);groups.get(date).push(item);}
+  const fragment=document.createDocumentFragment();
+  for(const date of [...groups.keys()].sort()){
+    const section=node('section',undefined,'quick-saved-group');section.append(node('h3',date));
+    const list=node('div',undefined,'quick-saved-list');
+    const sorted=groups.get(date).sort((a,b)=>(a.data.time || '99').localeCompare(b.data.time || '99') || a.id.localeCompare(b.id));
+    for(const item of sorted){
+      const card=node('article',undefined,'quick-saved-row');card.id='record_'+item.id;card.tabIndex=-1;
+      const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',formatExpense(item.data) || '未填金額','expense-amount'));card.append(main);
+      const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');if(meta)card.append(node('p',meta,'quick-saved-meta'));
+      if(item.data.location)card.append(mapLink(safeString(item.data.location,160,'')));
+      if(item.data.endTime || item.data.reference || item.data.notes){
+        const details=node('details',undefined,'quick-extra');details.append(node('summary','詳細資料'));
+        for(const [label,key] of [['結束時間','endTime'],['預約編號','reference'],['備註','notes']])if(item.data[key])details.append(node('p',label+'：'+safeString(item.data[key],key==='notes'?2000:160,'')));
+        card.append(details);
+      }
+      const actions=node('div',undefined,'record-actions');
+      for(const [label,action,cls] of [['編輯',()=>editEntry(item.id),'secondary'],['刪除',()=>requestDelete(item.id),'secondary danger']]){const button=node('button',label,cls);button.type='button';button.disabled=recordBusy || deleteBusy || item.pending;button.addEventListener('click',action);actions.append(button);}
+      if(item.pending)card.append(node('p','等待雲端確認…','hint'));card.append(actions);list.append(card);
+    }
+    section.append(list);fragment.append(section);
+  }
+  $('recordList').replaceChildren(fragment);
+}
+
 function renderEntries() {
   if(activeModule==='calendar'){renderCalendar();return;}
   const def=moduleDefinitions[activeModule];
   let items=entryDocs.filter(item=>item.data.module===activeModule);
   const total=items.length;
+  if(isQuickModule()){renderQuickRecords(items);return;}
   if(def.checkable){renderChecklist(items);return;}
   if(activeModule==='itinerary' && $('dayFilter').value)items=items.filter(item=>item.data.date===$('dayFilter').value);
   items.sort((a,b)=>{
@@ -681,7 +796,7 @@ function renderEntries() {
 function editEntry(id) {
   if(!abandonDraft())return;
   const item=entryDocs.find(x=>x.id===id);if(!item)return;
-  editingEntryId=id;setFormOpen(true);
+  editingEntryId=id;configureQuickEntry(false);setFormOpen(true);
   for(const field of moduleDefinitions[activeModule].fields){
     const value=field.type==='number'?String(entryField(item.data,field.key) || 1):safeString(entryField(item.data,field.key),field.max || 160,field.type==='currency'?'TWD':'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
@@ -735,6 +850,7 @@ async function mutateEntry(action,success) {
 }
 async function saveEntry(event){
   event.preventDefault();if(recordBusy || !entriesReady || !$('recordForm').reportValidity())return;
+  if(quickMode && isQuickModule()){await saveQuickEntries();return;}
   let data;try{if(activeModule==='packing'){collectPackingRows();syncPackingValues();}data=collectEntry();}catch(error){feedback(error.message,'error');return;}
   const id=editingEntryId;
   if(moduleDefinitions[activeModule].checkable && !id){
@@ -764,6 +880,7 @@ function goHome(){
   closeDetail();notice('');window.scrollTo({top:0,behavior:'smooth'});
 }
 function initModules(){
+  $('useQuickBtn').addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);focusEntryInput();});
   $('showFormBtn').addEventListener('click',()=>{if($('recordForm').hidden){setFormOpen(true);focusEntryInput();}else if(abandonDraft())resetRecordForm();});
   $('homeLink').addEventListener('click',event=>{event.preventDefault();goHome();});
   for(const [key,def] of Object.entries(moduleDefinitions)){
