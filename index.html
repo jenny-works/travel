@@ -1,315 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-  <title>旅遊行程管理</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, "Noto Sans TC", sans-serif;
-      color: #30445d;
-      background: linear-gradient(
-        135deg, #e9f7ff, #fff1e8, #f3ebff
-      );
-      min-height: 100vh;
-    }
-    .wrap {
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
-    header {
-      background: linear-gradient(120deg, #23b9ac, #7884ee);
-      color: white;
-      border-radius: 22px;
-      padding: 30px;
-      margin-bottom: 20px;
-    }
-    h1 { margin: 0 0 10px; }
-    .card {
-      background: white;
-      padding: 24px;
-      margin-bottom: 20px;
-      border-radius: 18px;
-      box-shadow: 0 6px 24px #31465b12;
-    }
-    button {
-      background: #ff786c;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    button:disabled { opacity: .6; }
-    .logout { background: #7884ee; }
-    input {
-      display: block;
-      width: 100%;
-      margin: 12px 0;
-      padding: 13px;
-      font-size: 16px;
-      border: 1px solid #d5dfe9;
-      border-radius: 10px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-    .trip {
-      background: #e6f8f1;
-      border-left: 5px solid #23b9ac;
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-    .feature {
-      padding: 18px 8px;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .feature:nth-child(4n+1) { background: #e5f0ff; }
-    .feature:nth-child(4n+2) { background: #e5f8ee; }
-    .feature:nth-child(4n+3) { background: #fff0df; }
-    .feature:nth-child(4n) { background: #f1e8ff; }
-    .hidden { display: none; }
-    .error { color: #b73535; }
-    .muted { color: #687a8e; }
-    @media (max-width: 600px) {
-      .grid { grid-template-columns: 1fr; }
-      .features { grid-template-columns: repeat(2, 1fr); }
-      header { padding: 24px; }
-      .wrap { padding: 12px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6960dc">
+<title>Itinerary Manager</title>
+<style>
+:root{color-scheme:light;--ink:#252747;--muted:#656982;--purple:#6654cf;--line:#e5e5f1;--shadow:0 16px 45px #35336b0c}*{box-sizing:border-box}body{margin:0;background:#f7f7fd;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}[hidden]{display:none!important}header{background:linear-gradient(110deg,#6552cb,#7868e7 58%,#599ee0);color:white;padding:26px max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.7px;line-height:1.3}#headerAccount{display:flex;gap:12px;align-items:center;margin-left:auto;max-width:100%;justify-content:flex-end}#headerEmail{font-size:13px;overflow-wrap:anywhere;text-align:right;min-width:0}.logout{flex-shrink:0;color:white;border:1px solid #ffffff70;background:#ffffff15;border-radius:10px;padding:7px 15px}main{max-width:1160px;margin:32px auto;padding:0 24px 40px}.status{border:1px solid #dfddf4;background:#efedff;color:#4c4380;padding:12px 16px;border-radius:13px;margin-bottom:20px;overflow-wrap:anywhere}.status[data-tone="error"]{background:#fff0f1;border-color:#f1cbd0;color:#962c42}.status[data-tone="success"]{background:#e9f8f1;border-color:#bde3cf;color:#216646}.card{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.4px}p{margin:6px 0 20px;color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:var(--purple);margin-bottom:12px}.login{max-width:650px;margin:60px auto;text-align:center;padding:44px 28px}.travel-art{font-size:64px;line-height:1.5;margin-bottom:16px}.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 22px;font-weight:650;box-shadow:0 6px 14px #6654cf20}.primary:hover{background:#5643ba}button:focus-visible,input:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.dashboard{display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start}.create{border-top:5px solid #9a88ed}.field{margin:20px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}input{width:100%;border:1px solid #d9dbea;background:#fcfcff;border-radius:11px;padding:12px;color:var(--ink)}input::placeholder{color:#9496aa}.hint{font-size:13px;color:var(--muted);margin:14px 0 0}.create .primary{width:100%}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:3px 0 18px}.section-heading h2{margin:0}.count{font-size:12px;border-radius:20px;background:#eae7fa;padding:5px 12px;color:#5d4ca8;white-space:nowrap}.trips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.trip{padding:0;overflow:hidden;box-shadow:var(--shadow);border-radius:19px;background:white;border:1px solid var(--line);min-width:0}.trip-top{padding:20px 22px;font-size:30px;background:var(--wash);display:flex;align-items:center;justify-content:space-between}.trip-number{font-size:11px;font-weight:750;letter-spacing:1px;color:#4a4968}.trip-body{padding:20px 22px}.trip h3{margin:0 0 8px;font-size:19px;overflow-wrap:anywhere}.destination{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.trip-meta{margin:18px 0 0;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#767a90}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:2px dashed #dddcee;border-radius:20px;background:#ffffff80}.empty-icon{font-size:40px;margin-bottom:12px}.empty p{margin:0}.sync{font-size:13px;color:var(--muted);margin:0 0 18px}.footer{text-align:center;color:#888ba1;font-size:12px;margin-top:40px}noscript{display:block;padding:24px;background:#fff0f1}@media(max-width:900px){.dashboard{grid-template-columns:1fr}.create form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.create .primary{grid-column:1/-1}.create .hint{grid-column:1/-1}}@media(max-width:540px){header{padding:22px 18px;gap:16px}#headerAccount{width:100%}main{padding:0 16px 28px;margin-top:22px}.card{padding:22px}.login{margin:30px auto;padding:32px 22px}.create form{display:block}.trips{grid-template-columns:1fr}.dashboard{gap:24px}.section-heading h2{font-size:20px}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>✈️ Itinerary manager</h1>
-    </header>
+<header>
+<h1>✈️ Itinerary Manager</h1>
+<div id="headerAccount" hidden><span id="headerEmail"></span><button id="logoutBtn" class="logout" type="button">登出</button></div>
+</header>
+<main>
+<div id="notice" class="status" role="status" aria-live="polite">正在載入登入服務…</div>
+<section id="loginArea" class="card login">
+<div class="travel-art" aria-hidden="true">🌏 🧳</div>
+<div class="eyebrow">YOUR NEXT ADVENTURE</div>
+<h2>下一趟旅行，從這裡開始</h2>
+<p>建立旅行清單，讓每一次出發都有美好起點。</p>
+<button id="loginBtn" class="primary" type="button" disabled>使用 Google 帳號登入</button>
+<p class="hint">登入後即可儲存旅行，並在不同裝置上同步。</p>
+</section>
+<section id="appArea" hidden aria-label="旅行管理">
+<div class="dashboard">
+<section class="card create">
+<div class="eyebrow">LET’S GO SOMEWHERE</div>
+<h2>🌈 建立新旅行</h2>
+<p>把期待，變成下一個目的地。</p>
+<form id="tripForm">
+<fieldset id="tripFields" disabled style="border:0;margin:0;padding:0;min-width:0;display:contents">
+<div class="field"><label for="tripName">旅行名稱</label><input id="tripName" name="tripName" required maxlength="80" placeholder="例如：春日京都散步" autocomplete="off"></div>
+<div class="field"><label for="destination">目的地</label><input id="destination" name="destination" required maxlength="120" placeholder="例如：日本・京都" autocomplete="off"></div>
+<button id="addTripBtn" class="primary" type="submit">＋ 新增旅行</button>
+</fieldset>
+<p class="hint">旅行會儲存到目前登入帳號的雲端空間。</p>
+</form>
+</section>
+<section aria-labelledby="tripsHeading">
+<div class="section-heading"><h2 id="tripsHeading">🧳 我的旅行</h2><span id="tripCount" class="count">0 趟旅行</span></div>
+<p id="syncStatus" class="sync" role="status" aria-live="polite">正在同步旅行…</p>
+<div id="tripList" class="trips" aria-busy="true"></div>
+</section>
+</div>
+</section>
+<div class="footer">Itinerary Manager · Made for your next adventure</div>
+<noscript>請啟用 JavaScript，才能使用 Google 登入與旅行雲端同步。</noscript>
+</main>
+<script>
+// The watchdog also reports failed static module imports (for example, a missing config file).
+window.itineraryBootTimer = setTimeout(() => {
+  const notice = document.getElementById('notice');
+  notice.dataset.tone = 'error';
+  notice.textContent = '服務載入逾時。請確認 firebase-config.js 與 index.html 位於同一資料夾、設定匯出正確，並檢查網路後重新整理。請透過網站網址開啟，勿直接雙擊檔案。';
+}, 15000);
+</script>
+<script type="module">
+import { firebaseConfig } from './firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
 
-    <p id="message" role="status"></p>
-
-    <section id="loginArea" class="card hidden">
-      <h2>🌏 歡迎來到 Travel Mate</h2>
-      <p>登入 Google 帳號，開始規劃旅行。</p>
-      <button id="loginBtn">使用 Google 登入</button>
-    </section>
-
-    <div id="appArea" class="hidden">
-      <section class="card">
-        <h2 id="welcome"></h2>
-        <p id="email"></p>
-        <button id="logoutBtn" class="logout">登出</button>
-      </section>
-
-      <section class="card">
-        <h2>🌈 建立新行程</h2>
-        <form id="tripForm">
-          <input id="tripName"
-                 placeholder="旅行名稱，例如：東京自由行"
-                 required maxlength="100">
-          <input id="destination"
-                 placeholder="目的地，例如：日本東京"
-                 required maxlength="100">
-          <button id="addBtn" type="submit">
-            ＋ 新增旅行
-          </button>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>🧳 我的行程</h2>
-        <div id="tripList" class="grid"></div>
-      </section>
-
-      <section class="card">
-        <h2>🎨 旅行管理功能</h2>
-        <div class="features">
-          <div class="feature">✈️ 機票</div>
-          <div class="feature">🏨 住宿</div>
-          <div class="feature">🚆 交通</div>
-          <div class="feature">🎡 娛樂</div>
-          <div class="feature">🗓️ 行程</div>
-          <div class="feature">✅ 待辦</div>
-          <div class="feature">🧳 行李</div>
-          <div class="feature">💰 預算</div>
-        </div>
-        <p class="muted">
-          以上功能將在下一階段逐步開放。
-        </p>
-      </section>
-    </div>
-  </div>
-
-  <script type="module">
-    import { firebaseConfig } from "./firebase-config.js";
-    
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-
-    import {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      addDoc,
-      query,
-      where,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    const $ = id => document.getElementById(id);
-    let stopTrips = null;
-    let currentUser = null;
-
-    function showError(error) {
-      console.error(error);
-      $("message").textContent =
-        "操作失敗：" + (error.message || error);
-      $("message").className = "error";
-    }
-
-    $("loginBtn").onclick = async () => {
-      $("message").textContent = "";
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (error) {
-        showError(error);
-      }
-    };
-
-    $("logoutBtn").onclick = async () => {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        showError(error);
-      }
-    };
-
-    onAuthStateChanged(auth, async user => {
-      if (stopTrips) {
-        stopTrips();
-        stopTrips = null;
-      }
-
-      currentUser = user;
-      $("loginArea").classList.toggle("hidden", !!user);
-      $("appArea").classList.toggle("hidden", !user);
-
-      if (!user) {
-        $("tripList").replaceChildren();
-        return;
-      }
-
-      $("welcome").textContent =
-        "👋 歡迎，" + (user.displayName || "旅行者");
-      $("email").textContent = user.email || "";
-
-      try {
-        await setDoc(doc(db, "users", user.uid), {
-          displayName: user.displayName || "",
-          email: user.email || "",
-          photoURL: user.photoURL || "",
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-      } catch (error) {
-        showError(error);
-      }
-
-      if (auth.currentUser?.uid !== user.uid) return;
-
-      const tripsQuery = query(
-        collection(db, "trips"),
-        where("ownerId", "==", user.uid)
-      );
-
-      stopTrips = onSnapshot(
-        tripsQuery,
-        snapshot => {
-          if (auth.currentUser?.uid !== user.uid) return;
-          const list = $("tripList");
-          list.replaceChildren();
-
-          snapshot.forEach(result => {
-            const data = result.data();
-            const card = document.createElement("article");
-            card.className = "trip";
-
-            const title = document.createElement("h3");
-            title.textContent = "🌍 " + data.name;
-
-            const place = document.createElement("p");
-            place.textContent = "📍 " + data.destination;
-
-            card.append(title, place);
-            list.appendChild(card);
-          });
-
-          if (snapshot.empty) {
-            const empty = document.createElement("p");
-            empty.textContent =
-              "還沒有旅行，建立第一趟吧！";
-            list.appendChild(empty);
-          }
-        },
-        showError
-      );
+clearTimeout(window.itineraryBootTimer);
+const $ = id => document.getElementById(id);
+let currentUser = null;
+let unsubscribeTrips = null;
+let generation = 0;
+let saving = false;
+let db, auth;
+const washes = ['#eae5ff','#dff3ee','#ffebdc','#e1edff','#ffe4ed','#fff2cc'];
+const icons = ['✈️','🌿','🌅','🗺️','🌸','☀️'];
+function notice(message, tone = 'info') {
+  $('notice').textContent = message;
+  $('notice').dataset.tone = tone;
+  $('notice').hidden = !message;
+}
+function errorText(error) {
+  const messages = {
+    'auth/popup-blocked': '登入視窗被瀏覽器阻擋，請允許彈出視窗，再按一次登入。',
+    'auth/popup-closed-by-user': '登入視窗已關閉，你可以再次登入。',
+    'auth/cancelled-popup-request': '另一次登入正在進行，請完成該視窗的操作。',
+    'auth/unauthorized-domain': '此網站尚未獲授權。請在 Firebase Authentication 的 Authorized domains 加入目前網站網域。',
+    'auth/operation-not-allowed': '請先在 Firebase Authentication 啟用 Google 登入。',
+    'auth/network-request-failed': '網路連線失敗，請檢查連線後重試。',
+    'auth/invalid-api-key': 'Firebase 設定無效，請檢查 firebase-config.js。',
+    'permission-denied': '無法存取旅行資料，請確認 Firestore 規則允許目前帳號讀寫 users/{uid} 及其 trips 子集合。',
+    'unavailable': '雲端服務暫時無法連線，請稍後再試。'
+  };
+  return messages[error?.code] || '操作未完成，請檢查 Firebase 設定、資料庫規則與網路，再重新整理重試。';
+}
+function emptyState(title, detail) {
+  const box = document.createElement('div'); box.className = 'empty';
+  const icon = document.createElement('div'); icon.className = 'empty-icon'; icon.textContent = '🧳'; icon.setAttribute('aria-hidden','true');
+  const heading = document.createElement('h3'); heading.textContent = title;
+  const p = document.createElement('p'); p.textContent = detail;
+  box.append(icon, heading, p); $('tripList').replaceChildren(box);
+}
+function safeString(value, length, fallback) {
+  return typeof value === 'string' && value.trim() ? value.slice(0, length) : fallback;
+}
+function renderTrips(snapshot) {
+  const items = snapshot.docs.map(item => ({ id: item.id, data: item.data(), pending: item.metadata.hasPendingWrites }));
+  // Sort locally to avoid an extra composite index and retain older documents without createdAt.
+  items.sort((a,b) => (b.data.createdAt?.toMillis?.() || 0) - (a.data.createdAt?.toMillis?.() || 0) || a.id.localeCompare(b.id));
+  $('tripCount').textContent = `${items.length} 趟旅行`;
+  $('tripList').setAttribute('aria-busy','false');
+  $('syncStatus').textContent = snapshot.metadata.fromCache ? '目前顯示暫存資料，正在等待雲端連線…' : snapshot.metadata.hasPendingWrites ? '正在儲存變更…' : '已與雲端同步';
+  if (!items.length) { emptyState('還沒有旅行計畫', '新增第一趟旅行，準備出發吧！'); return; }
+  const fragment = document.createDocumentFragment();
+  items.forEach((item,index) => {
+    const article = document.createElement('article'); article.className = 'trip'; article.style.setProperty('--wash',washes[index % washes.length]);
+    const top = document.createElement('div'); top.className = 'trip-top';
+    const icon = document.createElement('span'); icon.textContent = icons[index % icons.length]; icon.setAttribute('aria-hidden','true');
+    const number = document.createElement('span'); number.className = 'trip-number'; number.textContent = `TRIP ${String(index+1).padStart(2,'0')}`; top.append(icon,number);
+    const body = document.createElement('div'); body.className = 'trip-body';
+    const heading = document.createElement('h3'); heading.textContent = safeString(item.data.name,80,'未命名旅行');
+    const place = document.createElement('p'); place.className = 'destination'; place.textContent = '📍 ' + safeString(item.data.destination,120,'尚未設定目的地');
+    const meta = document.createElement('p'); meta.className = 'trip-meta';
+    const date = item.data.createdAt?.toDate?.();
+    meta.textContent = item.pending ? '等待雲端儲存…' : date instanceof Date && Number.isFinite(date.getTime()) ? `建立於 ${new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium'}).format(date)}` : '旅行計畫';
+    body.append(heading,place,meta); article.append(top,body); fragment.append(article);
+  });
+  // User and database strings are always text nodes, never HTML.
+  $('tripList').replaceChildren(fragment);
+}
+async function start() {
+  if (location.protocol === 'file:') throw new Error('http-required');
+  if (!firebaseConfig || ['apiKey','authDomain','projectId','appId'].some(key => typeof firebaseConfig[key] !== 'string' || !firebaseConfig[key].trim())) throw new Error('invalid-config');
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app); db = getFirestore(app); auth.languageCode = 'zh-TW';
+  try { await setPersistence(auth,browserLocalPersistence); }
+  catch { notice('此瀏覽器無法保留長期登入狀態，本次仍可嘗試登入。'); }
+  $('loginBtn').disabled = false;
+  onAuthStateChanged(auth,user => {
+    const token = ++generation;
+    unsubscribeTrips?.(); unsubscribeTrips = null;
+    currentUser = user; saving = false;
+    $('tripFields').disabled = !user; $('addTripBtn').textContent = '＋ 新增旅行';
+    $('tripForm').reset(); $('tripList').replaceChildren(); $('tripCount').textContent = '0 趟旅行';
+    $('headerAccount').hidden = !user; $('loginArea').hidden = !!user; $('appArea').hidden = !user;
+    $('headerEmail').textContent = user ? (user.email || user.displayName || 'Google 帳號') : '';
+    notice('');
+    if (!user) return;
+    $('tripList').setAttribute('aria-busy','true'); $('syncStatus').textContent = '正在同步旅行…';
+    // Profile errors do not stop the independent trip listener.
+    setDoc(doc(db,'users',user.uid), {
+      uid:user.uid, displayName:user.displayName || '', email:user.email || '', updatedAt:serverTimestamp()
+    },{merge:true}).catch(error => { if (generation === token) notice('帳號資料同步失敗。' + errorText(error),'error'); });
+    unsubscribeTrips = onSnapshot(collection(db,'users',user.uid,'trips'),{includeMetadataChanges:true},snapshot => {
+      if (generation === token) renderTrips(snapshot);
+    },error => {
+      if (generation !== token) return;
+      $('tripList').setAttribute('aria-busy','false'); $('syncStatus').textContent = '同步失敗';
+      emptyState('無法載入旅行', '請檢查權限與網路，修正後重新整理。'); notice(errorText(error),'error');
     });
-
-    $("tripForm").onsubmit = async event => {
-      event.preventDefault();
-      if (!currentUser) return;
-
-      const name = $("tripName").value.trim();
-      const destination = $("destination").value.trim();
-
-      if (!name || !destination) return;
-
-      const button = $("addBtn");
-      button.disabled = true;
-
-      try {
-        await addDoc(collection(db, "trips"), {
-          name,
-          destination,
-          ownerId: currentUser.uid,
-          createdAt: serverTimestamp()
-        });
-        $("tripForm").reset();
-      } catch (error) {
-        showError(error);
-      } finally {
-        button.disabled = false;
-      }
-    };
-  </script>
+  },error => { notice(errorText(error),'error'); });
+  $('loginBtn').addEventListener('click',async () => {
+    $('loginBtn').disabled = true; notice('正在開啟 Google 登入…');
+    try { const provider = new GoogleAuthProvider(); provider.setCustomParameters({prompt:'select_account'}); await signInWithPopup(auth,provider); }
+    catch(error) { notice(errorText(error),'error'); }
+    finally { $('loginBtn').disabled = false; }
+  });
+  $('logoutBtn').addEventListener('click',async () => {
+    $('logoutBtn').disabled = true;
+    try { await signOut(auth); notice('已登出。'); }
+    catch(error) { notice(errorText(error),'error'); }
+    finally { $('logoutBtn').disabled = false; }
+  });
+  $('tripForm').addEventListener('submit',async event => {
+    event.preventDefault();
+    if (!currentUser || saving || !$('tripForm').reportValidity()) return;
+    const name = $('tripName').value.trim(); const destination = $('destination').value.trim();
+    if (!name || !destination || name.length > 80 || destination.length > 120) {
+      notice('請輸入有效的旅行名稱（最多 80 字）與目的地（最多 120 字）。','error'); return;
+    }
+    const token = generation; const uid = currentUser.uid;
+    saving = true; $('tripFields').disabled = true; $('addTripBtn').textContent = '儲存中…'; notice('正在儲存旅行；若網路中斷，請等待連線恢復。');
+    try {
+      await addDoc(collection(db,'users',uid,'trips'), {name,destination,createdAt:serverTimestamp()});
+      if (generation !== token) return;
+      $('tripForm').reset(); notice('旅行已儲存到雲端！','success');
+    } catch(error) { if (generation === token) notice(errorText(error),'error'); }
+    finally {
+      if (generation === token) { saving = false; $('tripFields').disabled = !currentUser; $('addTripBtn').textContent = '＋ 新增旅行'; }
+    }
+  });
+}
+start().catch(error => {
+  $('loginBtn').disabled = true;
+  notice(error.message === 'http-required' ? '請透過 GitHub Pages 或其他 HTTP/HTTPS 網址開啟網站，不能直接雙擊 HTML 檔案登入。' : '初始化失敗。請確認 firebase-config.js 的 export const firebaseConfig 設定及 Firebase 專案資料正確。','error');
+});
+</script>
 </body>
 </html>
-
