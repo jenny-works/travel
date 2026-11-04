@@ -18,6 +18,7 @@
 .map-link{color:#5d4caf;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}.calendar-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}.calendar-toolbar h2{margin:0 auto 0 0}.calendar-toolbar input{width:auto;padding:8px}.calendar-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.calendar-shortcuts button{font-size:13px}.calendar-week,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.calendar-week{background:#eeebfb;border-radius:12px 12px 0 0;text-align:center;font-size:13px;padding:10px 0}.calendar-grid{border-left:1px solid var(--line);border-top:1px solid var(--line)}.calendar-cell{min-height:128px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px;min-width:0;background:#fff}.calendar-cell.blank{background:#f8f8fc}.calendar-cell.selected{background:#f2efff;box-shadow:inset 0 0 0 2px #9c8ae2}.calendar-cell.in-trip{border-top:3px solid #c2b6f4}.calendar-date{border:0;background:transparent;color:var(--ink);font-weight:650;border-radius:20px;padding:3px 7px}.calendar-date[aria-current="date"]{background:var(--purple);color:white}.calendar-event{display:block;text-align:left;width:100%;background:#eae6ff;color:#51418c;border:0;border-radius:6px;padding:4px 6px;font-size:11px;line-height:1.5;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calendar-event[data-module="flights"]{background:#e2eeff;color:#315d95}.calendar-event[data-module="lodging"]{background:#ffeddb;color:#885b2a}.calendar-event[data-module="transport"]{background:#ddf1eb;color:#346e60}.calendar-event[data-module="activities"]{background:#ffe5ed;color:#984d65}.calendar-event[data-module="todos"]{background:#fff3c9;color:#7a651e}.calendar-more{font-size:11px;border:0;background:none;color:#6654cf;padding:3px}.calendar-agenda{margin-top:26px}.calendar-agenda h3{margin-bottom:12px}.agenda-item{display:flex;gap:12px;align-items:flex-start;border-top:1px solid var(--line);padding:13px 0}.agenda-item .agenda-open{flex:1;text-align:left;border:0;background:none;color:var(--ink);padding:0;min-width:0;overflow-wrap:anywhere}.agenda-item small{display:block;color:var(--muted);margin-top:4px}.calendar-notes{font-size:13px;color:var(--muted);margin:12px 0}.calendar-dot-count{display:none}.record:focus,.check-row:focus{outline:3px solid #b0a0ed;outline-offset:3px}@media(min-width:901px){.module-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}.module-fields .wide{grid-column:1/-1}.checklist-form .field{max-width:760px}.packing-row{grid-template-columns:minmax(0,1fr) 110px 42px}}@media(max-width:600px){#calendarArea{padding:14px}.calendar-cell{padding:4px;min-height:67px}.calendar-event{display:none}.calendar-dot-count{display:block;font-size:11px;color:#6654cf;padding:2px 0}.calendar-toolbar{gap:7px}.calendar-toolbar h2{width:100%;font-size:21px}.calendar-toolbar button{padding:7px 10px}.agenda-item{flex-wrap:wrap}.calendar-week{font-size:12px}}
 
 .undated-list{border-top:1px solid var(--line);padding-top:18px}.undated-list>summary{font-weight:700;cursor:pointer;padding:8px 0}
+.expense-amount{display:inline-block;font-size:14px;font-weight:650;color:#6450ad;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -61,7 +62,7 @@
 <button id="backBtn" type="button" class="secondary">← 返回我的旅行</button>
 <div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
 <nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
-<section id="calendarArea" class="card" hidden aria-label="總表行事曆"></section>
+<section id="calendarArea" class="card" hidden aria-label="總表"></section>
 <div id="moduleLayout" class="module-layout">
 <section class="card"><div class="detail-heading"><h2 id="moduleTitle"></h2><button id="showFormBtn" type="button" class="primary" aria-expanded="false" aria-controls="recordForm">＋ 新增</button></div><p id="moduleDescription"></p>
 <form id="recordForm" hidden><fieldset id="recordFields" style="border:0;padding:0;margin:0;min-width:0"><div id="moduleFields" class="module-fields"></div><div class="form-actions"><button id="saveRecordBtn" class="primary" type="submit">＋ 新增</button><button id="cancelEditBtn" type="button" class="secondary">取消</button></div></fieldset></form>
@@ -223,15 +224,33 @@ async function start() {
 const F = (key,label,type='text',required=false,max=160) => ({key,label,type,required,max});
 const commonNotes = F('notes','備註','textarea',false,2000);
 const moduleDefinitions = {
-  calendar:{label:'📅 總表行事曆',description:'集中查看這趟旅行的安排。',fields:[]},
+  calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
   itinerary:{label:'🗓️ 每日行程',description:'依日期與時間安排每天的活動。時間皆為當地時間。',fields:[F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
-  flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('location','出發機場 → 抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
+  flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','座位／車輛資訊'),F('reference','預約編號'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
   todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','截止日期','date'),commonNotes]},
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
+const currencyOptions={TWD:'TWD 新台幣',JPY:'JPY 日圓',USD:'USD 美元',EUR:'EUR 歐元',KRW:'KRW 韓元',HKD:'HKD 港幣',CNY:'CNY 人民幣',GBP:'GBP 英鎊',SGD:'SGD 新加坡幣',THB:'THB 泰銖',AUD:'AUD 澳幣',CAD:'CAD 加幣'};
+for(const key of ['itinerary','flights','lodging','transport','activities']){
+  const fields=moduleDefinitions[key].fields;
+  fields.splice(fields.length-1,0,F('amount','消費金額','decimal',false,12),F('currency','幣別','currency',false,3));
+}
+function entryField(data,key){
+  if(data.module==='flights' && ['departureAirport','arrivalAirport'].includes(key)){
+    if(typeof data[key]==='string')return data[key];
+    const old=safeString(data.location,160,'');const parts=old.split(/\s*(?:→|->)\s*/);
+    return key==='departureAirport'?parts[0] || '':parts.slice(1).join(' → ');
+  }
+  return data[key];
+}
+function formatExpense(data){
+  if(typeof data.amount!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(data.amount))return '';
+  const currency=Object.hasOwn(currencyOptions,data.currency)?data.currency:'TWD';
+  return currency+' '+new Intl.NumberFormat('zh-TW',{minimumFractionDigits:data.amount.includes('.')?2:0,maximumFractionDigits:2}).format(Number(data.amount));
+}
 const entryTextKeys=['title','date','endDate','time','endTime','location','reference','detail','notes'];
 let selectedTripId=null, activeModule='itinerary', unsubscribeEntries=null;
 let moduleGeneration=0, entryDocs=[], editingEntryId=null, recordBusy=false, entriesReady=false;
@@ -258,7 +277,8 @@ function isDirty() {
   return fields.some(field=>{
     const el=document.getElementById('entry_'+field.key); if(!el)return false;
     if(!editingEntryId && moduleDefinitions[activeModule].checkable && field.key==='detail')return false;
-    const initial=original ? String(original[field.key] ?? (field.type==='number'?1:'')) : (field.type==='number'?'1':'');
+    const fallback=field.type==='number'?'1':field.type==='currency'?'TWD':'';
+    const initial=original ? String(entryField(original,field.key) ?? fallback) : fallback;
     return el.value !== initial;
   });
 }
@@ -275,7 +295,7 @@ function refreshSelectedTrip() {
   const trip=tripsById.get(selectedTripId);
   if(!trip){closeDetail();notice('這趟旅行已不存在，已返回旅行清單。');return;}
   $('detailTitle').textContent=safeString(trip.name,80,'未命名旅行');
-  $('detailDestination').replaceChildren(node('span','📍 '),mapLink(safeString(trip.destination,120,'尚未設定目的地')));
+  $('detailDestination').textContent='📍 '+safeString(trip.destination,120,'尚未設定目的地');
   $('detailDates').textContent=trip.startDate || trip.endDate ? `${safeString(trip.startDate,10,'未設定開始日期')} → ${safeString(trip.endDate,10,'未設定結束日期')}` : '尚未設定旅行日期，可點「編輯旅行資料」補上。';
 }
 function openTrip(id) {
@@ -322,7 +342,8 @@ function agendaRow(item,label=''){
   const button=node('button',undefined,'agenda-open');button.type='button';
   button.append(node('strong',safeString(item.data.title,160,'未命名項目')),node('small',`${moduleDefinitions[item.data.module].label} ${label}${item.eventTime?' · '+item.eventTime:''}${item.data.done===true?' · 已完成':''}`));
   button.addEventListener('click',()=>jumpToEntry(item));row.append(button);
-  if(item.data.location)row.append(mapLink(safeString(item.data.location,160,'')));
+  if(item.data.module!=='flights' && item.data.location)row.append(mapLink(safeString(item.data.location,160,'')));
+  if(formatExpense(item.data))row.append(node('span',formatExpense(item.data),'expense-amount'));
   return row;
 }
 function changeCalendarMonth(amount){
@@ -339,7 +360,7 @@ function renderCalendar(){
   if(!calendarDay || calendarDay.slice(0,7)!==calendarMonth)calendarDay=calendarMonth+'-01';
   const [year,month]=calendarMonth.split('-').map(Number),first=new Date(year,month-1,1,12),days=new Date(year,month,0,12).getDate();
   const fragment=document.createDocumentFragment(),toolbar=node('div',undefined,'calendar-toolbar');
-  toolbar.append(node('h2','📅 總表行事曆'));
+  toolbar.append(node('h2','📅 總表'));
   const previous=node('button','‹ 上個月','secondary');previous.type='button';previous.disabled=calendarMonth==='1900-01';previous.addEventListener('click',()=>changeCalendarMonth(-1));
   const picker=node('input');picker.type='month';picker.value=calendarMonth;picker.min='1900-01';picker.max='2199-12';picker.setAttribute('aria-label','行事曆月份');picker.addEventListener('change',()=>{if(/^\d{4}-\d{2}$/.test(picker.value) && validDate(picker.value+'-01')){calendarMonth=picker.value;calendarDay=calendarMonth+'-01';renderCalendar();}});
   const next=node('button','下個月 ›','secondary');next.type='button';next.disabled=calendarMonth==='2199-12';next.addEventListener('click',()=>changeCalendarMonth(1));
@@ -363,11 +384,6 @@ function renderCalendar(){
   const events=eventsOnDay(calendarDay);if(!events.length)agenda.append(node('p','這一天還沒有安排。'));
   for(const item of events)agenda.append(agendaRow(item,item.eventLabel));
   const add=node('button','＋ 新增這一天的每日行程','secondary');add.type='button';add.addEventListener('click',()=>{const day=calendarDay;if(!abandonDraft())return;switchModule('itinerary',true);$('entry_date').value=day;setFormOpen(true);focusEntryInput();});agenda.append(add);fragment.append(agenda);
-  const undated=node('details',undefined,'calendar-agenda undated-list');
-  const noDate=entryDocs.filter(item=>moduleDefinitions[item.data.module] && item.data.module!=='calendar' && !datesForEntry(item.data).length);
-  undated.append(node('summary',`未排日期與行李清單（${noDate.length} 項）`));
-  if(!noDate.length)undated.append(node('p','沒有未排日期的項目。'));
-  for(const item of noDate)undated.append(agendaRow(item,'未排日期'));fragment.append(undated);
   $('calendarArea').replaceChildren(fragment);
 }
 
@@ -426,8 +442,13 @@ function switchModule(key,force=false) {
       label.htmlFor='entry_'+field.key+'_hour';
       wrap.append(label,createTimePicker(field));fragment.append(wrap);continue;
     }
-    const input=node(field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
-    if(input.tagName==='INPUT')input.type=field.type;
+    const input=node(field.type==='currency'?'select':field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
+    if(input.tagName==='INPUT')input.type=field.type==='decimal'?'number':field.type;
+    if(field.type==='decimal'){input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填，例如：1500';}
+    if(field.type==='currency'){
+      input.className='category-select';
+      for(const [code,text] of Object.entries(currencyOptions)){const option=node('option',text);option.value=code;option.defaultSelected=code==='TWD';input.append(option);}
+    }
     if(field.type==='number'){input.min='1';input.max='999';input.step='1';input.defaultValue='1';input.value='1';}
     else if(field.type==='text' || field.type==='textarea')input.maxLength=field.max;
     wrap.append(label,input);
@@ -643,10 +664,10 @@ function renderEntries() {
     }
     const dl=node('dl');
     for(const field of def.fields){
-      if(field.key==='title')continue;
-      const value=item.data[field.key];
+      if(field.key==='title' || field.key==='currency')continue;
+      const value=entryField(item.data,field.key);
       if(value===undefined || value==='')continue;
-      const dd=node('dd');if(field.key==='location')dd.append(mapLink(safeString(value,160,'')));else dd.textContent=field.type==='number'?String(Number.isInteger(value)?value:1):safeString(value,field.max || 160,'');dl.append(node('dt',field.label),dd);
+      const dd=node('dd');if(field.key==='amount')dd.textContent=formatExpense(item.data);else if(field.key==='location' && item.data.module!=='flights')dd.append(mapLink(safeString(value,160,'')));else dd.textContent=field.type==='number'?String(Number.isInteger(value)?value:1):safeString(value,field.max || 160,'');dl.append(node('dt',field.label),dd);
     }
     card.append(dl);
     if(item.pending)card.append(node('p','等待雲端確認…','hint'));
@@ -662,7 +683,7 @@ function editEntry(id) {
   const item=entryDocs.find(x=>x.id===id);if(!item)return;
   editingEntryId=id;setFormOpen(true);
   for(const field of moduleDefinitions[activeModule].fields){
-    const value=field.type==='number'?String(item.data[field.key] || 1):safeString(item.data[field.key],field.max || 160,'');
+    const value=field.type==='number'?String(entryField(item.data,field.key) || 1):safeString(entryField(item.data,field.key),field.max || 160,field.type==='currency'?'TWD':'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
   }
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
@@ -678,7 +699,12 @@ function collectEntry() {
   for(const field of moduleDefinitions[activeModule].fields){
     const value=$('entry_'+field.key).value.trim();
     if(field.required && !value)throw new Error('請填寫'+field.label+'。');
-    if(field.type==='number'){
+    if(field.type==='decimal'){
+      if(value && !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))throw new Error('消費金額請填寫 0 至 999999999.99，最多兩位小數。');
+      data[field.key]=value;
+    }else if(field.type==='currency'){
+      if(!Object.hasOwn(currencyOptions,value))throw new Error('請選擇有效幣別。');data[field.key]=value;
+    }else if(field.type==='number'){
       const n=Number(value);if(!Number.isInteger(n)||n<1||n>999)throw new Error('數量請填寫 1 至 999 的整數。');data[field.key]=n;
     }else{
       if(value.length>field.max && !(moduleDefinitions[activeModule].checkable && field.key==='title' && !editingEntryId))throw new Error(field.label+'內容過長。');
