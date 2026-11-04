@@ -1,1 +1,324 @@
 
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>Travel Mate｜我的旅行管理</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      color: #30445d;
+      background: linear-gradient(
+        135deg, #e9f7ff, #fff1e8, #f3ebff
+      );
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    header {
+      background: linear-gradient(120deg, #23b9ac, #7884ee);
+      color: white;
+      border-radius: 22px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0 0 10px; }
+    .card {
+      background: white;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 24px #31465b12;
+    }
+    button {
+      background: #ff786c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    button:disabled { opacity: .6; }
+    .logout { background: #7884ee; }
+    input {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 13px;
+      font-size: 16px;
+      border: 1px solid #d5dfe9;
+      border-radius: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .trip {
+      background: #e6f8f1;
+      border-left: 5px solid #23b9ac;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .feature {
+      padding: 18px 8px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .feature:nth-child(4n+1) { background: #e5f0ff; }
+    .feature:nth-child(4n+2) { background: #e5f8ee; }
+    .feature:nth-child(4n+3) { background: #fff0df; }
+    .feature:nth-child(4n) { background: #f1e8ff; }
+    .hidden { display: none; }
+    .error { color: #b73535; }
+    .muted { color: #687a8e; }
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      header { padding: 24px; }
+      .wrap { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>✈️ Travel Mate</h1>
+      <p>一起規劃每一趟精彩旅行 🌈</p>
+    </header>
+
+    <p id="message" role="status"></p>
+
+    <section id="loginArea" class="card hidden">
+      <h2>🌏 歡迎來到 Travel Mate</h2>
+      <p>登入 Google 帳號，開始規劃旅行。</p>
+      <button id="loginBtn">使用 Google 登入</button>
+    </section>
+
+    <div id="appArea" class="hidden">
+      <section class="card">
+        <h2 id="welcome"></h2>
+        <p id="email"></p>
+        <button id="logoutBtn" class="logout">登出</button>
+      </section>
+
+      <section class="card">
+        <h2>🌈 建立新旅行</h2>
+        <form id="tripForm">
+          <input id="tripName"
+                 placeholder="旅行名稱，例如：東京自由行"
+                 required maxlength="100">
+          <input id="destination"
+                 placeholder="目的地，例如：日本東京"
+                 required maxlength="100">
+          <button id="addBtn" type="submit">
+            ＋ 新增旅行
+          </button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>🧳 我的旅行</h2>
+        <div id="tripList" class="grid"></div>
+      </section>
+
+      <section class="card">
+        <h2>🎨 旅行管理功能</h2>
+        <div class="features">
+          <div class="feature">✈️ 機票</div>
+          <div class="feature">🏨 住宿</div>
+          <div class="feature">🚆 交通</div>
+          <div class="feature">🎡 娛樂</div>
+          <div class="feature">🗓️ 行程</div>
+          <div class="feature">✅ 待辦</div>
+          <div class="feature">🧳 行李</div>
+          <div class="feature">💰 預算</div>
+        </div>
+        <p class="muted">
+          以上功能將在下一階段逐步開放。
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      addDoc,
+      query,
+      where,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+    // 請替換為你的 Firebase 專案設定
+    const firebaseConfig = {
+      apiKey: "你的API_KEY",
+      authDomain: "你的專案.firebaseapp.com",
+      projectId: "你的專案ID",
+      storageBucket: "你的StorageBucket",
+      messagingSenderId: "你的SenderID",
+      appId: "你的AppID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const $ = id => document.getElementById(id);
+    let stopTrips = null;
+    let currentUser = null;
+
+    function showError(error) {
+      console.error(error);
+      $("message").textContent =
+        "操作失敗：" + (error.message || error);
+      $("message").className = "error";
+    }
+
+    $("loginBtn").onclick = async () => {
+      $("message").textContent = "";
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        showError(error);
+      }
+    };
+
+    $("logoutBtn").onclick = async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        showError(error);
+      }
+    };
+
+    onAuthStateChanged(auth, async user => {
+      if (stopTrips) {
+        stopTrips();
+        stopTrips = null;
+      }
+
+      currentUser = user;
+      $("loginArea").classList.toggle("hidden", !!user);
+      $("appArea").classList.toggle("hidden", !user);
+
+      if (!user) {
+        $("tripList").replaceChildren();
+        return;
+      }
+
+      $("welcome").textContent =
+        "👋 歡迎，" + (user.displayName || "旅行者");
+      $("email").textContent = user.email || "";
+
+      try {
+        await setDoc(doc(db, "users", user.uid), {
+          displayName: user.displayName || "",
+          email: user.email || "",
+          photoURL: user.photoURL || "",
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (error) {
+        showError(error);
+      }
+
+      if (auth.currentUser?.uid !== user.uid) return;
+
+      const tripsQuery = query(
+        collection(db, "trips"),
+        where("ownerId", "==", user.uid)
+      );
+
+      stopTrips = onSnapshot(
+        tripsQuery,
+        snapshot => {
+          if (auth.currentUser?.uid !== user.uid) return;
+          const list = $("tripList");
+          list.replaceChildren();
+
+          snapshot.forEach(result => {
+            const data = result.data();
+            const card = document.createElement("article");
+            card.className = "trip";
+
+            const title = document.createElement("h3");
+            title.textContent = "🌍 " + data.name;
+
+            const place = document.createElement("p");
+            place.textContent = "📍 " + data.destination;
+
+            card.append(title, place);
+            list.appendChild(card);
+          });
+
+          if (snapshot.empty) {
+            const empty = document.createElement("p");
+            empty.textContent =
+              "還沒有旅行，建立第一趟吧！";
+            list.appendChild(empty);
+          }
+        },
+        showError
+      );
+    });
+
+    $("tripForm").onsubmit = async event => {
+      event.preventDefault();
+      if (!currentUser) return;
+
+      const name = $("tripName").value.trim();
+      const destination = $("destination").value.trim();
+
+      if (!name || !destination) return;
+
+      const button = $("addBtn");
+      button.disabled = true;
+
+      try {
+        await addDoc(collection(db, "trips"), {
+          name,
+          destination,
+          ownerId: currentUser.uid,
+          createdAt: serverTimestamp()
+        });
+        $("tripForm").reset();
+      } catch (error) {
+        showError(error);
+      } finally {
+        button.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>
+
