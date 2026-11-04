@@ -22,6 +22,7 @@
 .quick-common{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:650px}.quick-common .field{margin:12px 0}.quick-row{display:grid;grid-template-columns:130px minmax(0,1fr) 145px 42px;gap:10px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}.quick-row label{font-size:13px;margin-bottom:6px}.quick-row input,.quick-row select{width:100%;border:1px solid #d9dbea;border-radius:10px;padding:11px;background:#fcfcff;color:var(--ink)}.quick-row>div{min-width:0}.quick-row .quick-remove{margin-top:27px;padding:10px}.quick-add{margin:16px 0}.quick-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.quick-heading .secondary{font-size:13px}.quick-count{font-size:13px;color:var(--purple)}.calendar-event[data-module="dining"]{background:#fff0db;color:#8a5e21}.quick-guide{font-size:13px;color:var(--muted);margin:8px 0 12px}@media(max-width:600px){.quick-row{grid-template-columns:minmax(0,1fr) 110px 40px}.quick-row .quick-title-cell{grid-column:1/-1;grid-row:1}.quick-common{gap:12px}.quick-row .quick-remove{margin-top:27px}}
 
 .quick-saved-group>h3{font-size:16px;color:#68637f;margin:8px 0 10px}.quick-saved-list{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden}.quick-saved-row{padding:18px 22px;border-bottom:1px solid var(--line)}.quick-saved-row:last-child{border-bottom:0}.quick-saved-main{display:flex;justify-content:space-between;gap:18px;align-items:baseline}.quick-saved-main strong{overflow-wrap:anywhere;min-width:0}.quick-saved-meta{font-size:13px;color:var(--muted);margin:5px 0}.quick-saved-row .record-actions{margin-top:10px}.quick-saved-row .record-actions button{padding:4px 10px;font-size:12px}.quick-extra{font-size:13px;color:var(--muted);margin-top:7px}.quick-extra summary{cursor:pointer}.quick-extra p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.quick-saved-row:focus{outline:3px solid #b0a0ed;outline-offset:-3px}
+.expense-summary{margin:20px 0 26px;padding:20px;border-radius:18px;background:#f6f4ff;border:1px solid #e5def8}.expense-summary h3{margin:0;font-size:19px}.expense-summary-note{font-size:12px;color:var(--muted);margin:8px 0 14px}.expense-total-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.expense-total-card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}.expense-currency{font-size:13px;font-weight:650;color:#7b70a1}.expense-total-value{font-size:clamp(24px,3vw,32px);font-weight:750;color:#58449e;overflow-wrap:anywhere;margin-top:5px}.expense-module-totals{border-top:1px solid var(--line);padding-top:8px}.expense-module-total{display:flex;justify-content:space-between;gap:12px;width:100%;border:0;border-radius:7px;padding:9px 0;background:white;color:var(--ink);font-size:13px;text-align:left}.expense-module-total:hover{background:#f5f2ff}.expense-module-total strong{overflow-wrap:anywhere;text-align:right}.expense-module-total:focus-visible{outline:3px solid #e49d24;outline-offset:2px}@media(max-width:540px){.expense-summary{padding:14px}.expense-total-grid{grid-template-columns:minmax(0,1fr)}.expense-summary .count{white-space:normal}}
 </style>
 </head>
 <body>
@@ -436,6 +437,51 @@ function changeCalendarMonth(amount){
   if(date.getFullYear()<1900 || date.getFullYear()>2199)return;
   calendarMonth=dateKey(date).slice(0,7);calendarDay=calendarMonth+'-01';renderCalendar();
 }
+const expenseModules=['itinerary','flights','lodging','transport','dining','activities'];
+function amountToMinor(value){
+  if(typeof value!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))return null;
+  const [whole,fraction='']=value.split('.');return BigInt(whole)*100n+BigInt(fraction.padEnd(2,'0'));
+}
+function formatMinor(value){
+  const fraction=value%100n;
+  return new Intl.NumberFormat('zh-TW').format(value/100n)+(fraction ? '.'+String(fraction).padStart(2,'0') : '');
+}
+function calculateExpenseTotals(entries){
+  const currencies=new Map(),seen=new Set();let filled=0,missing=0,pending=0;
+  for(const item of entries){
+    if(seen.has(item.id))continue;seen.add(item.id);
+    const data=item.data;if(!expenseModules.includes(data.module))continue;
+    const minor=amountToMinor(data.amount);
+    if(minor===null){missing++;continue;}
+    const currency=data.currency || 'TWD';
+    if(!Object.hasOwn(currencyOptions,currency)){missing++;continue;}
+    if(!currencies.has(currency))currencies.set(currency,{total:0n,count:0,modules:new Map()});
+    const group=currencies.get(currency);group.total+=minor;group.count++;filled++;if(item.pending)pending++;
+    const module=group.modules.get(data.module) || {total:0n,count:0};module.total+=minor;module.count++;group.modules.set(data.module,module);
+  }
+  return {currencies,filled,missing,pending};
+}
+function renderExpenseTotals(){
+  const stats=calculateExpenseTotals(entryDocs),section=node('section',undefined,'expense-summary');section.setAttribute('aria-label','本趟旅行消費統計');
+  const heading=node('div',undefined,'detail-heading');heading.append(node('h3','💰 本趟旅行消費'),node('span',`已填 ${stats.filled} 筆 · 未填 ${stats.missing} 筆`,'count'));section.append(heading);
+  section.append(node('p','統計整趟旅行，不受目前月份影響；不同幣別分開加總，不做匯率換算。','expense-summary-note'));
+  if(!stats.filled){section.append(node('p','尚無消費金額。可到各模組新增，或編輯既有紀錄補上金額。','empty'));return section;}
+  const grid=node('div',undefined,'expense-total-grid');
+  for(const [currency,group] of [...stats.currencies].sort(([a],[b])=>a.localeCompare(b))){
+    const card=node('div',undefined,'expense-total-card');card.append(node('span',currencyOptions[currency],'expense-currency'),node('div',formatMinor(group.total),'expense-total-value'),node('p',`${group.count} 筆消費`,'expense-summary-note'));
+    const list=node('div',undefined,'expense-module-totals');
+    for(const key of expenseModules){
+      const subtotal=group.modules.get(key);if(!subtotal)continue;
+      const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));button.addEventListener('click',()=>switchModule(key));list.append(button);
+    }
+    card.append(list);grid.append(card);
+  }
+  section.append(grid);
+  if(stats.pending)section.append(node('p',`含 ${stats.pending} 筆等待雲端確認的紀錄。`,'expense-summary-note'));
+  section.append(node('p','每筆紀錄只計一次；同一消費若在不同模組各建一筆，會分別計入。','expense-summary-note'));
+  return section;
+}
+
 function renderCalendar(){
   const trip=tripsById.get(selectedTripId) || {};
   if(!calendarMonth){
@@ -449,7 +495,7 @@ function renderCalendar(){
   const previous=node('button','‹ 上個月','secondary');previous.type='button';previous.disabled=calendarMonth==='1900-01';previous.addEventListener('click',()=>changeCalendarMonth(-1));
   const picker=node('input');picker.type='month';picker.value=calendarMonth;picker.min='1900-01';picker.max='2199-12';picker.setAttribute('aria-label','行事曆月份');picker.addEventListener('change',()=>{if(/^\d{4}-\d{2}$/.test(picker.value) && validDate(picker.value+'-01')){calendarMonth=picker.value;calendarDay=calendarMonth+'-01';renderCalendar();}});
   const next=node('button','下個月 ›','secondary');next.type='button';next.disabled=calendarMonth==='2199-12';next.addEventListener('click',()=>changeCalendarMonth(1));
-  const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar);
+  const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar,renderExpenseTotals());
   fragment.append(node('p','點日期查看當日安排，點活動前往對應模組。住宿會顯示入住、住宿期間與退房；時間依填寫的當地時間顯示。','calendar-notes'));
   const shortcuts=node('div',undefined,'calendar-shortcuts');for(const [key,def] of Object.entries(moduleDefinitions)){if(key==='calendar')continue;const btn=node('button',def.label,'secondary');btn.type='button';btn.addEventListener('click',()=>switchModule(key));shortcuts.append(btn);}fragment.append(shortcuts);
   const week=node('div',undefined,'calendar-week');for(const day of ['日','一','二','三','四','五','六'])week.append(node('span',day));fragment.append(week);
