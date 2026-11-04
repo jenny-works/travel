@@ -13,11 +13,13 @@
 .time-picker{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.time-picker select{width:auto;flex:1;min-width:76px;padding:11px 8px;border:1px solid #d9dbea;border-radius:10px;background:#fcfcff;color:var(--ink)}.time-picker .time-unit{font-size:13px;color:var(--muted)}.time-picker .clear-time{padding:8px 10px;font-size:12px}.time-picker select:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.time-help{font-size:12px;color:var(--muted);margin:6px 0 0}
 
 .check-tools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.check-tools button{font-size:13px;padding:7px 12px}.check-tools button[aria-pressed="true"]{color:white;background:var(--purple)}.check-group{border:1px solid var(--line);border-radius:18px;background:white;overflow:hidden}.check-group summary{cursor:pointer;padding:18px 20px;background:#f0edff;font-weight:700;overflow-wrap:anywhere}.group-count{font-size:12px;font-weight:500;margin-left:10px;color:var(--muted)}.group-progress{display:block;width:100%;height:5px;accent-color:#7260d4;border:0}.check-row{padding:14px 18px;border-top:1px solid var(--line)}.check-main{display:flex;align-items:flex-start;gap:12px}.check-main input{width:21px;height:21px;flex-shrink:0;margin-top:3px;accent-color:var(--purple)}.check-title{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:0;font-weight:650;overflow-wrap:anywhere;cursor:pointer;min-width:0;flex:1}.check-row.done .item-name{color:#85879b;text-decoration:line-through}.quantity-pill{font-size:12px;font-weight:500;background:#eeeafd;border-radius:20px;padding:2px 9px;color:#6654a4}.check-meta{margin:5px 0 0 33px;color:var(--muted);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.check-row .record-actions{margin:8px 0 0 33px}.check-row .record-actions button{padding:3px 9px;font-size:12px}.group-add{margin:12px 18px;font-size:13px}.bulk-help{font-size:13px;color:var(--muted);margin:8px 0}.bulk-counter{font-size:12px;color:var(--purple);margin:4px 0}.check-form-title{min-height:145px}.module-fields .category-field{order:-1}.checklist-form{display:flex!important;flex-direction:column;gap:0!important}
+
+.home-link{color:inherit;text-decoration:none;display:inline-block;border-radius:7px}.home-link:focus-visible{outline:3px solid #ffd283;outline-offset:5px}.category-select{width:100%;padding:11px;border:1px solid #d9dbea;border-radius:10px;background:#fcfcff;color:var(--ink)}.category-custom{margin-top:9px}.packing-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 40px;gap:8px;align-items:start;margin:10px 0}.packing-row label{font-size:12px;margin-bottom:5px}.packing-row input{padding:10px!important}.packing-row .remove-row{padding:8px;margin-top:26px;min-height:46px}.add-row{font-size:14px;margin-top:6px}.packing-help{font-size:13px;color:var(--muted);margin:10px 0}.packing-row .name-cell,.packing-row .quantity-cell{min-width:0}
 </style>
 </head>
 <body>
 <header>
-<h1>✈️ Itinerary Manager</h1>
+<h1><a id="homeLink" class="home-link" href="#">✈️ Itinerary Manager</a></h1>
 <div id="headerAccount" hidden><span id="headerEmail"></span><button id="logoutBtn" class="logout" type="button">登出</button></div>
 </header>
 <main>
@@ -223,7 +225,7 @@ const moduleDefinitions = {
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','座位／車輛資訊'),F('reference','預約編號'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
   todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','截止日期','date'),commonNotes]},
-  packing:{label:'🎒 行李',description:'依類別整理行李，每行一項，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
+  packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
 const entryTextKeys=['title','date','endDate','time','endTime','location','reference','detail','notes'];
 let selectedTripId=null, activeModule='itinerary', unsubscribeEntries=null;
@@ -242,6 +244,9 @@ function abandonDraft() {
   return true;
 }
 function isDirty() {
+  if(activeModule==='packing' && !editingEntryId && $('packingRows')){
+    if([...$('packingRows').children].some(row=>row.querySelector('.packing-name').value.trim() || row.querySelector('.packing-quantity').value!=='1'))return true;
+  }
   const fields=moduleDefinitions[activeModule].fields;
   const original=entryDocs.find(item=>item.id===editingEntryId)?.data;
   return fields.some(field=>{
@@ -303,7 +308,7 @@ function setTimeValue(key,value) {
 function resetRecordForm() {
   editingEntryId=null; $('recordForm').reset();
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
-  $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=true;feedback('');configureChecklistForm(false);
+  $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=true;feedback('');configureChecklistForm(false);setCategoryValue('');
 }
 function switchModule(key,force=false) {
   if(!moduleDefinitions[key] || (!force && !abandonDraft()))return;
@@ -330,11 +335,14 @@ function switchModule(key,force=false) {
     else if(field.type==='text' || field.type==='textarea')input.maxLength=field.max;
     wrap.append(label,input);
     if(def.checkable && field.key==='detail'){
-      wrap.classList.add('category-field');input.setAttribute('list','categorySuggestions');input.placeholder='選擇或輸入自訂類別';
-      const list=node('datalist');list.id='categorySuggestions';
-      const categories=new Set(categorySuggestions[key]);
-      for(const item of entryDocs)if(item.data.module===key && item.data.detail)categories.add(item.data.detail);
-      for(const category of categories){const option=node('option');option.value=category;list.append(option);}wrap.append(list);
+      wrap.classList.add('category-field');label.htmlFor='categorySelect';
+      const select=node('select');select.id='categorySelect';select.className='category-select';
+      input.classList.add('category-custom');input.placeholder='輸入自訂類別';input.setAttribute('aria-label','自訂類別');input.hidden=true;
+      select.addEventListener('change',()=>{
+        if(select.value==='custom'){input.hidden=false;input.value='';input.focus();}
+        else {input.hidden=true;input.value=select.value.startsWith('known:')?select.value.slice(6):'';}
+      });
+      wrap.insertBefore(select,input);
     }
     if(def.checkable && field.key==='title'){
       input.addEventListener('input',updateBulkCount);
@@ -344,7 +352,7 @@ function switchModule(key,force=false) {
     if(def.checkable && field.key==='detail')fragment.prepend(wrap);else fragment.append(wrap);
   }
   $('moduleFields').classList.toggle('checklist-form',!!def.checkable);
-  $('moduleFields').replaceChildren(fragment);resetRecordForm();renderChecklistTools();$('recordFields').disabled=true;
+  $('moduleFields').replaceChildren(fragment);refreshCategorySuggestions();resetRecordForm();renderChecklistTools();$('recordFields').disabled=true;
   const token=moduleGeneration,authToken=generation,uid=currentUser.uid,trip=selectedTripId;
   unsubscribeEntries=onSnapshot(collection(db,'users',uid,'trips',trip,'entries'),{includeMetadataChanges:true},snapshot=>{
     if(token!==moduleGeneration || authToken!==generation)return;
@@ -379,8 +387,57 @@ function parseBulkItems(value,module,defaultQuantity=1) {
     seen.add(title);return {title,quantity:module==='packing'?quantity:1};
   });
 }
+let packingRowCounter=0;
+function configurePackingRows(editing){
+  const title=$('entry_title'),quantity=$('entry_quantity');
+  const name=editing?title.value:'',count=editing?quantity.value:'1';
+  title.hidden=true;title.required=false;title.maxLength=160;
+  // Hide the separate legacy quantity field; each row now owns its quantity.
+  quantity.closest('.field').hidden=true;
+  const wrap=title.closest('.field');wrap.querySelector('label').hidden=true;
+  let rows=$('packingRows');if(!rows){rows=node('div');rows.id='packingRows';wrap.insertBefore(rows,$('bulkHelp'));}rows.replaceChildren();
+  let add=$('addPackingRow');if(!add){add=node('button','＋ 新增一列','secondary add-row');add.type='button';add.id='addPackingRow';add.addEventListener('click',()=>{
+    if($('packingRows').children.length>=50){feedback('一次最多新增 50 項。','error');return;}
+    const row=appendPackingRow('',1);row.querySelector('.packing-name').focus();
+  });wrap.insertBefore(add,$('bulkHelp'));}add.hidden=editing;
+  $('bulkHelp').textContent=editing?'直接修改品名與數量。':'每列填寫一項物品與數量；按「新增一列」繼續加入，最多 50 項。';
+  appendPackingRow(name,count);updateBulkCount();
+}
+function appendPackingRow(name='',quantity=1){
+  const row=node('div',undefined,'packing-row');
+  const nameCell=node('div',undefined,'name-cell'),quantityCell=node('div',undefined,'quantity-cell');
+  const id=++packingRowCounter;
+  const input=node('input');input.type='text';input.maxLength=160;input.value=name;input.className='packing-name';input.id='packingName'+id;input.placeholder='例如：上衣';
+  const label=node('label','品名');label.htmlFor=input.id;nameCell.append(label,input);
+  const count=node('input');count.type='number';count.min='1';count.max='999';count.step='1';count.value=String(quantity);count.className='packing-quantity';count.id='packingQuantity'+id;
+  const countLabel=node('label','數量');countLabel.htmlFor=count.id;quantityCell.append(countLabel,count);
+  const remove=node('button','×','secondary remove-row');remove.type='button';remove.setAttribute('aria-label','移除這列');remove.hidden=!!editingEntryId;
+  remove.addEventListener('click',()=>{if($('packingRows').children.length===1){input.value='';count.value='1';input.focus();}else row.remove();syncPackingValues();updateBulkCount();});
+  for(const el of [input,count])el.addEventListener('input',()=>{syncPackingValues();updateBulkCount();});
+  row.append(nameCell,quantityCell,remove);$('packingRows').append(row);syncPackingValues();updateBulkCount();return row;
+}
+function syncPackingValues(){
+  const rows=[...($('packingRows')?.children || [])];const row=rows.find(row=>row.querySelector('.packing-name').value.trim()) || rows[0];if(!row)return;
+  $('entry_title').value=row.querySelector('.packing-name').value.trim();$('entry_quantity').value=row.querySelector('.packing-quantity').value;
+}
+function collectPackingRows(){
+  const rows=[...$('packingRows').children];if(rows.length>50)throw new Error('一次最多新增 50 項。');
+  const items=[],seen=new Set();
+  for(const [index,row] of rows.entries()){
+    const title=row.querySelector('.packing-name').value.trim(),raw=row.querySelector('.packing-quantity').value;
+    if(!title && raw==='1')continue;
+    if(!title || title.length>160)throw new Error(`第 ${index+1} 列請輸入品名（最多 160 字）。`);
+    const quantity=Number(raw);
+    if(!/^\d+$/.test(raw) || !Number.isInteger(quantity) || quantity<1 || quantity>999)throw new Error(`第 ${index+1} 列數量需為 1 至 999 的整數。`);
+    if(seen.has(title))throw new Error(`「${title}」重複，請合併數量後再新增。`);
+    seen.add(title);items.push({title,quantity});
+  }
+  if(!items.length)throw new Error('請至少輸入一項物品。');return items;
+}
+
 function configureChecklistForm(editing) {
   const def=moduleDefinitions[activeModule];if(!def.checkable)return;
+  if(activeModule==='packing'){configurePackingRows(editing);return;}
   const title=$('entry_title');title.maxLength=editing?160:8100;title.rows=editing?2:6;
   title.classList.toggle('check-form-title',!editing);
   title.placeholder=editing?'修改這一項的名稱':activeModule==='packing'?'上衣 | 3\n襪子 | 4\n外套 | 1':'確認護照有效期限\n申請旅遊保險\n下載離線地圖';
@@ -390,14 +447,27 @@ function configureChecklistForm(editing) {
 }
 function updateBulkCount(){
   if(!$('bulkCount'))return;
+  if(activeModule==='packing' && $('packingRows')){$('bulkCount').textContent=editingEntryId?'':`待新增 ${[...$('packingRows').children].filter(row=>row.querySelector('.packing-name').value.trim()).length} 項`;return;}
   const n=$('entry_title').value.split(/\r?\n/).filter(x=>x.trim()).length;
   $('bulkCount').textContent=editingEntryId?'':`待新增 ${n} 項`;
 }
 function refreshCategorySuggestions(){
-  const list=$('categorySuggestions');if(!list)return;
+  const select=$('categorySelect');if(!select)return;
+  const value=$('entry_detail').value;
+  const custom=select.value==='custom';
   const names=new Set(categorySuggestions[activeModule] || []);
   for(const item of entryDocs)if(item.data.module===activeModule && typeof item.data.detail==='string' && item.data.detail.trim())names.add(item.data.detail.trim());
-  list.replaceChildren();for(const name of names){const option=node('option');option.value=name;list.append(option);}
+  if(value)names.add(value);
+  select.replaceChildren();
+  for(const [value,label] of [['','未分類'],...[...names].map(name=>['known:'+name,name]),['custom','＋ 自訂類別']]){
+    const option=node('option',label);option.value=value;select.append(option);
+  }
+  select.value=custom?'custom':value?'known:'+value:'';
+  $('entry_detail').hidden=!custom;
+}
+function setCategoryValue(value){
+  if(!$('categorySelect'))return;
+  $('entry_detail').value=value;$('categorySelect').value='';refreshCategorySuggestions();
 }
 function renderChecklistTools(){
   const tools=$('checklistTools');tools.replaceChildren();tools.hidden=!moduleDefinitions[activeModule].checkable;
@@ -444,7 +514,7 @@ function renderChecklist(items){
       row.append(actions);group.append(row);
     }
     const add=node('button','＋ 在此類別新增','secondary group-add');add.type='button';add.disabled=recordBusy || deleteBusy;
-    add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();$('entry_detail').value=name==='未分類'?'':name;$('entry_title').focus();});group.append(add);fragment.append(group);
+    add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setCategoryValue(name==='未分類'?'':name);if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();});group.append(add);fragment.append(group);
   }
   $('recordList').replaceChildren(visibleGroups?fragment:node('p',checklistFilter==='done'?'還沒有已完成項目。':'全部完成了！','empty'));
 }
@@ -495,8 +565,8 @@ function editEntry(id) {
     const value=field.type==='number'?String(item.data[field.key] || 1):safeString(item.data[field.key],field.max || 160,'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
   }
-  configureChecklistForm(true);
-  $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');$('entry_title').focus();
+  configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
+  $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
 }
 function validDate(value) {
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
@@ -539,17 +609,17 @@ async function mutateEntry(action,success) {
 }
 async function saveEntry(event){
   event.preventDefault();if(recordBusy || !entriesReady || !$('recordForm').reportValidity())return;
-  let data;try{data=collectEntry();}catch(error){feedback(error.message,'error');return;}
+  let data;try{if(activeModule==='packing'){collectPackingRows();syncPackingValues();}data=collectEntry();}catch(error){feedback(error.message,'error');return;}
   const id=editingEntryId;
   if(moduleDefinitions[activeModule].checkable && !id){
-    let rows;try{rows=parseBulkItems(data.title,activeModule,data.quantity);}catch(error){feedback(error.message,'error');return;}
+    let rows;try{rows=activeModule==='packing'?collectPackingRows():parseBulkItems(data.title,activeModule,data.quantity);}catch(error){feedback(error.message,'error');return;}
     const category=data.detail;
     await mutateEntry(()=>{
       const batch=writeBatch(db);
       const target=collection(db,'users',currentUser.uid,'trips',selectedTripId,'entries');
       for(const row of rows)batch.set(doc(target),{...data,title:row.title,quantity:row.quantity,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
       return batch.commit();
-    },()=>{resetRecordForm();$('entry_detail').value=category;feedback(`已新增 ${rows.length} 項到「${category || '未分類'}」。`);});
+    },()=>{resetRecordForm();setCategoryValue(category);feedback(`已新增 ${rows.length} 項到「${category || '未分類'}」。`);});
     return;
   }
   if(moduleDefinitions[activeModule].checkable && /[\r\n]/.test(data.title)){feedback('編輯時一次修改一項，請勿輸入換行。','error');return;}
@@ -563,7 +633,12 @@ function requestDelete(id){
   const item=entryDocs.find(x=>x.id===id);if(!item)return;
   deleteTarget=id;$('deleteLabel').textContent=safeString(item.data.title,160,'未命名紀錄');$('deleteFeedback').textContent='';$('deleteDialog').showModal();$('cancelDeleteBtn').focus();
 }
+function goHome(){
+  if(selectedTripId && !abandonDraft())return;
+  closeDetail();notice('');window.scrollTo({top:0,behavior:'smooth'});
+}
 function initModules(){
+  $('homeLink').addEventListener('click',event=>{event.preventDefault();goHome();});
   for(const [key,def] of Object.entries(moduleDefinitions)){
     const btn=node('button',def.label,'module-tab');btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');btn.addEventListener('click',()=>switchModule(key));$('moduleNav').append(btn);
   }
