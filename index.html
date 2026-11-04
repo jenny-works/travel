@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#6960dc">
 <title>Itinerary Manager</title>
 <style>
-:root{color-scheme:light;--ink:#252747;--muted:#656982;--purple:#6654cf;--line:#e5e5f1;--shadow:0 16px 45px #35336b0c}*{box-sizing:border-box}body{margin:0;background:#f7f7fd;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}[hidden]{display:none!important}header{background:linear-gradient(110deg,#6552cb,#7868e7 58%,#599ee0);color:white;padding:26px max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.7px;line-height:1.3}#headerAccount{display:flex;gap:12px;align-items:center;margin-left:auto;max-width:100%;justify-content:flex-end}#headerEmail{font-size:13px;overflow-wrap:anywhere;text-align:right;min-width:0}.logout{flex-shrink:0;color:white;border:1px solid #ffffff70;background:#ffffff15;border-radius:10px;padding:7px 15px}main{max-width:1160px;margin:32px auto;padding:0 24px 40px}.status{border:1px solid #dfddf4;background:#efedff;color:#4c4380;padding:12px 16px;border-radius:13px;margin-bottom:20px;overflow-wrap:anywhere}.status[data-tone="error"]{background:#fff0f1;border-color:#f1cbd0;color:#962c42}.status[data-tone="success"]{background:#e9f8f1;border-color:#bde3cf;color:#216646}.card{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.4px}p{margin:6px 0 20px;color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:var(--purple);margin-bottom:12px}.login{max-width:650px;margin:60px auto;text-align:center;padding:44px 28px}.travel-art{font-size:64px;line-height:1.5;margin-bottom:16px}.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 22px;font-weight:650;box-shadow:0 6px 14px #6654cf20}.primary:hover{background:#5643ba}button:focus-visible,input:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.dashboard{display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start}.create{border-top:5px solid #9a88ed}.field{margin:20px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}input{width:100%;border:1px solid #d9dbea;background:#fcfcff;border-radius:11px;padding:12px;color:var(--ink)}input::placeholder{color:#9496aa}.hint{font-size:13px;color:var(--muted);margin:14px 0 0}.create .primary{width:100%}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:3px 0 18px}.section-heading h2{margin:0}.count{font-size:12px;border-radius:20px;background:#eae7fa;padding:5px 12px;color:#5d4ca8;white-space:nowrap}.trips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.trip{padding:0;overflow:hidden;box-shadow:var(--shadow);border-radius:19px;background:white;border:1px solid var(--line);min-width:0}.trip-top{padding:20px 22px;font-size:30px;background:var(--wash);display:flex;align-items:center;justify-content:space-between}.trip-number{font-size:11px;font-weight:750;letter-spacing:1px;color:#4a4968}.trip-body{padding:20px 22px}.trip h3{margin:0 0 8px;font-size:19px;overflow-wrap:anywhere}.destination{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.trip-meta{margin:18px 0 0;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#767a90}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:2px dashed #dddcee;border-radius:20px;background:#ffffff80}.empty-icon{font-size:40px;margin-bottom:12px}.empty p{margin:0}.sync{font-size:13px;color:var(--muted);margin:0 0 18px}.footer{text-align:center;color:#888ba1;font-size:12px;margin-top:40px}noscript{display:block;padding:24px;background:#fff0f1}@media(max-width:900px){.dashboard{grid-template-columns:1fr}.create form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.create .primary{grid-column:1/-1}.create .hint{grid-column:1/-1}}@media(max-width:540px){header{padding:22px 18px;gap:16px}#headerAccount{width:100%}main{padding:0 16px 28px;margin-top:22px}.card{padding:22px}.login{margin:30px auto;padding:32px 22px}.create form{display:block}.trips{grid-template-columns:1fr}.dashboard{gap:24px}.section-heading h2{font-size:20px}}
+:root{color-scheme:light;--ink:#252747;--muted:#656982;--purple:#6654cf;--line:#e5e5f1;--shadow:0 16px 45px #35336b0c}*{box-sizing:border-box}body{margin:0;background:#f7f7fd;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}[hidden]{display:none!important}header{background:linear-gradient(110deg,#6552cb,#7868e7 58%,#599ee0);color:white;padding:26px max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.7px;line-height:1.3}#headerAccount{display:flex;gap:12px;align-items:center;margin-left:auto;max-width:100%;justify-content:flex-end}#headerEmail{font-size:13px;overflow-wrap:anywhere;text-align:right;min-width:0}.logout{flex-shrink:0;color:white;border:1px solid #ffffff70;background:#ffffff15;border-radius:10px;padding:7px 15px}main{max-width:1160px;margin:32px auto;padding:0 24px 40px}.status{border:1px solid #dfddf4;background:#efedff;color:#4c4380;padding:12px 16px;border-radius:13px;margin-bottom:20px;overflow-wrap:anywhere}.status[data-tone="error"]{background:#fff0f1;border-color:#f1cbd0;color:#962c42}.status[data-tone="success"]{background:#e9f8f1;border-color:#bde3cf;color:#216646}.card{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.4px}p{margin:6px 0 20px;color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:var(--purple);margin-bottom:12px}.login{max-width:650px;margin:60px auto;text-align:center;padding:44px 28px}.travel-art{font-size:64px;line-height:1.5;margin-bottom:16px}.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 22px;font-weight:650;box-shadow:0 6px 14px #6654cf20}.primary:hover{background:#5643ba}button:focus-visible,input:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.dashboard{display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start}.create{border-top:5px solid #9a88ed}.field{margin:20px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}input{width:100%;border:1px solid #d9dbea;background:#fcfcff;border-radius:11px;padding:12px;color:var(--ink)}input::placeholder{color:#9496aa}.hint{font-size:13px;color:var(--muted);margin:14px 0 0}.create .primary{width:100%}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:3px 0 18px}.section-heading h2{margin:0}.count{font-size:12px;border-radius:20px;background:#eae7fa;padding:5px 12px;color:#5d4ca8;white-space:nowrap}.trips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.trip{padding:0;overflow:hidden;box-shadow:var(--shadow);border-radius:19px;background:white;border:1px solid var(--line);min-width:0}.trip-top{padding:20px 22px;font-size:30px;background:var(--wash);display:flex;align-items:center;justify-content:space-between}.trip-number{font-size:11px;font-weight:750;letter-spacing:1px;color:#4a4968}.trip-body{padding:20px 22px}.trip h3{margin:0 0 8px;font-size:19px;overflow-wrap:anywhere}.destination{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.trip-meta{margin:18px 0 0;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#767a90}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:2px dashed #dddcee;border-radius:20px;background:#ffffff80}.empty-icon{font-size:40px;margin-bottom:12px}.empty p{margin:0}.sync{font-size:13px;color:var(--muted);margin:0 0 18px}.footer{text-align:center;color:#888ba1;font-size:12px;margin-top:40px}noscript{display:block;padding:24px;background:#fff0f1}@media(max-width:900px){.dashboard{grid-template-columns:1fr}.create form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.create .primary{grid-column:1/-1}.create .hint{grid-column:1/-1}}@media(max-width:540px){header{padding:22px 18px;gap:16px}#headerAccount{width:100%}main{padding:0 16px 28px;margin-top:22px}.card{padding:22px}.login{margin:30px auto;padding:32px 22px}.create form{display:block}.trips{grid-template-columns:1fr}.dashboard{gap:24px}.section-heading h2{font-size:20px}}
+
+.secondary{background:white;border:1px solid #d9d5ed;color:#51469c;border-radius:10px;padding:9px 15px;font-weight:600}.secondary:hover{background:#f2efff}.danger{color:#a52b45;border-color:#efc7d0}.trip .secondary{margin-top:14px;width:100%}.detail-hero{background:linear-gradient(120deg,#eee9ff,#e5f4fa);margin:20px 0;padding:26px;border-radius:22px}.detail-hero h2{font-size:28px;overflow-wrap:anywhere}.detail-hero p{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:0}.detail-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.module-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.module-tab{border:1px solid #dfdcec;background:white;border-radius:12px;color:#5d5e79;padding:10px 15px}.module-tab[aria-pressed="true"]{background:#6654cf;color:white;border-color:#6654cf}.module-layout{display:grid;grid-template-columns:350px minmax(0,1fr);gap:24px;align-items:start}.module-fields .field{margin:15px 0}.module-fields input,.module-fields textarea{background:#fcfcff;width:100%;border:1px solid #d9dbea;border-radius:10px;padding:10px;color:var(--ink)}textarea{resize:vertical;min-height:90px}.form-actions,.record-actions{display:flex;gap:8px;flex-wrap:wrap}.record-list{display:grid;gap:14px}.record{padding:22px}.record h3{margin:0;font-size:19px;overflow-wrap:anywhere}.record dl{display:grid;grid-template-columns:95px minmax(0,1fr);gap:7px 12px;font-size:14px;margin:16px 0}.record dt{color:var(--muted)}.record dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.record.done h3{text-decoration:line-through;color:#7e8195}.record-actions button{font-size:13px;padding:7px 12px}.record label{display:flex;gap:10px;align-items:center;margin:10px 0 0}.record input[type="checkbox"]{width:18px;height:18px}.filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 18px}.filter label{margin:0}.filter input{width:auto;padding:7px}.form-status{font-size:14px;margin:14px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.form-status[data-tone="error"]{color:#a52b45}.modal{border:1px solid var(--line);border-radius:20px;max-width:440px;width:calc(100% - 32px);padding:28px;color:var(--ink);box-shadow:var(--shadow)}.modal::backdrop{background:#25274770}.modal h2{font-size:21px}.modal p{overflow-wrap:anywhere}.trip-range{font-size:13px;color:var(--muted)}@media(max-width:900px){.module-layout{grid-template-columns:1fr}.module-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.module-fields .wide{grid-column:1/-1}}@media(max-width:540px){.module-fields{display:block}.module-tab{padding:9px 12px;font-size:14px}.detail-hero{padding:22px}.record dl{grid-template-columns:80px minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -25,7 +27,7 @@
 <p class="hint">登入後即可儲存旅行，並在不同裝置上同步。</p>
 </section>
 <section id="appArea" hidden aria-label="旅行管理">
-<div class="dashboard">
+<div id="overviewArea" class="dashboard">
 <section class="card create">
 <div class="eyebrow">LET’S GO SOMEWHERE</div>
 <h2>🌈 建立新旅行</h2>
@@ -46,6 +48,20 @@
 </section>
 </div>
 </section>
+<section id="detailArea" hidden aria-label="旅行專屬管理">
+<button id="backBtn" type="button" class="secondary">← 返回我的旅行</button>
+<div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
+<nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
+<div class="module-layout">
+<section class="card"><h2 id="moduleTitle"></h2><p id="moduleDescription"></p>
+<form id="recordForm"><fieldset id="recordFields" style="border:0;padding:0;margin:0;min-width:0"><div id="moduleFields" class="module-fields"></div><div class="form-actions"><button id="saveRecordBtn" class="primary" type="submit">＋ 新增</button><button id="cancelEditBtn" type="button" class="secondary" hidden>取消編輯</button></div></fieldset></form>
+<p id="recordFeedback" class="form-status" role="status" aria-live="polite"></p></section>
+<section aria-label="模組紀錄"><div class="section-heading"><h2 id="recordsHeading">紀錄清單</h2><span id="recordCount" class="count">0 筆</span></div>
+<div id="dayFilterArea" class="filter" hidden><label for="dayFilter">依日期篩選</label><input id="dayFilter" type="date"><button id="clearFilterBtn" type="button" class="secondary">顯示全部</button></div>
+<p id="recordSync" class="sync" role="status" aria-live="polite"></p><div id="recordList" class="record-list" aria-busy="false"></div></section>
+</div></section>
+<dialog id="tripDialog" class="modal"><h2>編輯旅行資料</h2><form id="tripEditForm"><fieldset id="tripEditFields" style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="editName">旅行名稱</label><input id="editName" required maxlength="80"></div><div class="field"><label for="editDestination">目的地</label><input id="editDestination" required maxlength="120"></div><div class="field"><label for="editStart">開始日期</label><input id="editStart" type="date"></div><div class="field"><label for="editEnd">結束日期</label><input id="editEnd" type="date"></div><div class="form-actions"><button class="primary" type="submit">儲存</button><button id="closeTripDialog" type="button" class="secondary">取消</button></div></fieldset><p id="tripEditFeedback" role="status" class="form-status"></p></form></dialog>
+<dialog id="deleteDialog" class="modal"><h2>刪除這筆紀錄？</h2><p id="deleteLabel"></p><p>刪除後無法復原。</p><div class="form-actions"><button id="confirmDeleteBtn" type="button" class="primary">確認刪除</button><button id="cancelDeleteBtn" type="button" class="secondary">取消</button></div><p id="deleteFeedback" class="form-status" role="status"></p></dialog>
 <div class="footer">Itinerary Manager · Made for your next adventure</div>
 <noscript>請啟用 JavaScript，才能使用 Google 登入與旅行雲端同步。</noscript>
 </main>
@@ -61,7 +77,7 @@ window.itineraryBootTimer = setTimeout(() => {
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
+import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
 
 clearTimeout(window.itineraryBootTimer);
 const $ = id => document.getElementById(id);
@@ -70,6 +86,7 @@ let unsubscribeTrips = null;
 let generation = 0;
 let saving = false;
 let db, auth;
+let tripsById = new Map();
 const washes = ['#eae5ff','#dff3ee','#ffebdc','#e1edff','#ffe4ed','#fff2cc'];
 const icons = ['✈️','🌿','🌅','🗺️','🌸','☀️'];
 function notice(message, tone = 'info') {
@@ -86,7 +103,7 @@ function errorText(error) {
     'auth/operation-not-allowed': '請先在 Firebase Authentication 啟用 Google 登入。',
     'auth/network-request-failed': '網路連線失敗，請檢查連線後重試。',
     'auth/invalid-api-key': 'Firebase 設定無效，請檢查 firebase-config.js。',
-    'permission-denied': '無法存取旅行資料，請確認 Firestore 規則允許目前帳號讀寫 users/{uid} 及其 trips 子集合。',
+    'permission-denied': '資料存取被拒絕。請發布新版 Firestore 規則，允許目前帳號存取自己的旅行與模組紀錄。',
     'unavailable': '雲端服務暫時無法連線，請稍後再試。'
   };
   return messages[error?.code] || '操作未完成，請檢查 Firebase 設定、資料庫規則與網路，再重新整理重試。';
@@ -102,6 +119,8 @@ function safeString(value, length, fallback) {
   return typeof value === 'string' && value.trim() ? value.slice(0, length) : fallback;
 }
 function renderTrips(snapshot) {
+  tripsById = new Map(snapshot.docs.map(item => [item.id, item.data()]));
+  refreshSelectedTrip();
   const items = snapshot.docs.map(item => ({ id: item.id, data: item.data(), pending: item.metadata.hasPendingWrites }));
   // Sort locally to avoid an extra composite index and retain older documents without createdAt.
   items.sort((a,b) => (b.data.createdAt?.toMillis?.() || 0) - (a.data.createdAt?.toMillis?.() || 0) || a.id.localeCompare(b.id));
@@ -121,7 +140,8 @@ function renderTrips(snapshot) {
     const meta = document.createElement('p'); meta.className = 'trip-meta';
     const date = item.data.createdAt?.toDate?.();
     meta.textContent = item.pending ? '等待雲端儲存…' : date instanceof Date && Number.isFinite(date.getTime()) ? `建立於 ${new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium'}).format(date)}` : '旅行計畫';
-    body.append(heading,place,meta); article.append(top,body); fragment.append(article);
+    const open = document.createElement('button'); open.type = 'button'; open.className = 'secondary'; open.textContent = '開啟旅行 →'; open.addEventListener('click',() => openTrip(item.id));
+    body.append(heading,place,meta,open); article.append(top,body); fragment.append(article);
   });
   // User and database strings are always text nodes, never HTML.
   $('tripList').replaceChildren(fragment);
@@ -136,6 +156,7 @@ async function start() {
   $('loginBtn').disabled = false;
   onAuthStateChanged(auth,user => {
     const token = ++generation;
+    closeDetail(); tripsById.clear();
     unsubscribeTrips?.(); unsubscribeTrips = null;
     currentUser = user; saving = false;
     $('tripFields').disabled = !user; $('addTripBtn').textContent = '＋ 新增旅行';
@@ -188,6 +209,241 @@ async function start() {
     }
   });
 }
+// Each trip owns an entries subcollection. Fields are bounded text, never HTML.
+const F = (key,label,type='text',required=false,max=160) => ({key,label,type,required,max});
+const commonNotes = F('notes','備註','textarea',false,2000);
+const moduleDefinitions = {
+  itinerary:{label:'🗓️ 每日行程',description:'依日期與時間安排每天的活動。時間皆為當地時間。',fields:[F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
+  flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('location','出發機場 → 抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
+  lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
+  transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','座位／車輛資訊'),F('reference','預約編號'),commonNotes]},
+  activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
+  todos:{label:'✅ 待辦',description:'準備事項逐項完成，支援勾選與取消完成。',checkable:true,fields:[F('title','待辦事項','text',true),F('date','截止日期','date'),commonNotes]},
+  packing:{label:'🎒 行李',description:'記錄物品與數量，打包完成後即可勾選。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','分類（例如：衣物、證件）'),F('quantity','數量','number',true),commonNotes]}
+};
+const entryTextKeys=['title','date','endDate','time','endTime','location','reference','detail','notes'];
+let selectedTripId=null, activeModule='itinerary', unsubscribeEntries=null;
+let moduleGeneration=0, entryDocs=[], editingEntryId=null, recordBusy=false, entriesReady=false;
+let deleteTarget=null, deleteBusy=false, tripEditBusy=false;
+function node(tag,text,className) {
+  const el=document.createElement(tag); if(text !== undefined) el.textContent=text; if(className) el.className=className; return el;
+}
+function feedback(message,tone='info') { $('recordFeedback').textContent=message; $('recordFeedback').dataset.tone=tone; }
+function abandonDraft() {
+  if(recordBusy || deleteBusy || tripEditBusy){notice('請等待目前的儲存或刪除完成，再切換頁面。');return false;}
+  if(isDirty() && !window.confirm('表單有尚未儲存的內容，確定放棄並切換嗎？')) return false;
+  return true;
+}
+function isDirty() {
+  const fields=moduleDefinitions[activeModule].fields;
+  const original=entryDocs.find(item=>item.id===editingEntryId)?.data;
+  return fields.some(field=>{
+    const el=document.getElementById('entry_'+field.key); if(!el)return false;
+    const initial=original ? String(original[field.key] ?? (field.type==='number'?1:'')) : (field.type==='number'?'1':'');
+    return el.value !== initial;
+  });
+}
+function closeDetail() {
+  ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
+  selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
+  $('tripDialog').close(); $('deleteDialog').close();
+  $('tripEditFields').disabled=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;
+  $('detailArea').hidden=true; $('overviewArea').hidden=false;
+  $('moduleFields').replaceChildren(); $('recordList').replaceChildren(); feedback('');
+}
+function refreshSelectedTrip() {
+  if(!selectedTripId)return;
+  const trip=tripsById.get(selectedTripId);
+  if(!trip){closeDetail();notice('這趟旅行已不存在，已返回旅行清單。');return;}
+  $('detailTitle').textContent=safeString(trip.name,80,'未命名旅行');
+  $('detailDestination').textContent='📍 '+safeString(trip.destination,120,'尚未設定目的地');
+  $('detailDates').textContent=trip.startDate || trip.endDate ? `${safeString(trip.startDate,10,'未設定開始日期')} → ${safeString(trip.endDate,10,'未設定結束日期')}` : '尚未設定旅行日期，可點「編輯旅行資料」補上。';
+}
+function openTrip(id) {
+  if(!currentUser || !tripsById.has(id))return;
+  selectedTripId=id; $('overviewArea').hidden=true;$('detailArea').hidden=false;
+  refreshSelectedTrip(); switchModule('itinerary',true); $('backBtn').focus();
+}
+function resetRecordForm() {
+  editingEntryId=null; $('recordForm').reset();
+  $('saveRecordBtn').textContent='＋ 新增';$('cancelEditBtn').hidden=true;feedback('');
+}
+function switchModule(key,force=false) {
+  if(!moduleDefinitions[key] || (!force && !abandonDraft()))return;
+  ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
+  activeModule=key;editingEntryId=null;entryDocs=[];recordBusy=false;entriesReady=false;
+  const def=moduleDefinitions[key];
+  $('moduleTitle').textContent=def.label;$('moduleDescription').textContent=def.description;
+  $('recordsHeading').textContent=def.checkable?'檢查清單':'紀錄清單';
+  $('recordCount').textContent='0 筆';$('recordSync').textContent='正在載入…';$('recordList').setAttribute('aria-busy','true');
+  $('recordList').replaceChildren();$('dayFilterArea').hidden=key!=='itinerary';$('dayFilter').value='';
+  for(const btn of $('moduleNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===key));
+  const fragment=document.createDocumentFragment();
+  for(const field of def.fields){
+    const wrap=node('div',undefined,'field'+(field.type==='textarea'?' wide':''));
+    const label=node('label',field.label+(field.required?' *':''));label.htmlFor='entry_'+field.key;
+    const input=node(field.type==='textarea'?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
+    if(field.type!=='textarea')input.type=field.type;
+    if(field.type==='number'){input.min='1';input.max='999';input.step='1';input.defaultValue='1';input.value='1';}
+    else if(field.type==='text' || field.type==='textarea')input.maxLength=field.max;
+    wrap.append(label,input);fragment.append(wrap);
+  }
+  $('moduleFields').replaceChildren(fragment);resetRecordForm();$('recordFields').disabled=true;
+  const token=moduleGeneration,authToken=generation,uid=currentUser.uid,trip=selectedTripId;
+  unsubscribeEntries=onSnapshot(collection(db,'users',uid,'trips',trip,'entries'),{includeMetadataChanges:true},snapshot=>{
+    if(token!==moduleGeneration || authToken!==generation)return;
+    entryDocs=snapshot.docs.map(item=>({id:item.id,data:item.data(),pending:item.metadata.hasPendingWrites}));
+    entriesReady=true;$('recordFields').disabled=recordBusy;
+    $('recordList').setAttribute('aria-busy','false');
+    $('recordSync').textContent=snapshot.metadata.fromCache?'目前顯示暫存資料，等待雲端連線…':snapshot.metadata.hasPendingWrites?'正在同步變更…':'已與雲端同步';
+    renderEntries();
+  },error=>{
+    if(token!==moduleGeneration || authToken!==generation)return;
+    entriesReady=false;$('recordFields').disabled=true;$('recordList').setAttribute('aria-busy','false');
+    $('recordSync').textContent='同步失敗';feedback(errorText(error),'error');
+    $('recordList').replaceChildren(node('p','請先發布新版 Firestore 規則，再重新開啟這趟旅行。','empty'));
+  });
+}
+function renderEntries() {
+  const def=moduleDefinitions[activeModule];
+  let items=entryDocs.filter(item=>item.data.module===activeModule);
+  const total=items.length;
+  if(activeModule==='itinerary' && $('dayFilter').value)items=items.filter(item=>item.data.date===$('dayFilter').value);
+  items.sort((a,b)=>{
+    if(def.checkable && !!a.data.done!==!!b.data.done)return Number(!!a.data.done)-Number(!!b.data.done);
+    const av=(a.data.date||'9999')+' '+(a.data.time||'99');const bv=(b.data.date||'9999')+' '+(b.data.time||'99');
+    return av.localeCompare(bv) || a.id.localeCompare(b.id);
+  });
+  $('recordCount').textContent=def.checkable?`${items.filter(x=>x.data.done===true).length} / ${total} 已完成`:`${items.length} 筆${items.length!==total?' / 共 '+total+' 筆':''}`;
+  if(!items.length){$('recordList').replaceChildren(node('p',total?'這一天還沒有行程。':'還沒有紀錄，從左側新增第一筆吧。','empty'));return;}
+  const fragment=document.createDocumentFragment();
+  for(const item of items){
+    const card=node('article',undefined,'card record'+(item.data.done===true?' done':''));
+    card.append(node('h3',safeString(item.data.title,160,'未命名紀錄')));
+    if(def.checkable){
+      const label=node('label');const checkbox=node('input');checkbox.type='checkbox';checkbox.checked=item.data.done===true;checkbox.disabled=recordBusy || item.pending;
+      checkbox.addEventListener('change',()=>toggleDone(item,checkbox.checked));
+      label.append(checkbox,node('span',item.data.done===true?'已完成':'標記完成'));card.append(label);
+    }
+    const dl=node('dl');
+    for(const field of def.fields){
+      if(field.key==='title')continue;
+      const value=item.data[field.key];
+      if(value===undefined || value==='')continue;
+      dl.append(node('dt',field.label),node('dd',field.type==='number'?String(Number.isInteger(value)?value:1):safeString(value,field.max || 160,'')));
+    }
+    card.append(dl);
+    if(item.pending)card.append(node('p','等待雲端確認…','hint'));
+    const actions=node('div',undefined,'record-actions');
+    const edit=node('button','編輯','secondary');edit.type='button';edit.disabled=recordBusy || item.pending;edit.addEventListener('click',()=>editEntry(item.id));
+    const remove=node('button','刪除','secondary danger');remove.type='button';remove.disabled=recordBusy || item.pending;remove.addEventListener('click',()=>requestDelete(item.id));
+    actions.append(edit,remove);card.append(actions);fragment.append(card);
+  }
+  $('recordList').replaceChildren(fragment);
+}
+function editEntry(id) {
+  if(!abandonDraft())return;
+  const item=entryDocs.find(x=>x.id===id);if(!item)return;
+  editingEntryId=id;
+  for(const field of moduleDefinitions[activeModule].fields)$('entry_'+field.key).value=field.type==='number'?String(item.data[field.key] || 1):safeString(item.data[field.key],field.max || 160,'');
+  $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');$('entry_title').focus();
+}
+function validDate(value) {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+  const date=new Date(value+'T00:00:00Z');return Number.isFinite(date.getTime()) && date.toISOString().slice(0,10)===value && value>='1900-01-01' && value<='2199-12-31';
+}
+function collectEntry() {
+  const data={module:activeModule,quantity:1,done:false};
+  for(const key of entryTextKeys)data[key]='';
+  for(const field of moduleDefinitions[activeModule].fields){
+    const value=$('entry_'+field.key).value.trim();
+    if(field.required && !value)throw new Error('請填寫'+field.label+'。');
+    if(field.type==='number'){
+      const n=Number(value);if(!Number.isInteger(n)||n<1||n>999)throw new Error('數量請填寫 1 至 999 的整數。');data[field.key]=n;
+    }else{
+      if(value.length>field.max)throw new Error(field.label+'內容過長。');
+      if(field.type==='date' && value && !validDate(value))throw new Error('請填寫有效日期（1900 至 2199 年）。');
+      if(field.type==='time' && value && !/^([01]\d|2[0-3]):[0-5]\d$/.test(value))throw new Error('時間格式不正確。');
+      data[field.key]=value;
+    }
+  }
+  if(data.endDate && data.date && data.endDate<data.date && activeModule!=='flights')throw new Error('結束日期不可早於開始日期。');
+  if(['itinerary','activities'].includes(activeModule) && data.time && data.endTime && data.endTime<data.time)throw new Error('結束時間不可早於開始時間。跨日活動請分成兩筆紀錄。');
+  const existing=entryDocs.find(x=>x.id===editingEntryId);
+  if(existing)data.done=existing.data.done===true;
+  return data;
+}
+function entryRef(id){return doc(db,'users',currentUser.uid,'trips',selectedTripId,'entries',id);}
+async function mutateEntry(action,success) {
+  if(recordBusy || !entriesReady || !currentUser || !selectedTripId)return false;
+  const token=moduleGeneration,authToken=generation;
+  recordBusy=true;$('recordFields').disabled=true;feedback('正在儲存，請等待雲端確認…');renderEntries();
+  try{
+    await action();
+    if(token!==moduleGeneration || authToken!==generation)return false;
+    if(success)success();return true;
+  }catch(error){if(token===moduleGeneration && authToken===generation)feedback(errorText(error),'error');return false;}
+  finally{
+    if(token===moduleGeneration && authToken===generation){recordBusy=false;$('recordFields').disabled=!entriesReady;renderEntries();}
+  }
+}
+async function saveEntry(event){
+  event.preventDefault();if(recordBusy || !entriesReady || !$('recordForm').reportValidity())return;
+  let data;try{data=collectEntry();}catch(error){feedback(error.message,'error');return;}
+  const id=editingEntryId;
+  await mutateEntry(()=>id?updateDoc(entryRef(id),{...data,updatedAt:serverTimestamp()}):addDoc(collection(db,'users',currentUser.uid,'trips',selectedTripId,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),()=>{resetRecordForm();feedback(id?'修改已儲存。':'已新增並儲存到雲端。');});
+}
+async function toggleDone(item,done){
+  await mutateEntry(()=>updateDoc(entryRef(item.id),{done,updatedAt:serverTimestamp()}),()=>feedback(done?'已標記完成。':'已取消完成。'));
+}
+function requestDelete(id){
+  if(recordBusy || deleteBusy)return;
+  const item=entryDocs.find(x=>x.id===id);if(!item)return;
+  deleteTarget=id;$('deleteLabel').textContent=safeString(item.data.title,160,'未命名紀錄');$('deleteFeedback').textContent='';$('deleteDialog').showModal();$('cancelDeleteBtn').focus();
+}
+function initModules(){
+  for(const [key,def] of Object.entries(moduleDefinitions)){
+    const btn=node('button',def.label,'module-tab');btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');btn.addEventListener('click',()=>switchModule(key));$('moduleNav').append(btn);
+  }
+  $('backBtn').addEventListener('click',()=>{if(abandonDraft()){closeDetail();$('tripsHeading').scrollIntoView({block:'start'});}});
+  $('recordForm').addEventListener('submit',saveEntry);
+  $('cancelEditBtn').addEventListener('click',()=>{if(abandonDraft())resetRecordForm();});
+  $('dayFilter').addEventListener('input',renderEntries);$('clearFilterBtn').addEventListener('click',()=>{$('dayFilter').value='';renderEntries();});
+  $('cancelDeleteBtn').addEventListener('click',()=>{if(!deleteBusy)$('deleteDialog').close();});
+  $('deleteDialog').addEventListener('cancel',event=>{if(deleteBusy)event.preventDefault();});
+  $('confirmDeleteBtn').addEventListener('click',async()=>{
+    if(!deleteTarget || deleteBusy || !currentUser)return;
+    const id=deleteTarget,token=moduleGeneration,authToken=generation,ref=entryRef(id);
+    deleteBusy=true;$('confirmDeleteBtn').disabled=true;$('cancelDeleteBtn').disabled=true;$('deleteFeedback').textContent='正在刪除，請等待雲端確認…';
+    try{await deleteDoc(ref);if(token!==moduleGeneration || authToken!==generation)return;
+      if(editingEntryId===id)resetRecordForm();$('deleteDialog').close();feedback('紀錄已刪除。');
+    }catch(error){if(token===moduleGeneration && authToken===generation)$('deleteFeedback').textContent=errorText(error);}
+    finally{if(token===moduleGeneration && authToken===generation){deleteBusy=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;}}
+  });
+  $('editTripBtn').addEventListener('click',()=>{
+    if(recordBusy || deleteBusy)return;
+    const trip=tripsById.get(selectedTripId);if(!trip)return;
+    $('editName').value=safeString(trip.name,80,'');$('editDestination').value=safeString(trip.destination,120,'');
+    $('editStart').value=safeString(trip.startDate,10,'');$('editEnd').value=safeString(trip.endDate,10,'');
+    $('tripEditFeedback').textContent='';$('tripDialog').showModal();
+  });
+  $('closeTripDialog').addEventListener('click',()=>{if(!tripEditBusy)$('tripDialog').close();});
+  $('tripDialog').addEventListener('cancel',event=>{if(tripEditBusy)event.preventDefault();});
+  $('tripEditForm').addEventListener('submit',async event=>{
+    event.preventDefault();if(tripEditBusy || !currentUser || !selectedTripId || !$('tripEditForm').reportValidity())return;
+    const data={name:$('editName').value.trim(),destination:$('editDestination').value.trim(),startDate:$('editStart').value,endDate:$('editEnd').value};
+    if(!data.name || data.name.length>80 || !data.destination || data.destination.length>120){$('tripEditFeedback').textContent='請填寫有效的旅行名稱與目的地。';return;}
+    if((data.startDate && !validDate(data.startDate)) || (data.endDate && !validDate(data.endDate)) || (data.startDate && data.endDate && data.endDate<data.startDate)){$('tripEditFeedback').textContent='請確認日期有效，且結束日期不早於開始日期。';return;}
+    const authToken=generation,trip=selectedTripId;
+    tripEditBusy=true;$('tripEditFields').disabled=true;$('tripEditFeedback').textContent='正在儲存…';
+    try{await updateDoc(doc(db,'users',currentUser.uid,'trips',trip),{...data,updatedAt:serverTimestamp()});if(authToken===generation && selectedTripId===trip){$('tripDialog').close();notice('旅行資料已更新。','success');}}
+    catch(error){if(authToken===generation && selectedTripId===trip)$('tripEditFeedback').textContent=errorText(error);}
+    finally{if(authToken===generation && selectedTripId===trip){tripEditBusy=false;$('tripEditFields').disabled=false;}}
+  });
+  window.addEventListener('beforeunload',event=>{if(recordBusy || deleteBusy || tripEditBusy || (selectedTripId && isDirty())){event.preventDefault();event.returnValue='';}});
+}
+
+initModules();
 start().catch(error => {
   $('loginBtn').disabled = true;
   notice(error.message === 'http-required' ? '請透過 GitHub Pages 或其他 HTTP/HTTPS 網址開啟網站，不能直接雙擊 HTML 檔案登入。' : '初始化失敗。請確認 firebase-config.js 的 export const firebaseConfig 設定及 Firebase 專案資料正確。','error');
