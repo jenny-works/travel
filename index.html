@@ -273,7 +273,7 @@ function createTimePicker(field) {
   const hour=node('select');hour.id=value.id+'_hour';hour.setAttribute('aria-label',field.label+'：小時（24 小時制）');
   const minute=node('select');minute.id=value.id+'_minute';minute.setAttribute('aria-label',field.label+'：分鐘');minute.disabled=true;
   function option(select,text,value){const o=node('option',text);o.value=value;select.append(o);}
-  option(hour,'選小時','');option(minute,'選分鐘','');
+  option(hour,'','');option(minute,'','');
   for(let i=0;i<24;i++){const v=String(i).padStart(2,'0');option(hour,v,v);}
   for(let i=0;i<60;i++){const v=String(i).padStart(2,'0');option(minute,v,v);}
   const clear=node('button','清除','secondary clear-time');clear.type='button';clear.setAttribute('aria-label','清除'+field.label);
