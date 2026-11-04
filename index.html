@@ -31,6 +31,7 @@
 <h1><a id="homeLink" class="home-link" href="#">✈️ Itinerary Manager</a></h1>
 <div id="headerAccount" hidden><span id="headerEmail"></span><button id="logoutBtn" class="logout" type="button">登出</button></div>
 </header>
+
 <main>
 <div id="notice" class="status" role="status" aria-live="polite">正在載入登入服務…</div>
 <div id="shortcutBanner" class="status" hidden><p id="shortcutMessage"></p><div class="form-actions"><button id="shortcutChooseTrip" type="button" class="secondary">回首頁選擇旅行</button><button id="shortcutCancel" type="button" class="secondary">取消帶入</button></div></div>
@@ -44,6 +45,8 @@
 </section>
 <section id="appArea" hidden aria-label="旅行管理">
 <div id="overviewArea" class="dashboard">
+<section class="card" style="grid-column:1/-1" aria-label="首頁新增項目"><div class="detail-heading"><div><div class="eyebrow">QUICK ADD</div><h2>新增項目</h2></div><button id="homeAddToggle" type="button" class="primary" aria-expanded="false" aria-controls="homeAddForm">＋ 新增項目</button></div><p class="hint">選旅行與類別，直接加入對應清單。</p>
+<form id="homeAddForm" hidden><fieldset id="homeAddFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields"><div class="field"><label for="homeTrip">1. 選擇旅行／專案</label><select id="homeTrip" required><option value="">請選擇旅行</option></select><p id="homeEmpty" class="hint">請先在下方建立一趟旅行。</p></div><div class="field"><label for="homeModule">2. 選擇大項目</label><select id="homeModule" required><option value="">請選擇大項目</option></select></div></div><div id="homeDetails" hidden><div class="field"><label for="homeCategory">3. 選擇類別</label><select id="homeCategory" required></select></div><div id="homeItemFields" class="module-fields"></div><button type="submit" class="primary">儲存並新增下一筆</button></div></fieldset><p id="homeAddStatus" class="form-status" role="status" aria-live="polite"></p></form><section id="homeSaved" hidden><h3>剛剛新增</h3><ul id="homeSavedList"></ul><p class="hint">此處顯示本次操作最近 10 筆；完整紀錄請開啟對應旅行查看。</p></section></section>
 <section class="card create">
 <div class="eyebrow">LET’S GO SOMEWHERE</div>
 <h2>🌈 建立新旅行</h2>
@@ -137,7 +140,7 @@ function safeString(value, length, fallback) {
 }
 function renderTrips(snapshot) {
   tripsById = new Map(snapshot.docs.map(item => [item.id, item.data()]));
-  refreshSelectedTrip();
+  refreshSelectedTrip();refreshHomeTrips();
   const items = snapshot.docs.map(item => ({ id: item.id, data: item.data(), pending: item.metadata.hasPendingWrites }));
   // Sort locally to avoid an extra composite index and retain older documents without createdAt.
   items.sort((a,b) => (b.data.createdAt?.toMillis?.() || 0) - (a.data.createdAt?.toMillis?.() || 0) || a.id.localeCompare(b.id));
@@ -176,6 +179,7 @@ async function start() {
     closeDetail(); tripsById.clear();
     unsubscribeTrips?.(); unsubscribeTrips = null;
     currentUser = user; saving = false;
+    $('homeAddForm').reset();$('homeModule').dataset.previous='';renderHomeFields();$('homeSavedList').replaceChildren();$('homeSaved').hidden=true;$('homeAddStatus').textContent='';refreshHomeTrips();
     $('tripFields').disabled = !user; $('addTripBtn').textContent = '＋ 新增旅行';
     $('tripForm').reset(); $('tripList').replaceChildren(); $('tripCount').textContent = '0 趟旅行';
     $('headerAccount').hidden = !user; $('loginArea').hidden = !!user; $('appArea').hidden = !user;
@@ -996,7 +1000,76 @@ function goHome(){
   if(selectedTripId && !abandonDraft())return;
   closeDetail();notice('');renderShortcutBanner();window.scrollTo({top:0,behavior:'smooth'});
 }
+const homeCategories={itinerary:['觀光','散步','預約行程','其他行程'],flights:['去程','回程','轉機','其他機票'],lodging:['飯店','民宿','公寓','青年旅館','其他住宿'],transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物'],activities:['景點門票','展覽','表演','體驗活動','其他娛樂'],todos:['行前準備','證件文件','預訂事項','其他待辦'],packing:['證件','衣物','盥洗用品','電子用品','藥品','其他行李']};
+let homeBusy=false;
+function refreshHomeTrips(){
+  const el=$('homeTrip'),value=el.value;el.replaceChildren(new Option('請選擇旅行',''));
+  for(const [id,trip] of tripsById)el.append(new Option(safeString(trip.name,80,'未命名旅行')+' · '+safeString(trip.destination,120,''),id));
+  el.value=tripsById.has(value)?value:'';
+  $('homeEmpty').hidden=tripsById.size>0;
+}
+function homeField(field){
+  const wrap=node('div',undefined,'field'),label=node('label',field.label);label.htmlFor='home_'+field.key;
+  const input=node(field.type==='textarea'?'textarea':field.type==='currency'?'select':'input');input.id='home_'+field.key;input.name=field.key;input.required=!!field.required;
+  if(field.type==='currency'){for(const [code,name] of Object.entries(currencyOptions))input.append(new Option(name,code));input.value='TWD';}
+  else if(field.type==='decimal'){input.type='number';input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填';}
+  else if(field.type==='number'){input.type='number';input.min='1';input.max='999';input.step='1';input.value='1';}
+  else if(field.type!=='textarea'){input.type=field.type;if(field.type==='date'){input.min='1900-01-01';input.max='2199-12-31';input.value=dateKey(new Date());}}
+  if(['text','textarea'].includes(field.type))input.maxLength=field.max;
+  wrap.append(label,input);return wrap;
+}
+function renderHomeFields(){
+  const module=$('homeModule').value,defined=Object.hasOwn(homeCategories,module);
+  $('homeItemFields').replaceChildren();$('homeCategory').replaceChildren(new Option('請選擇類別',''));
+  $('homeDetails').hidden=!defined;if(!defined)return;
+  for(const value of homeCategories[module])$('homeCategory').append(new Option(value,value));
+  const fields=moduleDefinitions[module].fields;
+  const usesDetail=['transport','dining','shopping','todos','packing'].includes(module);
+  const ordered=[...fields.filter(f=>!['amount','currency','notes'].includes(f.key)),...fields.filter(f=>f.key==='currency'),...fields.filter(f=>f.key==='amount'),...fields.filter(f=>f.key==='notes')];
+  const optional=node('details',undefined,'wide'),summary=node('summary','更多資料（時間、地點、備註等）'),extra=node('div',undefined,'module-fields');optional.append(summary,extra);
+  for(const field of ordered){if(usesDetail&&field.key==='detail')continue;if(field.required||['currency','amount'].includes(field.key))$('homeItemFields').append(homeField(field));else extra.append(homeField(field));}
+  if(extra.children.length)$('homeItemFields').append(optional);
+  for(const input of $('homeItemFields').querySelectorAll('input,textarea,select'))input.dataset.initial=input.value;
+}
+function buildHomeEntry(module,category,values){
+  if(!Object.hasOwn(homeCategories,module)||!homeCategories[module].includes(category))throw Error('請選擇大項目及類別。');
+  const data={module,quantity:1,done:false};for(const key of entryTextKeys)data[key]='';
+  for(const field of moduleDefinitions[module].fields){
+    const value=String(values[field.key]??'').trim();
+    if(field.required&&!value)throw Error('請填寫'+field.label+'。');
+    if(field.type==='decimal'){if(value&&!/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))throw Error('金額最多兩位小數，範圍 0 至 999999999.99。');data[field.key]=value;}
+    else if(field.type==='currency'){if(!Object.hasOwn(currencyOptions,value))throw Error('請選擇幣別。');data[field.key]=value;}
+    else if(field.type==='number'){const n=Number(value);if(!Number.isInteger(n)||n<1||n>999)throw Error('數量須為 1 至 999。');data[field.key]=n;}
+    else{if(value.length>field.max)throw Error(field.label+'內容過長。');if(field.type==='date'&&value&&!validDate(value))throw Error('請填寫有效日期。');if(field.type==='time'&&value&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(value))throw Error('時間格式不正確。');data[field.key]=value;}
+  }
+  if(['transport','dining','shopping','todos','packing'].includes(module))data.detail=category;
+  else {data.notes='類別：'+category+(data.notes?'\n'+data.notes:'');if(data.notes.length>2000)throw Error('備註內容過長。');}
+  if(data.date&&data.endDate&&data.endDate<data.date&&module!=='flights')throw Error('結束日期不可早於開始日期。');
+  if(['itinerary','activities'].includes(module)&&data.time&&data.endTime&&data.endTime<data.time)throw Error('結束時間不可早於開始時間。');
+  return data;
+}
+function initHomeAdd(){
+  for(const [key,def] of Object.entries(moduleDefinitions))if(key!=='calendar')$('homeModule').append(new Option(def.label,key));
+  $('homeAddToggle').addEventListener('click',()=>{const open=$('homeAddForm').hidden;$('homeAddForm').hidden=!open;$('homeAddToggle').setAttribute('aria-expanded',String(open));$('homeAddToggle').textContent=open?'收起':'＋ 新增項目';if(open){refreshHomeTrips();$('homeTrip').focus();}});
+  $('homeModule').addEventListener('change',()=>{if([...$('homeItemFields').querySelectorAll('input,textarea,select')].some(x=>x.value!==(x.dataset.initial||''))){if(!confirm('切換大項目會清除目前填寫的項目內容，要繼續嗎？')){$('homeModule').value=$('homeModule').dataset.previous||'';return;}}renderHomeFields();$('homeModule').dataset.previous=$('homeModule').value;});
+  $('homeAddForm').addEventListener('submit',async event=>{
+    event.preventDefault();if(homeBusy||!currentUser||!$('homeAddForm').reportValidity())return;
+    const trip=$('homeTrip').value,module=$('homeModule').value;
+    if(!tripsById.has(trip)){$('homeAddStatus').textContent='請選擇仍存在的旅行。';return;}
+    let data;try{data=buildHomeEntry(module,$('homeCategory').value,Object.fromEntries(new FormData($('homeAddForm'))));}catch(e){$('homeAddStatus').textContent=e.message;return;}
+    const authToken=generation,uid=currentUser.uid,tripName=safeString(tripsById.get(trip).name,80,'未命名旅行');
+    homeBusy=true;$('homeAddFields').disabled=true;$('homeAddStatus').textContent='正在儲存，請等待雲端確認…';
+    try{await addDoc(collection(db,'users',uid,'trips',trip,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});if(authToken!==generation)return;
+      const saved=node('li',tripName+' · '+moduleDefinitions[module].label+' · '+data.title+(data.amount?' · '+data.currency+' '+data.amount:''));$('homeSavedList').prepend(saved);while($('homeSavedList').children.length>10)$('homeSavedList').lastElementChild.remove();$('homeSaved').hidden=false;
+      for(const key of ['title','amount','notes','reference']){const el=document.getElementById('home_'+key);if(el)el.value='';}
+      $('homeAddStatus').textContent='已儲存，可繼續新增下一筆。';
+    }catch(e){if(authToken===generation)$('homeAddStatus').textContent=errorText(e);}
+    finally{homeBusy=false;$('homeAddFields').disabled=false;if(authToken===generation)$('home_title')?.focus();}
+  });
+}
+
 function initModules(){
+  initHomeAdd();
   initShortcutBridge();
   $('useQuickBtn').addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);focusEntryInput();});
   $('showFormBtn').addEventListener('click',()=>{if($('recordForm').hidden){setFormOpen(true);focusEntryInput();}else if(abandonDraft())resetRecordForm();});
