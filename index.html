@@ -23,6 +23,7 @@
 
 .quick-saved-group>h3{font-size:16px;color:#68637f;margin:8px 0 10px}.quick-saved-list{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden}.quick-saved-row{padding:18px 22px;border-bottom:1px solid var(--line)}.quick-saved-row:last-child{border-bottom:0}.quick-saved-main{display:flex;justify-content:space-between;gap:18px;align-items:baseline}.quick-saved-main strong{overflow-wrap:anywhere;min-width:0}.quick-saved-meta{font-size:13px;color:var(--muted);margin:5px 0}.quick-saved-row .record-actions{margin-top:10px}.quick-saved-row .record-actions button{padding:4px 10px;font-size:12px}.quick-extra{font-size:13px;color:var(--muted);margin-top:7px}.quick-extra summary{cursor:pointer}.quick-extra p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.quick-saved-row:focus{outline:3px solid #b0a0ed;outline-offset:-3px}
 .expense-summary{margin:20px 0 26px;padding:20px;border-radius:18px;background:#f6f4ff;border:1px solid #e5def8}.expense-summary h3{margin:0;font-size:19px}.expense-summary-note{font-size:12px;color:var(--muted);margin:8px 0 14px}.expense-total-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.expense-total-card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}.expense-currency{font-size:13px;font-weight:650;color:#7b70a1}.expense-total-value{font-size:clamp(24px,3vw,32px);font-weight:750;color:#58449e;overflow-wrap:anywhere;margin-top:5px}.expense-module-totals{border-top:1px solid var(--line);padding-top:8px}.expense-module-total{display:flex;justify-content:space-between;gap:12px;width:100%;border:0;border-radius:7px;padding:9px 0;background:white;color:var(--ink);font-size:13px;text-align:left}.expense-module-total:hover{background:#f5f2ff}.expense-module-total strong{overflow-wrap:anywhere;text-align:right}.expense-module-total:focus-visible{outline:3px solid #e49d24;outline-offset:2px}@media(max-width:540px){.expense-summary{padding:14px}.expense-total-grid{grid-template-columns:minmax(0,1fr)}.expense-summary .count{white-space:normal}}
+.calendar-event[data-module="shopping"]{background:#f5e6ff;color:#775395}#shortcutBanner p{margin:0 0 12px;color:inherit}
 </style>
 </head>
 <body>
@@ -32,6 +33,7 @@
 </header>
 <main>
 <div id="notice" class="status" role="status" aria-live="polite">正在載入登入服務…</div>
+<div id="shortcutBanner" class="status" hidden><p id="shortcutMessage"></p><div class="form-actions"><button id="shortcutChooseTrip" type="button" class="secondary">回首頁選擇旅行</button><button id="shortcutCancel" type="button" class="secondary">取消帶入</button></div></div>
 <section id="loginArea" class="card login">
 <div class="travel-art" aria-hidden="true">🌏 🧳</div>
 <div class="eyebrow">YOUR NEXT ADVENTURE</div>
@@ -178,7 +180,7 @@ async function start() {
     $('tripForm').reset(); $('tripList').replaceChildren(); $('tripCount').textContent = '0 趟旅行';
     $('headerAccount').hidden = !user; $('loginArea').hidden = !!user; $('appArea').hidden = !user;
     $('headerEmail').textContent = user ? (user.email || user.displayName || 'Google 帳號') : '';
-    notice('');
+    notice('');renderShortcutBanner();
     if (!user) return;
     $('tripList').setAttribute('aria-busy','true'); $('syncStatus').textContent = '正在同步旅行…';
     // Profile errors do not stop the independent trip listener.
@@ -233,13 +235,14 @@ const moduleDefinitions = {
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
+  shopping:{label:'🛍️ 購物',description:'快速記錄購物品項與消費，一次儲存多筆。',fields:[F('title','商店／購買內容','text',true),F('date','日期','date',true),F('time','購買時間','time'),F('location','商店地點'),F('detail','購物類型'),commonNotes]},
   dining:{label:'🍽️ 餐飲',description:'連續記錄餐廳、咖啡與小吃，一次儲存多筆。',fields:[F('title','餐廳／餐點名稱','text',true),F('date','日期','date',true),F('time','用餐時間','time'),F('location','地點'),F('detail','餐別／類型'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
   todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','截止日期','date'),commonNotes]},
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
 const currencyOptions={TWD:'TWD 新台幣',JPY:'JPY 日圓',USD:'USD 美元',EUR:'EUR 歐元',KRW:'KRW 韓元',HKD:'HKD 港幣',CNY:'CNY 人民幣',GBP:'GBP 英鎊',SGD:'SGD 新加坡幣',THB:'THB 泰銖',AUD:'AUD 澳幣',CAD:'CAD 加幣'};
-for(const key of ['itinerary','flights','lodging','transport','dining','activities']){
+for(const key of ['itinerary','flights','lodging','transport','dining','shopping','activities']){
   const fields=moduleDefinitions[key].fields;
   fields.splice(fields.length-1,0,F('amount','消費金額','decimal',false,12),F('currency','幣別','currency',false,3));
 }
@@ -261,6 +264,8 @@ let selectedTripId=null, activeModule='itinerary', unsubscribeEntries=null;
 let moduleGeneration=0, entryDocs=[], editingEntryId=null, recordBusy=false, entriesReady=false;
 let deleteTarget=null, deleteBusy=false, tripEditBusy=false;
 let checklistFilter='all';
+const shortcutCategoryNames={transport:'交通',dining:'餐飲',shopping:'購物',activities:'娛樂'};
+let shortcutDraft=readShortcutDraft();
 let calendarMonth='', calendarDay='', pendingRecordId=null;
 const collapsedCategories=new Set();
 const categorySuggestions={packing:['證件與票券','衣物','盥洗用品','電子用品','藥品','其他'],todos:['出發前準備','訂位與預約','證件與保險','旅途中','返家後','其他']};
@@ -307,11 +312,11 @@ function refreshSelectedTrip() {
 function openTrip(id) {
   if(!currentUser || !tripsById.has(id))return;
   selectedTripId=id; $('overviewArea').hidden=true;$('detailArea').hidden=false;
-  calendarMonth='';calendarDay='';pendingRecordId=null;refreshSelectedTrip(); switchModule('calendar',true); $('backBtn').focus();
+  calendarMonth='';calendarDay='';pendingRecordId=null;refreshSelectedTrip(); if(shortcutDraft)applyShortcutDraft();else switchModule('calendar',true); $('backBtn').focus();
 }
 let quickMode=false, quickRowCounter=0,quickDefaultDate='',quickDefaultCurrency='TWD';
-const quickTypes={transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲']};
-function isQuickModule(){return activeModule==='transport' || activeModule==='dining';}
+const quickTypes={transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物']};
+function isQuickModule(){return activeModule==='transport' || activeModule==='dining' || activeModule==='shopping';}
 function configureQuickEntry(enabled){
   quickMode=!!enabled && isQuickModule();
   const area=$('quickEntryArea');area.hidden=!quickMode;for(const input of area.querySelectorAll('input,select,textarea,button'))input.disabled=!quickMode;$('moduleFields').hidden=quickMode;
@@ -342,11 +347,11 @@ function configureQuickEntry(enabled){
 }
 function appendQuickRow(){
   const row=node('div',undefined,'quick-row'),id=++quickRowCounter;
-  for(const [key,label,type] of [['type','類型','select'],['name',activeModule==='transport'?'路線／交通內容':'餐廳／餐點','text'],['amount','消費金額','number']]){
+  for(const [key,label,type] of [['type','類型','select'],['name',activeModule==='transport'?'路線／交通內容':activeModule==='shopping'?'商店／購買內容':'餐廳／餐點','text'],['amount','消費金額','number']]){
     const cell=node('div',undefined,key==='name'?'quick-title-cell':'');
     const title=node('label',label);const input=node(type==='select'?'select':'input');input.className='quick-'+key;input.id='quick_'+key+id;title.htmlFor=input.id;
     if(type==='select')for(const name of quickTypes[activeModule]){const option=node('option',name);option.value=name;input.append(option);}
-    else{input.type=type;if(key==='name'){input.maxLength=160;input.placeholder=activeModule==='transport'?'例如：京都站 → 清水寺':'例如：拉麵午餐';}else{input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填';}}
+    else{input.type=type;if(key==='name'){input.maxLength=160;input.placeholder=activeModule==='transport'?'例如：京都站 → 清水寺':activeModule==='shopping'?'例如：藥妝店防曬乳':'例如：拉麵午餐';}else{input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填';}}
     input.addEventListener('input',updateQuickCount);cell.append(title,input);row.append(cell);
   }
   const remove=node('button','×','secondary quick-remove');remove.type='button';remove.setAttribute('aria-label','移除這筆');remove.addEventListener('click',()=>{if($('quickRows').children.length===1){row.querySelector('.quick-name').value='';row.querySelector('.quick-amount').value='';}else row.remove();updateQuickCount();});row.append(remove);$('quickRows').append(row);updateQuickCount();return row;
@@ -385,8 +390,74 @@ async function saveQuickEntries(){
     for(const item of items)batch.set(doc(target),{...item,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});return batch.commit();
   },()=>{
     resetRecordForm();$('quickDate').value=date;$('quickCurrency').value=currency;quickDefaultDate=date;quickDefaultCurrency=currency;setFormOpen(true);
-    feedback(`已儲存 ${items.length} 筆，可以繼續新增。`);focusEntryInput();
+    consumeShortcutDraft();feedback(`已儲存 ${items.length} 筆，可以繼續新增。`);focusEntryInput();
   });
+}
+
+function parseShortcutPayload(hash){
+  if(!hash.startsWith('#quick-add?'))return null;
+  const params=new URLSearchParams(hash.slice('#quick-add?'.length));
+  const map={交通:'transport',餐飲:'dining',購物:'shopping',娛樂:'activities',transport:'transport',dining:'dining',shopping:'shopping',activities:'activities'};
+  const category=params.get('category');const module=Object.hasOwn(map,category)?map[category]:null;
+  const currency=params.get('currency') || 'TWD';let amount=(params.get('amount') || '').trim();
+  if(/^\d+,\d{1,2}$/.test(amount))amount=amount.replace(',','.');
+  if(!module || !Object.hasOwn(currencyOptions,currency) || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(amount))return null;
+  return {module,currency,amount,title:shortcutCategoryNames[module]+'消費',createdAt:Date.now()};
+}
+function readShortcutDraft(){
+  // Values use the URL fragment so they are not sent to the static hosting server.
+  const isIncoming=location.hash.startsWith('#quick-add?');
+  let draft=null;
+  if(isIncoming){
+    draft=parseShortcutPayload(location.hash);history.replaceState(null,'',location.pathname+location.search);
+    try{if(draft)sessionStorage.setItem('itineraryShortcutDraft',JSON.stringify(draft));else sessionStorage.removeItem('itineraryShortcutDraft');}catch{}
+    return draft;
+  }
+  try{
+    const stored=JSON.parse(sessionStorage.getItem('itineraryShortcutDraft') || 'null');
+    if(stored && Object.hasOwn(shortcutCategoryNames,stored.module) && typeof stored.createdAt==='number' && Date.now()-stored.createdAt>=0 && Date.now()-stored.createdAt<86400000){
+      const validated=parseShortcutPayload('#quick-add?'+new URLSearchParams({category:stored.module,currency:stored.currency,amount:stored.amount}));
+      if(validated)return {...validated,createdAt:stored.createdAt};
+    }
+    sessionStorage.removeItem('itineraryShortcutDraft');
+  }catch{}
+  return null;
+}
+function renderShortcutBanner(){
+  $('shortcutBanner').hidden=!shortcutDraft;
+  if(!shortcutDraft)return;
+  const category=shortcutCategoryNames[shortcutDraft.module];
+  $('shortcutMessage').textContent=`捷徑帶入：${category} · ${shortcutDraft.currency} ${shortcutDraft.amount}。${selectedTripId?'請確認目前旅行、品名、日期與金額，再按儲存。':'請先登入，並開啟要記入的旅行。'}`;
+}
+function applyShortcutDraft(){
+  const draft=shortcutDraft;if(!draft || !currentUser || !selectedTripId)return;
+  switchModule(draft.module,true);setFormOpen(true);
+  const today=dateKey(new Date());
+  if(isQuickModule()){
+    $('quickDate').value=today;$('quickCurrency').value=draft.currency;
+    const row=$('quickRows').firstElementChild;row.querySelector('.quick-name').value=draft.title;row.querySelector('.quick-amount').value=draft.amount;updateQuickCount();
+  }else{
+    $('entry_title').value=draft.title;$('entry_date').value=today;$('entry_amount').value=draft.amount;$('entry_currency').value=draft.currency;
+  }
+  renderShortcutBanner();
+}
+function consumeShortcutDraft(){
+  if(!shortcutDraft || activeModule!==shortcutDraft.module)return;
+  shortcutDraft=null;try{sessionStorage.removeItem('itineraryShortcutDraft');}catch{}renderShortcutBanner();
+}
+function initShortcutBridge(){
+  window.addEventListener('hashchange',()=>{
+    if(!location.hash.startsWith('#quick-add?'))return;
+    if(selectedTripId && !abandonDraft()){history.replaceState(null,'',location.pathname+location.search);return;}
+    shortcutDraft=readShortcutDraft();renderShortcutBanner();
+    if(shortcutDraft && currentUser && selectedTripId)applyShortcutDraft();
+  });
+  $('shortcutChooseTrip').addEventListener('click',()=>{goHome();renderShortcutBanner();});
+  $('shortcutCancel').addEventListener('click',()=>{
+    if(selectedTripId && !abandonDraft())return;
+    shortcutDraft=null;try{sessionStorage.removeItem('itineraryShortcutDraft');}catch{}if(selectedTripId)resetRecordForm();renderShortcutBanner();
+  });
+  renderShortcutBanner();
 }
 
 function mapLink(place){
@@ -437,7 +508,7 @@ function changeCalendarMonth(amount){
   if(date.getFullYear()<1900 || date.getFullYear()>2199)return;
   calendarMonth=dateKey(date).slice(0,7);calendarDay=calendarMonth+'-01';renderCalendar();
 }
-const expenseModules=['itinerary','flights','lodging','transport','dining','activities'];
+const expenseModules=['itinerary','flights','lodging','transport','dining','shopping','activities'];
 function amountToMinor(value){
   if(typeof value!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))return null;
   const [whole,fraction='']=value.split('.');return BigInt(whole)*100n+BigInt(fraction.padEnd(2,'0'));
@@ -911,7 +982,7 @@ async function saveEntry(event){
     return;
   }
   if(moduleDefinitions[activeModule].checkable && /[\r\n]/.test(data.title)){feedback('編輯時一次修改一項，請勿輸入換行。','error');return;}
-  await mutateEntry(()=>id?updateDoc(entryRef(id),{...data,updatedAt:serverTimestamp()}):addDoc(collection(db,'users',currentUser.uid,'trips',selectedTripId,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),()=>{resetRecordForm();feedback(id?'修改已儲存。':'已新增並儲存到雲端。');});
+  await mutateEntry(()=>id?updateDoc(entryRef(id),{...data,updatedAt:serverTimestamp()}):addDoc(collection(db,'users',currentUser.uid,'trips',selectedTripId,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}),()=>{resetRecordForm();consumeShortcutDraft();feedback(id?'修改已儲存。':'已新增並儲存到雲端。');});
 }
 async function toggleDone(item,done){
   await mutateEntry(()=>updateDoc(entryRef(item.id),{done,updatedAt:serverTimestamp()}),()=>feedback(done?'已標記完成。':'已取消完成。'));
@@ -923,9 +994,10 @@ function requestDelete(id){
 }
 function goHome(){
   if(selectedTripId && !abandonDraft())return;
-  closeDetail();notice('');window.scrollTo({top:0,behavior:'smooth'});
+  closeDetail();notice('');renderShortcutBanner();window.scrollTo({top:0,behavior:'smooth'});
 }
 function initModules(){
+  initShortcutBridge();
   $('useQuickBtn').addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);focusEntryInput();});
   $('showFormBtn').addEventListener('click',()=>{if($('recordForm').hidden){setFormOpen(true);focusEntryInput();}else if(abandonDraft())resetRecordForm();});
   $('homeLink').addEventListener('click',event=>{event.preventDefault();goHome();});
