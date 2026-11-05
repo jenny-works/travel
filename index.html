@@ -35,6 +35,8 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .home-modal :is(input,select,textarea){box-sizing:border-box;max-width:100%}
 .home-modal input:is([type="date"],[type="time"]){min-width:0;width:100%;max-width:100%;min-inline-size:0}
 .home-modal input::-webkit-date-and-time-value{min-width:0;text-align:left}
+
+.calendar-todos{margin:22px 0 26px;padding:20px;border:1px solid #e6e0f2;border-radius:18px;background:#faf8ff}.calendar-todos .section-heading{margin:0 0 15px}.calendar-todos h3{margin:0;font-size:18px}.calendar-todo-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.calendar-todo{min-width:0;padding:16px;background:#fff;border:1px solid #ebe5f3;border-radius:13px}.todo-due{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#81738f;margin-bottom:12px}.todo-overdue,.todo-finished{font-size:10px;padding:2px 7px;border-radius:20px;background:#ffedf0;color:#a33b51}.todo-finished{background:#e8f6ef;color:#3c8060}.todo-body{display:flex;align-items:flex-start;gap:10px}.todo-body>input{appearance:auto;flex:0 0 19px;width:19px;height:19px;margin:4px 0 0;padding:0;accent-color:var(--purple)}.todo-content{flex:1;min-width:0}.todo-title{display:block;border:0;background:none;padding:0;color:var(--ink);font-size:15px;font-weight:650;text-align:left;overflow-wrap:anywhere}.todo-title:hover{text-decoration:underline}.todo-category{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:6px;background:#f0ecfa;color:#7b6997;font-size:11px}.todo-notes{margin:8px 0 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.calendar-todo.is-done .todo-title{text-decoration:line-through;color:#8b8697}.calendar-todo.is-overdue{border-color:#efced7}.todo-empty{margin:0;font-size:13px}@media(max-width:600px){.calendar-todos{padding:15px}.calendar-todo-list{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -255,7 +257,7 @@ const moduleDefinitions = {
   shopping:{label:'🛍️ 購物',description:'快速記錄購物品項與消費，一次儲存多筆。',fields:[F('title','商店／購買內容','text',true),F('date','日期','date',true),F('time','購買時間','time'),F('location','商店地點'),F('detail','購物類型'),commonNotes]},
   dining:{label:'🍽️ 餐飲',description:'連續記錄餐廳、咖啡與小吃，一次儲存多筆。',fields:[F('title','餐廳／餐點名稱','text',true),F('date','日期','date',true),F('time','用餐時間','time'),F('location','地點'),F('detail','餐別／類型'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
-  todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','截止日期','date'),commonNotes]},
+  todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','到期日期','date'),F('time','到期時間','time'),commonNotes]},
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
 const currencyOptions={TWD:'TWD 新台幣',JPY:'JPY 日圓',USD:'USD 美元',EUR:'EUR 歐元',KRW:'KRW 韓元',HKD:'HKD 港幣',CNY:'CNY 人民幣',GBP:'GBP 英鎊',SGD:'SGD 新加坡幣',THB:'THB 泰銖',AUD:'AUD 澳幣',CAD:'CAD 加幣'};
@@ -570,6 +572,34 @@ function renderExpenseTotals(){
   return section;
 }
 
+function sortedCalendarTodos(items){
+  return items.filter(item=>item.data.module==='todos').slice().sort((a,b)=>
+    Number(a.data.done===true)-Number(b.data.done===true) ||
+    (validDate(a.data.date||'')?a.data.date+'T'+(a.data.time||'23:59'):'9999').localeCompare(validDate(b.data.date||'')?b.data.date+'T'+(b.data.time||'23:59'):'9999') || a.id.localeCompare(b.id));
+}
+function renderCalendarTodos(){
+  const section=node('section',undefined,'calendar-todos');section.setAttribute('aria-label','待辦事項明細');
+  const items=sortedCalendarTodos(entryDocs),remaining=items.filter(x=>x.data.done!==true).length;
+  const heading=node('div',undefined,'section-heading');heading.append(node('h3','✅ 待辦事項'),node('span',remaining+' 項未完成','count'));section.append(heading);
+  if(!items.length){section.append(node('p','目前沒有待辦事項。','todo-empty'));return section;}
+  const list=node('div',undefined,'calendar-todo-list'),now=new Date(),today=dateKey(now),clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  for(const item of items){
+    const data=item.data,done=data.done===true,dated=validDate(data.date||'');
+    const overdue=!done&&dated&&(data.date<today||(data.date===today&&data.time&&data.time<clock));
+    const row=node('article',undefined,'calendar-todo'+(done?' is-done':'')+(overdue?' is-overdue':''));
+    const due=node('div',undefined,'todo-due');due.append(node('span',dated?'到期 '+data.date+(data.time?' · '+safeString(data.time,5,''):' · 未指定時間'):'未設定到期日期'));
+    if(overdue)due.append(node('span','已逾期','todo-overdue'));else if(done)due.append(node('span','已完成','todo-finished'));
+    row.append(due);
+    const body=node('div',undefined,'todo-body'),checkbox=node('input');checkbox.type='checkbox';checkbox.checked=done;checkbox.disabled=recordBusy||deleteBusy||item.pending;checkbox.setAttribute('aria-label',(done?'取消完成：':'標記完成：')+safeString(data.title,160,'未命名待辦'));checkbox.addEventListener('change',()=>toggleDone(item,checkbox.checked));
+    const content=node('div',undefined,'todo-content'),title=node('button',safeString(data.title,160,'未命名待辦'),'todo-title');title.type='button';title.addEventListener('click',()=>jumpToEntry(item));content.append(title);
+    if(data.detail)content.append(node('span',safeString(data.detail,160,''),'todo-category'));
+    if(data.notes)content.append(node('p',safeString(data.notes,2000,''),'todo-notes'));
+    if(item.pending)content.append(node('p','等待雲端確認…','todo-notes'));
+    body.append(checkbox,content);row.append(body);list.append(row);
+  }
+  section.append(list);return section;
+}
+
 function renderCalendar(){
   const trip=tripsById.get(selectedTripId) || {};
   if(!calendarMonth){
@@ -585,7 +615,7 @@ function renderCalendar(){
   const next=node('button','下個月 ›','secondary');next.type='button';next.disabled=calendarMonth==='2199-12';next.addEventListener('click',()=>changeCalendarMonth(1));
   const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar,renderExpenseTotals());
   fragment.append(node('p','點日期查看當日安排，點活動前往對應模組。住宿會顯示入住、住宿期間與退房；時間依填寫的當地時間顯示。','calendar-notes'));
-  const shortcuts=node('div',undefined,'calendar-shortcuts');for(const [key,def] of Object.entries(moduleDefinitions)){if(key==='calendar')continue;const btn=node('button',def.label,'secondary');btn.type='button';btn.addEventListener('click',()=>switchModule(key));shortcuts.append(btn);}fragment.append(shortcuts);
+  fragment.append(renderCalendarTodos());
   const week=node('div',undefined,'calendar-week');for(const day of ['日','一','二','三','四','五','六'])week.append(node('span',day));fragment.append(week);
   const grid=node('div',undefined,'calendar-grid');grid.setAttribute('aria-label',`${year} 年 ${month} 月`);
   for(let i=0;i<first.getDay();i++)grid.append(node('div',undefined,'calendar-cell blank'));
@@ -843,7 +873,7 @@ function renderChecklist(items){
       const title=node('label',undefined,'check-title');title.htmlFor=checkbox.id;title.append(node('span',safeString(item.data.title,160,'未命名項目'),'item-name'));
       if(activeModule==='packing')title.append(node('span','× '+(Number.isInteger(item.data.quantity)?item.data.quantity:1),'quantity-pill'));
       main.append(checkbox,title);row.append(main);
-      if(activeModule==='todos' && item.data.date)row.append(node('p','截止：'+safeString(item.data.date,10,''),'check-meta'));
+      if(activeModule==='todos' && item.data.date)row.append(node('p','到期：'+safeString(item.data.date,10,'')+(item.data.time?' '+safeString(item.data.time,5,''):''),'check-meta'));
       if(item.data.notes)row.append(node('p',safeString(item.data.notes,2000,''),'check-meta'));
       if(item.pending)row.append(node('p','等待雲端確認…','check-meta'));
       const actions=node('div',undefined,'record-actions');
