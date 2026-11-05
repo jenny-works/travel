@@ -41,6 +41,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .day-timeline{margin-bottom:32px}.timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.timeline-heading h3{font-size:18px;margin:0}.timeline-heading>span{font-size:11px;color:#9a8daa}.route-outline{padding:16px 18px;border:1px solid #e9e2f2;border-radius:16px;background:#f6f2fb;margin-bottom:20px}.route-outline summary{font-size:13px;color:#8c75ab;cursor:pointer}.route-path{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.route-pin{display:flex;gap:7px;align-items:center;font-size:12px}.route-pin>span{display:grid;place-items:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;background:#e5daf5;color:#8e76ac}.route-pin strong{font-weight:500;overflow-wrap:anywhere}.timeline-stop{display:grid;grid-template-columns:50px minmax(0,1fr);gap:13px}.timeline-rail{display:flex;flex-direction:column;align-items:center;gap:9px}.timeline-time{font-size:12px;font-weight:650;color:#8c7a9f;margin-top:15px}.timeline-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9dff5;color:#9273b8;font-size:11px}.timeline-card{padding:20px 22px;border-radius:18px;min-width:0}.timeline-kicker{font-size:10px;letter-spacing:1.4px;color:#b09cc8}.timeline-card h3{font-size:18px;margin:6px 0 10px;overflow-wrap:anywhere}.timeline-meta{font-size:12px;color:#a08dab;margin:6px 0}.timeline-notes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:12px 0;color:#94849f}.timeline-card .record-actions{margin-top:14px}.timeline-card .record-actions button{font-size:11px;padding:5px 10px}.timeline-card .expense-amount{display:block;margin-top:10px}.timeline-between{margin:12px 0 12px 63px;display:grid;gap:9px}.timeline-transport{padding:15px 18px;border:1px solid #e4dced;border-radius:14px;background:#f0ebf7}.timeline-transport-head{display:flex;justify-content:space-between;gap:10px;color:#89729f;font-size:13px;font-weight:600}.timeline-transport-head span:last-child{font-size:11px}.timeline-transport summary{cursor:pointer;font-size:12px;color:#a28ab8}.route-controls{display:flex;gap:15px;margin-top:12px;flex-wrap:wrap}.route-map-link,.route-edit{font-size:11px;color:#9e84b4;text-decoration:none}.route-edit{border:0;background:none;padding:0;cursor:pointer}.route-add{border:1px dashed #d9cce7;border-radius:11px;padding:10px;background:transparent;color:#aa94bd;font-size:12px}.route-unlinked{padding:16px;margin:20px 0;color:#9b88aa;font-size:12px}.route-unlinked button{display:block;margin-top:10px}.timeline-add-stop{margin:18px 0 0 63px;width:calc(100% - 63px);padding:14px;border:1px dashed #d2c0e4;border-radius:13px;background:#faf8fd;color:#a28aba}#routeEndpoints{overflow-wrap:anywhere}#routeStatus{font-size:13px;margin-top:15px}#routeDialog .form-actions{margin-top:18px}
 @media(max-width:600px){.timeline-stop{grid-template-columns:40px minmax(0,1fr);gap:10px}.timeline-between{margin-left:50px}.timeline-card{padding:16px}.timeline-card h3{font-size:16px}.timeline-time{font-size:11px}.timeline-heading{align-items:start;flex-direction:column;gap:3px}.timeline-add-stop{margin-left:50px;width:calc(100% - 50px)}.timeline-transport{padding:13px}.timeline-transport-head{flex-wrap:wrap}.route-outline{padding:14px}}
 .timeline-days{display:flex;gap:8px;overflow:auto;padding:3px 2px 12px;margin-bottom:8px}.timeline-days button{flex-shrink:0;font-size:12px}.timeline-days button[aria-pressed=true]{background:#7961ce;color:white;border-color:#7961ce}.timeline-rail:after{content:'';width:1px;background:#e5dced;flex:1;margin-top:4px}
+.legacy-itinerary-cost{padding:12px 14px;border-radius:11px;background:#fff7eb;margin-top:14px}.legacy-itinerary-cost .hint{margin:7px 0 10px}.legacy-itinerary-cost button{font-size:11px;padding:5px 10px}
 </style>
 </head>
 <body>
@@ -255,7 +256,7 @@ const F = (key,label,type='text',required=false,max=160) => ({key,label,type,req
 const commonNotes = F('notes','備註','textarea',false,2000);
 const moduleDefinitions = {
   calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
-  itinerary:{label:'🗓️ 每日行程',description:'依日期與時間安排每天的活動。時間皆為當地時間。',fields:[F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
+  itinerary:{label:'🗓️ 每日行程',description:'依日期與時間安排每天的活動；餐飲、娛樂等消費請在對應模組填寫一次。時間皆為當地時間。',fields:[F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
@@ -266,7 +267,7 @@ const moduleDefinitions = {
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
 const currencyOptions={TWD:'TWD 新台幣',JPY:'JPY 日圓',USD:'USD 美元',EUR:'EUR 歐元',KRW:'KRW 韓元',HKD:'HKD 港幣',CNY:'CNY 人民幣',GBP:'GBP 英鎊',SGD:'SGD 新加坡幣',THB:'THB 泰銖',AUD:'AUD 澳幣',CAD:'CAD 加幣'};
-for(const key of ['itinerary','flights','lodging','transport','dining','shopping','activities']){
+for(const key of ['flights','lodging','transport','dining','shopping','activities']){
   const fields=moduleDefinitions[key].fields;
   fields.splice(fields.length-1,0,F('amount','消費金額','decimal',false,12),F('currency','幣別','currency',false,3));
 }
@@ -547,6 +548,7 @@ function calculateExpenseTotals(entries){
     if(seen.has(item.id))continue;seen.add(item.id);
     const data=item.data;if(!expenseModules.includes(data.module))continue;
     const minor=amountToMinor(data.amount);
+    if(data.module==='itinerary'&&minor===null)continue;
     if(minor===null){missing++;continue;}
     const currency=data.currency || 'TWD';
     if(!Object.hasOwn(currencyOptions,currency)){missing++;continue;}
@@ -560,6 +562,7 @@ function renderExpenseTotals(){
   const stats=calculateExpenseTotals(entryDocs),section=node('section',undefined,'expense-summary');section.setAttribute('aria-label','本趟旅行消費統計');
   const heading=node('div',undefined,'detail-heading');heading.append(node('h3','💰 本趟旅行消費'),node('span',`已填 ${stats.filled} 筆 · 未填 ${stats.missing} 筆`,'count'));section.append(heading);
   section.append(node('p','統計整趟旅行，不受目前月份影響；不同幣別分開加總，不做匯率換算。','expense-summary-note'));
+  if(entryDocs.some(x=>x.data.module==='itinerary'&&amountToMinor(x.data.amount)!==null))section.append(node('p','含舊版每日行程金額。若已在餐飲或娛樂等模組記帳，請到每日行程移除重複的舊金額。','expense-summary-note'));
   if(!stats.filled){section.append(node('p','尚無消費金額。可到各模組新增，或編輯既有紀錄補上金額。','empty'));return section;}
   const grid=node('div',undefined,'expense-total-grid');
   for(const [currency,group] of [...stats.currencies].sort(([a],[b])=>a.localeCompare(b))){
@@ -953,7 +956,10 @@ function renderItineraryTimeline(items){
       if(data.endTime)card.append(node('p','至 '+safeString(data.endTime,5,''),'timeline-meta'));
       if(data.location)card.append(mapLink(safeString(data.location,160,'')));
       if(data.notes)card.append(node('p',safeString(data.notes,2000,''),'timeline-notes'));
-      if(formatExpense(data))card.append(node('span',formatExpense(data),'expense-amount'));
+      if(formatExpense(data)){
+        const legacy=node('div',undefined,'legacy-itinerary-cost');legacy.append(node('span','舊行程金額：'+formatExpense(data),'expense-amount'),node('p','若已記在餐飲、娛樂等模組，可移除此處金額避免重複加總。','hint'));
+        const clear=node('button','移除這筆舊金額','secondary');clear.type='button';clear.disabled=recordBusy||item.pending;clear.addEventListener('click',()=>{if(confirm('只移除此行程的舊金額，保留行程與其他模組消費？'))mutateEntry(()=>updateDoc(entryRef(item.id),{amount:'',updatedAt:serverTimestamp()}),()=>feedback('已移除舊行程金額，統計已更新。'));});legacy.append(clear);card.append(legacy);
+      }
       const actions=node('div',undefined,'record-actions');
       for(const [label,fn] of [['編輯',()=>editEntry(item.id)],['刪除',()=>requestDelete(item.id)]]){const b=node('button',label,'secondary');b.type='button';b.disabled=recordBusy||deleteBusy||item.pending;b.addEventListener('click',fn);actions.append(b);}card.append(actions);
       if(item.pending)card.append(node('p','等待雲端確認…','hint'));row.append(rail,card);section.append(row);
