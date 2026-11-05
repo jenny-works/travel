@@ -37,6 +37,10 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .home-modal input::-webkit-date-and-time-value{min-width:0;text-align:left}
 
 .calendar-todos{margin:22px 0 26px;padding:20px;border:1px solid #e6e0f2;border-radius:18px;background:#faf8ff}.calendar-todos .section-heading{margin:0 0 15px}.calendar-todos h3{margin:0;font-size:18px}.calendar-todo-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.calendar-todo{min-width:0;padding:16px;background:#fff;border:1px solid #ebe5f3;border-radius:13px}.todo-due{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#81738f;margin-bottom:12px}.todo-overdue,.todo-finished{font-size:10px;padding:2px 7px;border-radius:20px;background:#ffedf0;color:#a33b51}.todo-finished{background:#e8f6ef;color:#3c8060}.todo-body{display:flex;align-items:flex-start;gap:10px}.todo-body>input{appearance:auto;flex:0 0 19px;width:19px;height:19px;margin:4px 0 0;padding:0;accent-color:var(--purple)}.todo-content{flex:1;min-width:0}.todo-title{display:block;border:0;background:none;padding:0;color:var(--ink);font-size:15px;font-weight:650;text-align:left;overflow-wrap:anywhere}.todo-title:hover{text-decoration:underline}.todo-category{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:6px;background:#f0ecfa;color:#7b6997;font-size:11px}.todo-notes{margin:8px 0 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.calendar-todo.is-done .todo-title{text-decoration:line-through;color:#8b8697}.calendar-todo.is-overdue{border-color:#efced7}.todo-empty{margin:0;font-size:13px}@media(max-width:600px){.calendar-todos{padding:15px}.calendar-todo-list{grid-template-columns:minmax(0,1fr)}}
+
+.day-timeline{margin-bottom:32px}.timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.timeline-heading h3{font-size:18px;margin:0}.timeline-heading>span{font-size:11px;color:#9a8daa}.route-outline{padding:16px 18px;border:1px solid #e9e2f2;border-radius:16px;background:#f6f2fb;margin-bottom:20px}.route-outline summary{font-size:13px;color:#8c75ab;cursor:pointer}.route-path{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.route-pin{display:flex;gap:7px;align-items:center;font-size:12px}.route-pin>span{display:grid;place-items:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;background:#e5daf5;color:#8e76ac}.route-pin strong{font-weight:500;overflow-wrap:anywhere}.timeline-stop{display:grid;grid-template-columns:50px minmax(0,1fr);gap:13px}.timeline-rail{display:flex;flex-direction:column;align-items:center;gap:9px}.timeline-time{font-size:12px;font-weight:650;color:#8c7a9f;margin-top:15px}.timeline-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9dff5;color:#9273b8;font-size:11px}.timeline-card{padding:20px 22px;border-radius:18px;min-width:0}.timeline-kicker{font-size:10px;letter-spacing:1.4px;color:#b09cc8}.timeline-card h3{font-size:18px;margin:6px 0 10px;overflow-wrap:anywhere}.timeline-meta{font-size:12px;color:#a08dab;margin:6px 0}.timeline-notes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:12px 0;color:#94849f}.timeline-card .record-actions{margin-top:14px}.timeline-card .record-actions button{font-size:11px;padding:5px 10px}.timeline-card .expense-amount{display:block;margin-top:10px}.timeline-between{margin:12px 0 12px 63px;display:grid;gap:9px}.timeline-transport{padding:15px 18px;border:1px solid #e4dced;border-radius:14px;background:#f0ebf7}.timeline-transport-head{display:flex;justify-content:space-between;gap:10px;color:#89729f;font-size:13px;font-weight:600}.timeline-transport-head span:last-child{font-size:11px}.timeline-transport summary{cursor:pointer;font-size:12px;color:#a28ab8}.route-controls{display:flex;gap:15px;margin-top:12px;flex-wrap:wrap}.route-map-link,.route-edit{font-size:11px;color:#9e84b4;text-decoration:none}.route-edit{border:0;background:none;padding:0;cursor:pointer}.route-add{border:1px dashed #d9cce7;border-radius:11px;padding:10px;background:transparent;color:#aa94bd;font-size:12px}.route-unlinked{padding:16px;margin:20px 0;color:#9b88aa;font-size:12px}.route-unlinked button{display:block;margin-top:10px}.timeline-add-stop{margin:18px 0 0 63px;width:calc(100% - 63px);padding:14px;border:1px dashed #d2c0e4;border-radius:13px;background:#faf8fd;color:#a28aba}#routeEndpoints{overflow-wrap:anywhere}#routeStatus{font-size:13px;margin-top:15px}#routeDialog .form-actions{margin-top:18px}
+@media(max-width:600px){.timeline-stop{grid-template-columns:40px minmax(0,1fr);gap:10px}.timeline-between{margin-left:50px}.timeline-card{padding:16px}.timeline-card h3{font-size:16px}.timeline-time{font-size:11px}.timeline-heading{align-items:start;flex-direction:column;gap:3px}.timeline-add-stop{margin-left:50px;width:calc(100% - 50px)}.timeline-transport{padding:13px}.timeline-transport-head{flex-wrap:wrap}.route-outline{padding:14px}}
+.timeline-days{display:flex;gap:8px;overflow:auto;padding:3px 2px 12px;margin-bottom:8px}.timeline-days button{flex-shrink:0;font-size:12px}.timeline-days button[aria-pressed=true]{background:#7961ce;color:white;border-color:#7961ce}.timeline-rail:after{content:'';width:1px;background:#e5dced;flex:1;margin-top:4px}
 </style>
 </head>
 <body>
@@ -94,6 +98,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <div id="dayFilterArea" class="filter" hidden><label for="dayFilter">依日期篩選</label><input id="dayFilter" type="date"><button id="clearFilterBtn" type="button" class="secondary">顯示全部</button></div>
 <div id="checklistTools" class="check-tools" hidden aria-label="清單顯示篩選"></div><p id="recordSync" class="sync" role="status" aria-live="polite"></p><div id="recordList" class="record-list" aria-busy="false"></div></section>
 </div></section>
+<dialog id="routeDialog" class="home-modal" aria-labelledby="routeDialogTitle"><div class="home-modal-heading"><div><div class="eyebrow">GETTING THERE</div><h2 id="routeDialogTitle">兩站之間，怎麼去？</h2><p id="routeEndpoints"></p></div><button id="routeClose" class="home-modal-close" type="button" aria-label="關閉交通視窗">×</button></div><div class="home-modal-body"><form id="routeForm"><fieldset id="routeFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields"><div class="field"><label for="routeMode">交通工具</label><select id="routeMode" required></select></div><div class="field"><label for="routeMinutes">預估時間（分鐘）</label><input id="routeMinutes" type="number" min="0" max="9999" step="1" placeholder="例如：25"></div><div class="field"><label for="routeTime">出發時間</label><input id="routeTime" type="time"></div><div class="field"><label for="routeCurrency">幣別</label><select id="routeCurrency"></select></div><div class="field wide"><label for="routeAmount">交通費用</label><input id="routeAmount" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" placeholder="選填"></div><div class="field wide"><label for="routeNotes">路線、班次與轉乘資訊</label><textarea id="routeNotes" maxlength="2000" placeholder="例如：搭乘綠線至 Siam，從 2 號出口離站"></textarea></div></div><p class="hint">儲存為一筆交通紀錄，總表只計算一次；無須再到交通模組重複新增。</p><div class="form-actions"><button type="submit" class="primary">儲存交通</button><button id="routeRemove" type="button" class="secondary" hidden>刪除此段交通</button></div></fieldset><p id="routeStatus" role="status"></p></form></div></dialog>
 <dialog id="tripDialog" class="modal"><h2>編輯旅行資料</h2><form id="tripEditForm"><fieldset id="tripEditFields" style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="editName">旅行名稱</label><input id="editName" required maxlength="80"></div><div class="field"><label for="editDestination">目的地</label><input id="editDestination" required maxlength="120"></div><div class="field"><label for="editStart">開始日期</label><input id="editStart" type="date"></div><div class="field"><label for="editEnd">結束日期</label><input id="editEnd" type="date"></div><div class="form-actions"><button class="primary" type="submit">儲存</button><button id="closeTripDialog" type="button" class="secondary">取消</button></div></fieldset><p id="tripEditFeedback" role="status" class="form-status"></p></form></dialog>
 <dialog id="deleteDialog" class="modal"><h2>刪除這筆紀錄？</h2><p id="deleteLabel"></p><p>刪除後無法復原。</p><div class="form-actions"><button id="confirmDeleteBtn" type="button" class="primary">確認刪除</button><button id="cancelDeleteBtn" type="button" class="secondary">取消</button></div><p id="deleteFeedback" class="form-status" role="status"></p></dialog>
 <div class="footer">Itinerary Manager · Made for your next adventure</div>
@@ -315,7 +320,7 @@ function isDirty() {
 function closeDetail() {
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
   quickMode=false;selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
-  $('tripDialog').close(); $('deleteDialog').close();
+  $('tripDialog').close(); $('deleteDialog').close();$('routeDialog').close();routeContext=null;
   $('tripEditFields').disabled=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;
   $('detailArea').hidden=true; $('overviewArea').hidden=false;
   $('moduleFields').replaceChildren(); $('recordList').replaceChildren(); feedback('');
@@ -917,6 +922,94 @@ function renderQuickRecords(items){
   $('recordList').replaceChildren(fragment);
 }
 
+const routeModes={'步行':'🚶','地鐵':'🚇','公車':'🚌','火車':'🚆','計程車':'🚕','自駕':'🚗','渡船':'⛴','其他交通':'🚐'};
+let routeContext=null,routeBusy=false;
+function itineraryGroups(entries,filter=''){
+  const groups=new Map();
+  for(const item of entries){if(item.data.module!=='itinerary'||(filter&&item.data.date!==filter))continue;const date=validDate(item.data.date||'')?item.data.date:'未排日期';if(!groups.has(date))groups.set(date,[]);groups.get(date).push(item);}
+  return [...groups].sort(([a],[b])=>a.localeCompare(b)).map(([date,items])=>[date,items.sort((a,b)=>(a.data.time||'99').localeCompare(b.data.time||'99')||a.id.localeCompare(b.id))]);
+}
+function routesBetween(entries,from,to){return entries.filter(item=>item.data.module==='transport'&&item.data.routeFrom===from.id&&item.data.routeTo===to.id&&item.data.date===from.data.date);}
+function routeMapLink(from,to){
+  if(!from.data.location||!to.data.location)return null;
+  const a=node('a','Google Maps 路線 ↗','route-map-link');a.target='_blank';a.rel='noopener noreferrer';
+  a.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(from.data.location)+'&destination='+encodeURIComponent(to.data.location);return a;
+}
+function renderItineraryTimeline(items){
+  const all=entryDocs.filter(x=>x.data.module==='itinerary'),filter=$('dayFilter').value;
+  $('recordCount').textContent=items.length+' 站'+(filter?' / 共 '+all.length+' 站':'');
+  const fragment=document.createDocumentFragment(),groups=itineraryGroups(entryDocs,filter);
+  const dates=node('nav',undefined,'timeline-days');dates.setAttribute('aria-label','每日行程日期');for(const date of ['',...itineraryGroups(entryDocs).map(([d])=>d).filter(validDate)]){const b=node('button',date||'全部日期','secondary');b.type='button';b.setAttribute('aria-pressed',String(date===filter));b.addEventListener('click',()=>{$('dayFilter').value=date;renderEntries();});dates.append(b);}fragment.append(dates);
+  if(!groups.length){$('recordList').replaceChildren(node('p','這一天還沒有安排，按「新增」建立第一站。','empty'));return;}
+  for(const [date,stops] of groups){
+    const section=node('section',undefined,'day-timeline'),heading=node('div',undefined,'timeline-heading');heading.append(node('h3',date),node('span',stops.length+' 個站點 · 當地時間'));section.append(heading);
+    const outline=node('details',undefined,'route-outline'),summary=node('summary','當日路線 · '+stops.length+' 站');outline.append(summary);
+    const path=node('div',undefined,'route-path');stops.forEach((stop,i)=>{const pin=node('div',undefined,'route-pin');pin.append(node('span',String(i+1)),node('strong',safeString(stop.data.title,160,'未命名')));path.append(pin);});outline.append(path,node('p','路線順序示意，依開始時間排序；點各站地點或交通路段可開啟 Google Maps。','hint'));section.append(outline);
+    const matched=new Set();
+    stops.forEach((item,index)=>{
+      const data=item.data,row=node('div',undefined,'timeline-stop'),rail=node('div',undefined,'timeline-rail');rail.append(node('span',data.time||'未定','timeline-time'),node('span',String(index+1),'timeline-dot'));
+      const card=node('article',undefined,'card timeline-card');card.id='record_'+item.id;card.tabIndex=-1;
+      card.append(node('span','STOP '+String(index+1).padStart(2,'0'),'timeline-kicker'),node('h3',safeString(data.title,160,'未命名行程')));
+      if(data.endTime)card.append(node('p','至 '+safeString(data.endTime,5,''),'timeline-meta'));
+      if(data.location)card.append(mapLink(safeString(data.location,160,'')));
+      if(data.notes)card.append(node('p',safeString(data.notes,2000,''),'timeline-notes'));
+      if(formatExpense(data))card.append(node('span',formatExpense(data),'expense-amount'));
+      const actions=node('div',undefined,'record-actions');
+      for(const [label,fn] of [['編輯',()=>editEntry(item.id)],['刪除',()=>requestDelete(item.id)]]){const b=node('button',label,'secondary');b.type='button';b.disabled=recordBusy||deleteBusy||item.pending;b.addEventListener('click',fn);actions.append(b);}card.append(actions);
+      if(item.pending)card.append(node('p','等待雲端確認…','hint'));row.append(rail,card);section.append(row);
+      if(index===stops.length-1)return;
+      const next=stops[index+1],routes=routesBetween(entryDocs,item,next),between=node('div',undefined,'timeline-between');
+      for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',formatExpense(r)||'未填金額'));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
+        if(r.time)box.append(node('p','出發 '+safeString(r.time,5,''),'timeline-meta'));
+        if(r.notes){const details=node('details');details.append(node('summary','路線與轉乘資訊'),node('p',safeString(r.notes,2000,''),'timeline-notes'));box.append(details);}
+        const controls=node('div',undefined,'route-controls'),link=routeMapLink(item,next);if(link)controls.append(link);
+        const edit=node('button','編輯交通','route-edit');edit.type='button';edit.disabled=recordBusy||route.pending;edit.addEventListener('click',()=>openRouteDialog(item,next,route));controls.append(edit);box.append(controls);between.append(box);
+      }
+      const add=node('button',routes.length?'＋ 新增另一段交通':'＋ 新增交通方式','route-add');add.type='button';add.disabled=recordBusy||deleteBusy;add.addEventListener('click',()=>openRouteDialog(item,next));between.append(add);section.append(between);
+    });
+    const extras=entryDocs.filter(x=>x.data.module==='transport'&&x.data.date===date&&!matched.has(x.id));
+    if(extras.length){const more=node('details',undefined,'route-unlinked');more.append(node('summary','當日其他交通 · '+extras.length+' 筆'),node('p','獨立新增、或站點順序調整後的交通，仍保留在交通模組及消費統計。','hint'));for(const x of extras){const b=node('button',safeString(x.data.title,160,'交通')+' · '+(formatExpense(x.data)||'未填金額'),'secondary');b.type='button';b.addEventListener('click',()=>jumpToEntry(x));more.append(b);}section.append(more);}
+    const add=node('button','＋ 新增這一天的站點','timeline-add-stop');add.type='button';add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);if(validDate(date))$('entry_date').value=date;focusEntryInput();});section.append(add);fragment.append(section);
+  }
+  $('recordList').replaceChildren(fragment);
+}
+function openRouteDialog(from,to,existing=null){
+  if(!abandonDraft())return;
+  routeContext={from:from.id,to:to.id,id:existing?.id||null,trip:selectedTripId,uid:currentUser.uid};const data=existing?.data||{};
+  $('routeForm').reset();$('routeStatus').textContent='';$('routeEndpoints').textContent=from.data.title+' → '+to.data.title;
+  $('routeMode').value=Object.hasOwn(routeModes,data.title)?data.title:'其他交通';if(!existing)$('routeMode').value='步行';
+  $('routeMinutes').value=/^約 (\d+) 分鐘$/.exec(data.detail||'')?.[1]||'';$('routeAmount').value=data.amount||'';$('routeCurrency').value=data.currency||'TWD';$('routeNotes').value=data.notes||'';$('routeTime').value=data.time||from.data.endTime||'';
+  $('routeRemove').hidden=!existing;$('routeDialog').showModal();
+}
+function collectRoute(values,from,to){
+  if(!Object.hasOwn(routeModes,values.mode))throw Error('請選擇交通工具。');
+  if(values.minutes&&!/^\d{1,4}$/.test(values.minutes))throw Error('交通時間請填寫 0 至 9999 分鐘。');
+  if(values.amount&&amountToMinor(values.amount)===null)throw Error('金額最多兩位小數，且不可為負數。');
+  if(!Object.hasOwn(currencyOptions,values.currency))throw Error('請選擇幣別。');
+  if(values.time&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(values.time))throw Error('出發時間格式不正確。');
+  if(values.notes.length>2000)throw Error('路線說明最多2000字。');
+  const data={module:'transport',title:values.mode,date:from.data.date,quantity:1,done:false,amount:values.amount,currency:values.currency,detail:values.minutes?'約 '+Number(values.minutes)+' 分鐘':'',time:values.time,routeFrom:from.id,routeTo:to.id};
+  for(const key of ['endDate','endTime','reference'])data[key]='';
+  data.location=(safeString(from.data.location,160,from.data.title)+' → '+safeString(to.data.location,160,to.data.title)).slice(0,160);data.notes=values.notes;return data;
+}
+function initRouteDialog(){
+  for(const [name,icon] of Object.entries(routeModes))$('routeMode').append(new Option(icon+' '+name,name));
+  for(const [code,name] of Object.entries(currencyOptions))$('routeCurrency').append(new Option(name,code));
+  $('routeClose').addEventListener('click',()=>{if(!routeBusy)$('routeDialog').close();});$('routeDialog').addEventListener('cancel',event=>{if(routeBusy)event.preventDefault();});
+  $('routeForm').addEventListener('submit',event=>{event.preventDefault();saveRoute(false);});$('routeRemove').addEventListener('click',()=>{if(confirm('刪除此段交通？相關消費也會移除。'))saveRoute(true);});
+}
+async function saveRoute(remove){
+  const context=routeContext;if(routeBusy||!context||!currentUser||currentUser.uid!==context.uid||selectedTripId!==context.trip)return;
+  if(!remove&&!$('routeForm').reportValidity())return;
+  const from=entryDocs.find(x=>x.id===context.from&&x.data.module==='itinerary'),to=entryDocs.find(x=>x.id===context.to&&x.data.module==='itinerary');
+  if(!from||!to||from.data.date!==to.data.date){$('routeStatus').textContent='站點已變更，請關閉後重新選擇交通路段。';return;}
+  let data;try{if(!remove)data=collectRoute({mode:$('routeMode').value,minutes:$('routeMinutes').value.trim(),amount:$('routeAmount').value.trim(),currency:$('routeCurrency').value,time:$('routeTime').value,notes:$('routeNotes').value.trim()},from,to);}catch(e){$('routeStatus').textContent=e.message;return;}
+  if(!remove&&context.id){const existing=entryDocs.find(x=>x.id===context.id)?.data;if(existing)for(const key of ['endDate','endTime','reference'])data[key]=existing[key]||'';}
+  routeBusy=true;$('routeFields').disabled=true;$('routeClose').disabled=true;$('routeStatus').textContent='正在儲存…';
+  try{const result=await mutateEntry(()=>remove?deleteDoc(entryRef(context.id)):context.id?updateDoc(entryRef(context.id),{...data,updatedAt:serverTimestamp()}):addDoc(collection(db,'users',context.uid,'trips',context.trip,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}));if(result){feedback(remove?'已刪除交通及對應消費。':'交通已儲存，並同步消費統計。');$('routeDialog').close();}else $('routeStatus').textContent='未完成儲存，請檢查頁面提示及 Firestore 規則。';}
+  finally{routeBusy=false;$('routeFields').disabled=false;$('routeClose').disabled=false;}
+}
+
 function renderEntries() {
   if(activeModule==='calendar'){renderCalendar();return;}
   const def=moduleDefinitions[activeModule];
@@ -932,6 +1025,7 @@ function renderEntries() {
   });
   $('recordCount').textContent=def.checkable?`${items.filter(x=>x.data.done===true).length} / ${total} 已完成`:`${items.length} 筆${items.length!==total?' / 共 '+total+' 筆':''}`;
   if(!items.length){$('recordList').replaceChildren(node('p',total?'這一天還沒有行程。':'還沒有紀錄，從上方新增第一筆吧。','empty'));return;}
+  if(activeModule==='itinerary'){renderItineraryTimeline(items);return;}
   const fragment=document.createDocumentFragment();
   for(const item of items){
     const card=node('article',undefined,'card record'+(item.data.done===true?' done':''));card.id='record_'+item.id;card.tabIndex=-1;
@@ -1117,6 +1211,7 @@ function initHomeAdd(){
 }
 
 function initModules(){
+  initRouteDialog();
   initHomeAdd();
   initShortcutBridge();
   $('useQuickBtn').addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);focusEntryInput();});
