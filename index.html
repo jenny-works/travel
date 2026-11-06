@@ -258,7 +258,7 @@ const F = (key,label,type='text',required=false,max=160) => ({key,label,type,req
 const commonNotes = F('notes','備註','textarea',false,2000);
 const moduleDefinitions = {
   calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
-  itinerary:{label:'🗓️ 每日行程',description:'選擇交通、購物、餐飲或娛樂，一次填寫行程與消費；同一筆資料同步顯示在對應分類。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
+  itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。餐飲、購物等行程與消費可一次填寫。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
@@ -275,9 +275,32 @@ for(const key of ['itinerary','flights','lodging','transport','dining','shopping
 }
 const itineraryCategories={transport:'🚆 交通',shopping:'🛍️ 購物',dining:'🍽️ 餐飲',activities:'🎡 娛樂'};
 function isItineraryEntry(data){return data.module==='itinerary'||(data.showInItinerary===true&&Object.hasOwn(itineraryCategories,data.module));}
-function assignItineraryCategory(data,value){if(!Object.hasOwn(itineraryCategories,value))throw Error('請選擇行程類別。');data.module=value;data.showInItinerary=true;return data;}
+const itineraryAnchors={airport:'機場',hotel:'飯店'};
+const homeItineraryTypes={機場:'airport',飯店:'hotel',交通:'transport',購物:'shopping',餐飲:'dining',娛樂:'activities'};
+function assignItineraryCategory(data,value){
+  if(Object.hasOwn(itineraryAnchors,value)){
+    data.module='itinerary';
+    data.showInItinerary=false;
+    data.detail=itineraryAnchors[value];
+    return;
+  }
+  if(!Object.hasOwn(itineraryCategories,value))throw Error('請選擇行程類別。');
+  data.module=value;data.showInItinerary=true;
+}
+function syncAnchorExpenseFields(prefix,category){
+  const hide=Object.hasOwn(itineraryAnchors,category);
+  for(const key of ['currency','amount']){
+    const input=$(prefix+'_'+key);
+    if(!input)continue;
+    input.disabled=hide;
+    input.closest('.field').hidden=hide;
+  }
+}
 function entryField(data,key){
-  if(key==='itineraryCategory')return Object.hasOwn(itineraryCategories,data.module)?data.module:'activities';
+  if(key==='itineraryCategory'){
+    if(Object.hasOwn(itineraryCategories,data.module))return data.module;
+    return Object.keys(itineraryAnchors).find(value=>itineraryAnchors[value]===data.detail)||'activities';
+  }
   if(data.module==='flights' && ['departureAirport','arrivalAirport'].includes(key)){
     if(typeof data[key]==='string')return data[key];
     const old=safeString(data.location,160,'');const parts=old.split(/\s*(?:→|->)\s*/);
@@ -681,6 +704,7 @@ function setTimeValue(key,value) {
 }
 function resetRecordForm() {
   editingEntryId=null; $('recordForm').reset();
+  if(activeModule==='itinerary')syncAnchorExpenseFields('entry','');
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
   $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');configureQuickEntry(isQuickModule());setFormOpen(false);
 }
@@ -712,7 +736,7 @@ function switchModule(key,force=false) {
     const input=node(['currency','itineraryCategory'].includes(field.type)?'select':field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
     if(input.tagName==='INPUT')input.type=field.type==='decimal'?'number':field.type;
     if(field.type==='decimal'){input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填，例如：1500';}
-    if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries(itineraryCategories))input.append(new Option(label,key));}
+    if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries({...itineraryAnchors,...itineraryCategories}))input.append(new Option(label,key));input.addEventListener('change',()=>syncAnchorExpenseFields('entry',input.value));}
     if(field.type==='currency'){
       input.className='category-select';
       for(const [code,text] of Object.entries(currencyOptions)){const option=node('option',text);option.value=code;option.defaultSelected=code==='TWD';input.append(option);}
@@ -968,7 +992,7 @@ function renderItineraryTimeline(items){
     stops.forEach((item,index)=>{
       const data=item.data,row=node('div',undefined,'timeline-stop'),rail=node('div',undefined,'timeline-rail');rail.append(node('span',data.time||'未定','timeline-time'),node('span',String(index+1),'timeline-dot'));
       const card=node('article',undefined,'card timeline-card');card.id='record_'+item.id;card.tabIndex=-1;
-      card.append(node('span','STOP '+String(index+1).padStart(2,'0')+' · '+(itineraryCategories[data.module]||'行程'),'timeline-kicker'),node('h3',safeString(data.title,160,'未命名行程')));
+      card.append(node('span','STOP '+String(index+1).padStart(2,'0')+' · '+(itineraryCategories[data.module]||(Object.values(itineraryAnchors).includes(data.detail)?data.detail:'行程')),'timeline-kicker'),node('h3',safeString(data.title,160,'未命名行程')));
       if(data.endTime)card.append(node('p','至 '+safeString(data.endTime,5,''),'timeline-meta'));
       if(data.location)card.append(mapLink(safeString(data.location,160,'')));
       if(data.notes)card.append(node('p',safeString(data.notes,2000,''),'timeline-notes'));
@@ -1085,6 +1109,7 @@ function editEntry(id) {
     const value=field.type==='number'?String(entryField(item.data,field.key) || 1):safeString(entryField(item.data,field.key),field.max || 160,field.type==='currency'?'TWD':'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
   }
+  if(activeModule==='itinerary')syncAnchorExpenseFields('entry',$('entry_itineraryCategory').value);
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
   $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
 }
@@ -1096,6 +1121,7 @@ function collectEntry() {
   const data={module:activeModule,quantity:1,done:false};
   for(const key of entryTextKeys)data[key]='';
   for(const field of moduleDefinitions[activeModule].fields){
+    if(activeModule==='itinerary'&&data.module==='itinerary'&&['amount','currency'].includes(field.key))continue;
     const value=$('entry_'+field.key).value.trim();
     if(field.required && !value)throw new Error('請填寫'+field.label+'。');
     if(field.type==='itineraryCategory'){assignItineraryCategory(data,value);}
@@ -1117,7 +1143,11 @@ function collectEntry() {
   if(['itinerary','activities'].includes(activeModule) && data.time && data.endTime && data.endTime<data.time)throw new Error('結束時間不可早於開始時間。跨日活動請分成兩筆紀錄。');
   const existing=entryDocs.find(x=>x.id===editingEntryId);
   if(existing?.data.showInItinerary&&!data.date)throw Error('每日行程中的項目需要保留日期。');
-  if(existing&&(activeModule==='itinerary'||existing.data.showInItinerary))for(const key of entryTextKeys){if(!moduleDefinitions[activeModule].fields.some(f=>f.key===key))data[key]=existing.data[key]||'';}
+  if(existing&&(activeModule==='itinerary'||existing.data.showInItinerary))for(const key of entryTextKeys){if(key==='detail'&&activeModule==='itinerary'){
+    if(data.module!=='itinerary'&&existing.data.module!=='itinerary')data.detail=existing.data.detail||'';
+    continue;
+  }
+  if(!moduleDefinitions[activeModule].fields.some(f=>f.key===key))data[key]=existing.data[key]||'';}
   if(existing?.data.showInItinerary&&data.time&&data.endTime&&data.endTime<data.time)throw Error('結束時間早於開始時間，請從每日行程調整起迄時間。');
   if(existing)data.done=existing.data.done===true;
   return data;
@@ -1167,7 +1197,7 @@ function goHome(){
   if(selectedTripId && !abandonDraft())return;
   closeDetail();notice('');renderShortcutBanner();window.scrollTo({top:0,behavior:'smooth'});
 }
-const homeCategories={itinerary:['交通','購物','餐飲','娛樂'],flights:['去程','回程','轉機','其他機票'],lodging:['飯店','民宿','公寓','青年旅館','其他住宿'],transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物'],activities:['景點門票','展覽','表演','體驗活動','其他娛樂'],todos:['行前準備','證件文件','預訂事項','其他待辦'],packing:['證件','衣物','盥洗用品','電子用品','藥品','其他行李']};
+const homeCategories={itinerary:Object.keys(homeItineraryTypes),flights:['去程','回程','轉機','其他機票'],lodging:['飯店','民宿','公寓','青年旅館','其他住宿'],transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物'],activities:['景點門票','展覽','表演','體驗活動','其他娛樂'],todos:['行前準備','證件文件','預訂事項','其他待辦'],packing:['證件','衣物','盥洗用品','電子用品','藥品','其他行李']};
 let homeBusy=false;
 function refreshHomeTrips(){
   const el=$('homeTrip'),value=el.value;el.replaceChildren(new Option('請選擇旅行',''));
@@ -1203,6 +1233,7 @@ function buildHomeEntry(module,category,values){
   const data={module,quantity:1,done:false};for(const key of entryTextKeys)data[key]='';
   for(const field of moduleDefinitions[module].fields){
     if(field.type==='itineraryCategory')continue;
+    if(module==='itinerary'&&Object.hasOwn(itineraryAnchors,homeItineraryTypes[category])&&['amount','currency'].includes(field.key))continue;
     const value=String(values[field.key]??'').trim();
     if(field.required&&!value)throw Error('請填寫'+field.label+'。');
     if(field.type==='decimal'){if(value&&!/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))throw Error('金額最多兩位小數，範圍 0 至 999999999.99。');data[field.key]=value;}
@@ -1210,7 +1241,7 @@ function buildHomeEntry(module,category,values){
     else if(field.type==='number'){const n=Number(value);if(!Number.isInteger(n)||n<1||n>999)throw Error('數量須為 1 至 999。');data[field.key]=n;}
     else{if(value.length>field.max)throw Error(field.label+'內容過長。');if(field.type==='date'&&value&&!validDate(value))throw Error('請填寫有效日期。');if(field.type==='time'&&value&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(value))throw Error('時間格式不正確。');data[field.key]=value;}
   }
-  if(module==='itinerary')assignItineraryCategory(data,({交通:'transport',購物:'shopping',餐飲:'dining',娛樂:'activities'})[category]);
+  if(module==='itinerary')assignItineraryCategory(data,homeItineraryTypes[category]);
   else if(['transport','dining','shopping','todos','packing'].includes(module))data.detail=category;
   else {data.notes='類別：'+category+(data.notes?'\n'+data.notes:'');if(data.notes.length>2000)throw Error('備註內容過長。');}
   if(data.date&&data.endDate&&data.endDate<data.date&&module!=='flights')throw Error('結束日期不可早於開始日期。');
@@ -1225,6 +1256,7 @@ function initHomeAdd(){
   modal.addEventListener('cancel',event=>{if(homeBusy)event.preventDefault();});
   modal.addEventListener('close',()=>{document.body.classList.remove('home-modal-open');});
   modal.addEventListener('click',event=>{const rect=modal.getBoundingClientRect();if(event.target===modal&&!homeBusy&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom))modal.close();});
+  $('homeCategory').addEventListener('change',()=>{if($('homeModule').value==='itinerary')syncAnchorExpenseFields('home',homeItineraryTypes[$('homeCategory').value]);});
   $('homeModule').addEventListener('change',()=>{if([...$('homeItemFields').querySelectorAll('input,textarea,select')].some(x=>x.value!==(x.dataset.initial||''))){if(!confirm('切換大項目會清除目前填寫的項目內容，要繼續嗎？')){$('homeModule').value=$('homeModule').dataset.previous||'';return;}}renderHomeFields();$('homeModule').dataset.previous=$('homeModule').value;});
   $('homeAddForm').addEventListener('submit',async event=>{
     event.preventDefault();if(homeBusy||!currentUser||!$('homeAddForm').reportValidity())return;
