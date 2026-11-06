@@ -49,9 +49,9 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .nav-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .nav-label{font-size:12px;font-weight:700;color:#6b5f80;letter-spacing:.5px}
 @media(max-width:600px){.module-nav{flex-wrap:nowrap;overflow-x:auto;gap:16px;-webkit-overflow-scrolling:touch}.nav-group{flex-wrap:nowrap;flex-shrink:0}.module-tab{white-space:nowrap}}
-.home-fab{width:auto;min-width:64px;padding:0 20px;grid-auto-flow:column;gap:10px}.fab-label{display:none;font-size:15px;font-weight:650}
-@media(min-width:901px){.home-fab{height:60px;border-radius:20px}.fab-label{display:inline}}
-@media(max-width:900px){.home-fab{width:58px;min-width:0;padding:0}}
+.home-fab{width:auto;height:46px;min-width:46px;padding:0 15px;grid-auto-flow:column;gap:6px;border-radius:15px;box-shadow:0 8px 20px #6552cb38,inset 0 1px 0 #ffffff40;right:max(20px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom))}.home-fab>span:first-child{font-size:24px}.fab-label{display:none;font-size:14px;font-weight:650}
+@media(min-width:901px){.fab-label{display:inline}}
+@media(max-width:900px){.home-fab{width:46px;padding:0}}
 .toast{position:fixed;left:50%;bottom:calc(32px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:40;background:#2d2a4f;color:#fff;padding:12px 20px;border-radius:14px;box-shadow:0 12px 30px #25243d40;font-size:14px;max-width:calc(100vw - 40px);transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
 .record-actions button,.check-row .record-actions button,.quick-saved-row .record-actions button,.timeline-card .record-actions button,.check-tools button,.group-add{min-height:40px;padding:8px 14px;font-size:13px}
@@ -59,6 +59,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .route-edit,.route-map-link{min-height:32px;display:inline-flex;align-items:center;font-size:12px}
 .calendar-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12px;color:#625775}
 .legend-chip{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#eae6ff;color:#51418c;font-size:12px}
+.legend-chip[data-module="airport"]{background:#e2eeff;color:#315d95}.legend-chip[data-module="hotel"]{background:#ffeddb;color:#885b2a}.calendar-event[data-module="airport"]{background:#e2eeff;color:#315d95}.calendar-event[data-module="hotel"]{background:#ffeddb;color:#885b2a}
 .legend-chip[data-module="transport"]{background:#ddf1eb;color:#346e60}.legend-chip[data-module="dining"]{background:#fff0db;color:#8a5e21}.legend-chip[data-module="shopping"]{background:#f5e6ff;color:#775395}.legend-chip[data-module="activities"]{background:#ffe5ed;color:#984d65}
 .calendar-extra{border-top:1px solid var(--line);margin-top:24px;padding-top:6px}.calendar-extra>summary{cursor:pointer;font-weight:700;padding:12px 0}.calendar-extra .expense-summary,.calendar-extra .calendar-todos{margin-top:8px}
 .trip-dates{font-size:13px;color:#4c4380;margin:8px 0 0}.trip-countdown{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:20px;background:#eae7fa;color:#5d4ca8;font-size:12px;font-weight:650}
@@ -67,6 +68,32 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .time-picker input[type="time"]{flex:1;min-width:130px;width:auto}
 .check-search{flex:1;min-width:160px;width:auto;padding:8px 12px}
 .trip-dates-row{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.trip-dates-row .field{margin-top:0}
+/* expense charts */
+.expense-chart{position:relative;background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:24px}
+.expense-chart h3{margin:0;font-size:18px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.chart-currencies{display:flex;gap:6px;flex-wrap:wrap}
+.chart-currency{font-size:13px;min-height:36px;padding:6px 12px}.chart-currency[aria-pressed="true"]{background:#6654cf;color:white;border-color:#6654cf}
+.chart-total{font-size:clamp(26px,4vw,34px);font-weight:750;color:#2f2a63;margin:12px 0 2px;overflow-wrap:anywhere}
+.chart-sub{font-size:13px;color:#5f6378;margin:0 0 4px}
+.chart-title{font-size:14px;font-weight:700;color:#3a3760;margin:22px 0 8px}
+.chart-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;border:0;background:none;padding:5px 8px;border-radius:10px;text-align:left;color:var(--ink);min-height:40px}
+.chart-row:hover,.chart-row[aria-current="true"]{background:#f3f0ff}
+.chart-track{height:16px;border-left:1px solid #dcdaee}
+.chart-fill{display:block;height:100%;background:#cbc2f2;border-radius:0 4px 4px 0;min-width:2px}
+.chart-row[aria-current="true"] .chart-fill{background:#6654cf}
+.chart-value{font-size:13px;white-space:nowrap;color:#3a3760;font-variant-numeric:tabular-nums}
+.chart-days{display:flex;align-items:flex-end;gap:8px;overflow-x:auto;padding:4px 2px 4px}
+.chart-day{flex:1 0 48px;max-width:76px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:176px;border:0;background:none;padding:0;color:var(--ink)}
+.chart-day-value{font-size:12px;color:#3a3760;margin-bottom:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chart-day-bar{display:block;width:min(24px,70%);background:#6654cf;border-radius:4px 4px 0 0;min-height:2px}
+.chart-day-label{font-size:12px;color:#5f6378;margin-top:6px;border-top:1px solid #dcdaee;padding-top:4px;width:100%;text-align:center}
+.chart-day:hover .chart-day-bar,.chart-day:focus-visible .chart-day-bar{background:#4a3ab0}
+.chart-tip{position:absolute;z-index:5;transform:translate(-50%,-115%);background:#2d2a4f;color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;pointer-events:none;white-space:nowrap}
+.expense-details{background:white;border:1px solid var(--line);border-radius:18px;padding:4px 18px}
+.expense-details>summary{cursor:pointer;padding:12px 0;font-weight:700}
+.expense-details-body{display:grid;gap:14px;padding:4px 0 16px}
+@media(max-width:540px){.chart-row{grid-template-columns:84px minmax(0,1fr)}.chart-row .chart-value{grid-column:2}.expense-chart{padding:18px}}
 </style>
 </head>
 <body>
@@ -661,7 +688,7 @@ function dateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1)
 function eventsOnDay(day){
   const stops=itineraryGroups(entryDocs,day)[0]?.[1] || [];
   const first=stops[0]?.data;
-  if(first?.module==='itinerary' && Object.values(itineraryAnchors).includes(first.detail))return stops.slice(1);
+  if(first?.module==='itinerary' && first.detail===itineraryAnchors.hotel)return stops.slice(1);
   return stops;
 }
 function jumpToEntry(item,key=item.data.module){
@@ -759,7 +786,7 @@ function renderCalendarTodos(){
 
 function calendarLegend(){
   const box=node('div',undefined,'calendar-legend');box.append(node('span','圖例：'));
-  for(const [module,label] of [['itinerary','一般行程'],['transport','交通'],['dining','餐飲'],['shopping','購物'],['activities','娛樂']]){const chip=node('span',label,'legend-chip');chip.dataset.module=module;box.append(chip);}
+  for(const [module,label] of [['itinerary','一般行程'],['airport','機場'],['hotel','飯店'],['transport','交通'],['dining','餐飲'],['shopping','購物'],['activities','娛樂']]){const chip=node('span',label,'legend-chip');chip.dataset.module=module;box.append(chip);}
   return box;
 }
 function renderCalendar(){
@@ -785,7 +812,7 @@ function renderCalendar(){
     const cell=node('div',undefined,'calendar-cell'+(date===calendarDay?' selected':'')+(trip.startDate && trip.endDate && date>=trip.startDate && date<=trip.endDate?' in-trip':''));
     const button=node('button',String(day),'calendar-date');button.type='button';button.setAttribute('aria-label',date+`，${events.length} 筆安排`);button.setAttribute('aria-pressed',String(date===calendarDay));if(date===dateKey(new Date()))button.setAttribute('aria-current','date');
     button.addEventListener('click',()=>{calendarDay=date;renderCalendar();$('calendarAgenda').scrollIntoView({block:'nearest',behavior:'smooth'});});cell.append(button);
-    for(const item of events.slice(0,3)){const event=node('button',`${item.data.time || ''} ${safeString(item.data.title,160,'未命名')}`.trim(),'calendar-event');event.type='button';event.dataset.module=item.data.module;event.title=event.textContent;event.addEventListener('click',()=>jumpToEntry(item,'itinerary'));cell.append(event);}
+    for(const item of events.slice(0,3)){const event=node('button',`${item.data.time || ''} ${safeString(item.data.title,160,'未命名')}`.trim(),'calendar-event');event.type='button';event.dataset.module=item.data.module==='itinerary'&&item.data.detail===itineraryAnchors.airport?'airport':item.data.module==='itinerary'&&item.data.detail===itineraryAnchors.hotel?'hotel':item.data.module;event.title=event.textContent;event.addEventListener('click',()=>jumpToEntry(item,'itinerary'));cell.append(event);}
     if(events.length>3){const more=node('button',`＋ ${events.length-3} 筆`,'calendar-more');more.type='button';more.addEventListener('click',()=>{calendarDay=date;renderCalendar();$('calendarAgenda').scrollIntoView({block:'nearest'});});cell.append(more);}
     if(events.length)cell.append(node('span',events.length+' 筆','calendar-dot-count'));grid.append(cell);
   }
@@ -1201,7 +1228,80 @@ async function saveRoute(remove){
   finally{routeBusy=false;$('routeFields').disabled=false;$('routeClose').disabled=false;}
 }
 
-function renderEntries() {
+let expenseCurrency='',expenseDetailsOpen=false;
+function expenseData(){
+  const out=new Map();
+  for(const item of entryDocs){
+    const d=item.data;if(!expenseModules.includes(d.module))continue;
+    const minor=amountToMinor(d.amount);if(minor===null)continue;
+    const currency=d.currency||'TWD';if(!Object.hasOwn(currencyOptions,currency))continue;
+    if(!out.has(currency))out.set(currency,{total:0n,count:0,modules:new Map(),days:new Map()});
+    const g=out.get(currency);g.total+=minor;g.count++;
+    g.modules.set(d.module,(g.modules.get(d.module)||0n)+minor);
+    const day=validDate(d.date||'')?d.date:'未排日期';
+    if(!g.days.has(d.module))g.days.set(d.module,new Map());
+    const days=g.days.get(d.module);days.set(day,(days.get(day)||0n)+minor);
+  }
+  return out;
+}
+function attachTip(section,el,text){
+  const tip=section.querySelector('.chart-tip');
+  const show=()=>{tip.textContent=text;tip.hidden=false;const r=el.getBoundingClientRect(),b=section.getBoundingClientRect();tip.style.left=Math.min(Math.max(r.left-b.left+r.width/2,70),b.width-70)+'px';tip.style.top=(r.top-b.top)+'px';};
+  const hide=()=>{tip.hidden=true;};
+  el.addEventListener('pointerenter',show);el.addEventListener('focus',show);el.addEventListener('pointerleave',hide);el.addEventListener('blur',hide);
+}
+function renderExpenseCharts(){
+  const data=expenseData(),section=node('section',undefined,'expense-chart');section.setAttribute('aria-label','消費圖表');
+  const tip=node('div',undefined,'chart-tip');tip.hidden=true;section.append(tip);
+  const currencies=[...data.keys()].sort();
+  if(!currencies.length){section.append(node('h3','📊 消費圖表'),node('p','還沒有消費金額。新增紀錄並填寫金額後，這裡會顯示圖表。','hint'));return section;}
+  if(!currencies.includes(expenseCurrency))expenseCurrency=currencies[0];
+  const g=data.get(expenseCurrency);
+  const head=node('div',undefined,'chart-head');head.append(node('h3','📊 消費圖表'));
+  if(currencies.length>1){
+    const box=node('div',undefined,'chart-currencies');box.setAttribute('role','group');box.setAttribute('aria-label','選擇幣別');
+    for(const c of currencies){const b=node('button',c,'secondary chart-currency');b.type='button';b.setAttribute('aria-pressed',String(c===expenseCurrency));b.addEventListener('click',()=>{expenseCurrency=c;renderEntries();});box.append(b);}
+    head.append(box);
+  }
+  section.append(head,node('div',currencyOptions[expenseCurrency].split(' ')[0]+' '+formatMinor(g.total),'chart-total'),node('p','整趟旅行 · '+g.count+' 筆消費 · 不同幣別分開統計，不換算匯率','chart-sub'));
+  section.append(node('h4','各類別佔比（點選可切換類別）','chart-title'));
+  const rows=expenseModules.filter(k=>g.modules.has(k)).sort((a,b)=>(g.modules.get(b)>g.modules.get(a)?1:g.modules.get(b)<g.modules.get(a)?-1:0));
+  const max=g.modules.get(rows[0]);
+  for(const key of rows){
+    const v=g.modules.get(key),pct=Number(v*1000n/g.total)/10,width=Number(v*1000n/max)/10;
+    const row=node('button',undefined,'chart-row');row.type='button';row.setAttribute('aria-current',String(key===activeModule));
+    const track=node('span',undefined,'chart-track'),fill=node('span',undefined,'chart-fill');fill.style.width=width+'%';track.append(fill);
+    row.append(node('span',moduleDefinitions[key].label),track,node('span',formatMinor(v)+' · '+pct+'%','chart-value'));
+    row.setAttribute('aria-label',moduleDefinitions[key].label+' '+formatMinor(v)+'，佔 '+pct+'%');
+    row.addEventListener('click',()=>{if(key!==activeModule)switchModule(key);});attachTip(section,row,moduleDefinitions[key].label+'：'+formatMinor(v)+'（'+pct+'%）');
+    section.append(row);
+  }
+  const days=g.days.get(activeModule);
+  section.append(node('h4','每日消費 · '+moduleDefinitions[activeModule].label,'chart-title'));
+  if(!days||!days.size){section.append(node('p','此類別在 '+expenseCurrency+' 尚無金額。','hint'));return section;}
+  const entries=[...days].sort(([a],[b])=>a.localeCompare(b)),dayMax=entries.reduce((m,[,v])=>v>m?v:m,0n);
+  const wrap=node('div',undefined,'chart-days');
+  for(const [day,v] of entries){
+    const b=node('button',undefined,'chart-day');b.type='button';
+    const h=Math.max(2,Math.round(Number(v*1000n/dayMax)/1000*110));
+    const bar=node('span',undefined,'chart-day-bar');bar.style.height=h+'px';
+    b.append(node('span',formatMinor(v),'chart-day-value'),bar,node('span',validDate(day)?day.slice(5).replace('-','/'):day,'chart-day-label'));
+    b.setAttribute('aria-label',day+'：'+expenseCurrency+' '+formatMinor(v));attachTip(section,b,day+'：'+expenseCurrency+' '+formatMinor(v));
+    wrap.append(b);
+  }
+  section.append(wrap);return section;
+}
+function decorateExpenseView(){
+  if(!Object.hasOwn(itineraryCategories,activeModule)||!entriesReady)return;
+  const list=$('recordList'),children=[...list.childNodes];
+  const details=node('details',undefined,'expense-details');details.open=expenseDetailsOpen;
+  details.append(node('summary','查看明細 · '+$('recordCount').textContent));
+  details.addEventListener('toggle',()=>{if(details.isConnected)expenseDetailsOpen=details.open;});
+  const body=node('div',undefined,'expense-details-body');body.append(...children);details.append(body);
+  list.replaceChildren(renderExpenseCharts(),details);
+}
+function renderEntries(){renderEntriesCore();decorateExpenseView();}
+function renderEntriesCore() {
   if(activeModule==='calendar'){renderCalendar();return;}
   const def=moduleDefinitions[activeModule];
   let items=entryDocs.filter(item=>activeModule==='itinerary'?isItineraryEntry(item.data):item.data.module===activeModule);
