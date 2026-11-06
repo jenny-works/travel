@@ -140,24 +140,34 @@ input,select,textarea,.category-select,.quick-row input,.quick-row select,.home-
 #recordForm .field :is(input[type=date],input[type=time]){min-width:0;max-width:100%}
 #recordForm .field input::-webkit-calendar-picker-indicator{opacity:1}
 .field-example{margin:7px 0 0;font-size:12px;line-height:1.5;color:#b2c4d7}
-/* Warm route segments are distinct from the itinerary stops. */
+/* Teal route segments and readable checklist headings. */
 .timeline-transport{
-  background:linear-gradient(110deg,#392c21,#251f20);
-  border:1px solid #6a5138;
-  border-inline-start:4px solid #edaf66;
+  background:linear-gradient(110deg,#183538,#152a32);
+  border:1px solid #365a62;
+  border-inline-start:3px solid #63c7bd;
 }
-.timeline-transport-head{align-items:center;color:#ffe0ad;gap:10px}
+.timeline-transport-head{align-items:center;color:#d2f6ef;gap:10px}
 .timeline-transport-head>span:first-child{font-weight:750}
 .timeline-transport-head>span:last-child{
-  padding:4px 9px;border-radius:8px;background:#513925;color:#ffdfac;
+  padding:4px 9px;border-radius:8px;background:#254c4d;color:#d2f6ef;
   font-variant-numeric:tabular-nums;
 }
-.timeline-transport :is(.timeline-meta,.timeline-notes){color:#dac4ac}
-.timeline-transport :is(summary,.route-map-link,.route-edit){color:#ffd095}
-.timeline-between .route-add{
-  color:#ffd29c;background:#241e20;border-color:#795d40;
+.timeline-transport :is(.timeline-meta,.timeline-notes){color:#b7cfd4}
+.timeline-transport :is(summary,.route-map-link,.route-edit){color:#a5e8df}
+.timeline-between .route-add{color:#b3eee5;background:#152a33;border-color:#426d74}
+.timeline-between .route-add:hover{background:#204048;border-color:#63c7bd}
+.route-controls{align-items:center}
+.route-add-more{
+  display:grid;place-items:center;margin-inline-start:auto;
+  width:44px;min-height:44px;padding:0;
+  border:1px solid #49757a;border-radius:12px;background:#25484d;
+  color:#cdf6ef;font-size:22px;line-height:1;
 }
-.timeline-between .route-add:hover{background:#382a22;border-color:#edaf66}
+.route-add-more:hover{background:#346268}
+.check-group>summary{background:#223449;color:#edf5ff}
+.check-group>summary:hover{background:#293e54}
+.check-group .group-count{display:inline-block;padding:2px 8px;border-radius:999px;background:#28494d;color:#c2f0e8}
+.check-group .group-progress{accent-color:#62c9b7}
 
 /* Keep native pickers and style the controls across all entry points. */
 :is(#recordForm,#homeAddDialog,#routeDialog,#tripForm,#tripDialog) input:is([type=date],[type=time]),
@@ -1282,13 +1292,22 @@ function renderItineraryTimeline(items){
       if(item.pending)card.append(node('p','等待雲端確認…','hint'));row.append(rail,card);section.append(row);
       if(index===stops.length-1)return;
       const next=stops[index+1],routes=routesBetween(entryDocs,item,next),between=node('div',undefined,'timeline-between');
+      const add=node('button',routes.length?'＋':'＋ 新增交通方式',routes.length?'route-add-more':'route-add');
+      add.type='button';
+      add.disabled=recordBusy||deleteBusy;
+      if(routes.length){
+        add.setAttribute('aria-label','新增另一段交通');
+        add.title='新增另一段交通';
+      }
+      add.addEventListener('click',()=>openRouteDialog(item,next));
       for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',formatExpense(r)||'未填金額'));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
         if(r.time)box.append(node('p','出發 '+safeString(r.time,5,''),'timeline-meta'));
         if(r.notes){const details=node('details');details.append(node('summary','路線與轉乘資訊'),node('p',safeString(r.notes,2000,''),'timeline-notes'));box.append(details);}
         const controls=node('div',undefined,'route-controls'),link=routeMapLink(item,next);if(link)controls.append(link);
-        const edit=node('button','編輯交通','route-edit');edit.type='button';edit.disabled=recordBusy||route.pending;edit.addEventListener('click',()=>openRouteDialog(item,next,route));controls.append(edit);box.append(controls);between.append(box);
+        const edit=node('button','編輯交通','route-edit');edit.type='button';edit.disabled=recordBusy||route.pending;edit.addEventListener('click',()=>openRouteDialog(item,next,route));controls.append(edit);if(route===routes.at(-1))controls.append(add);box.append(controls);between.append(box);
       }
-      const add=node('button',routes.length?'＋ 新增另一段交通':'🚶 🚇 🚕 ＋ 新增交通方式','route-add');add.type='button';add.disabled=recordBusy||deleteBusy;add.addEventListener('click',()=>openRouteDialog(item,next));between.append(add);section.append(between);
+      if(!routes.length)between.append(add);
+      section.append(between);
     });
     const extras=entryDocs.filter(x=>x.data.module==='transport'&&x.data.date===date&&!matched.has(x.id));
     if(extras.length){const more=node('details',undefined,'route-unlinked');more.append(node('summary','當日其他交通 · '+extras.length+' 筆'),node('p','獨立新增、或站點順序調整後的交通，仍保留在交通模組及消費統計。','hint'));for(const x of extras){const b=node('button',safeString(x.data.title,160,'交通')+' · '+(formatExpense(x.data)||'未填金額'),'secondary');b.type='button';b.addEventListener('click',()=>jumpToEntry(x));more.append(b);}section.append(more);}
