@@ -439,7 +439,7 @@ const F = (key,label,type='text',required=false,max=160) => ({key,label,type,req
 const commonNotes = F('notes','備註','textarea',false,2000);
 const moduleDefinitions = {
   calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
-  itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。餐飲、購物等行程與消費可一次填寫。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','日期','date',true),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
+  itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。餐飲、購物等行程與消費可一次填寫。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','開始日期','date',true),F('time','開始時間','time'),F('endDate','結束日期（跨日才填）','date'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
@@ -1279,7 +1279,8 @@ function renderItineraryTimeline(items){
       const data=item.data,row=node('div',undefined,'timeline-stop'),rail=node('div',undefined,'timeline-rail');rail.append(node('span',data.time||'未定','timeline-time'),node('span',String(index+1),'timeline-dot'));
       const card=node('article',undefined,'card timeline-card');card.id='record_'+item.id;card.tabIndex=-1;
       card.append(node('span','STOP '+String(index+1).padStart(2,'0')+' · '+(itineraryCategories[data.module]||(Object.values(itineraryAnchors).includes(data.detail)?data.detail:'行程')),'timeline-kicker'),node('h3',safeString(data.title,160,'未命名行程')));
-      if(data.endTime)card.append(node('p','至 '+safeString(data.endTime,5,''),'timeline-meta'));
+      const end=[data.endDate&&data.endDate!==data.date?data.endDate:'',data.endTime].filter(Boolean).join(' ');
+      if(end)card.append(node('p','至 '+end,'timeline-meta'));
       if(data.location)card.append(mapLink(safeString(data.location,160,'')));
       if(data.notes)card.append(node('p',safeString(data.notes,2000,''),'timeline-notes'));
       if(formatExpense(data)&&data.module!=='itinerary')card.append(node('span',formatExpense(data),'expense-amount'));
@@ -1494,6 +1495,14 @@ function validDate(value) {
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
   const date=new Date(value+'T00:00:00Z');return Number.isFinite(date.getTime()) && date.toISOString().slice(0,10)===value && value>='1900-01-01' && value<='2199-12-31';
 }
+function validateEntrySpan(data,formModule,isShared=false){
+  if(formModule==='flights')return;
+  if(data.date&&data.endDate&&data.endDate<data.date)throw new Error('結束日期不可早於開始日期。');
+  const checkTime=isShared||formModule==='itinerary'||formModule==='activities';
+  if(checkTime&&(!data.endDate||data.endDate===data.date)&&data.time&&data.endTime&&data.endTime<data.time){
+    throw new Error('結束時間早於開始時間。若跨過午夜，請在每日行程填寫實際的結束日期。');
+  }
+}
 function collectEntry() {
   const data={module:activeModule,quantity:1,done:false};
   for(const key of entryTextKeys)data[key]='';
@@ -1516,8 +1525,6 @@ function collectEntry() {
       data[field.key]=value;
     }
   }
-  if(data.endDate && data.date && data.endDate<data.date && activeModule!=='flights')throw new Error('結束日期不可早於開始日期。');
-  if(['itinerary','activities'].includes(activeModule) && data.time && data.endTime && data.endTime<data.time)throw new Error('結束時間不可早於開始時間。跨日活動請分成兩筆紀錄。');
   const existing=entryDocs.find(x=>x.id===editingEntryId);
   if(existing?.data.showInItinerary&&!data.date)throw Error('每日行程中的項目需要保留日期。');
   if(existing&&(activeModule==='itinerary'||existing.data.showInItinerary))for(const key of entryTextKeys){if(key==='detail'&&activeModule==='itinerary'){
@@ -1525,7 +1532,7 @@ function collectEntry() {
     continue;
   }
   if(!moduleDefinitions[activeModule].fields.some(f=>f.key===key))data[key]=existing.data[key]||'';}
-  if(existing?.data.showInItinerary&&data.time&&data.endTime&&data.endTime<data.time)throw Error('結束時間早於開始時間，請從每日行程調整起迄時間。');
+  validateEntrySpan(data,activeModule,existing?.data.showInItinerary===true);
   if(existing)data.done=existing.data.done===true;
   return data;
 }
@@ -1622,8 +1629,7 @@ function buildHomeEntry(module,category,values){
   if(module==='itinerary')assignItineraryCategory(data,homeItineraryTypes[category]);
   else if(['transport','dining','shopping','todos','packing'].includes(module))data.detail=category;
   else {data.notes='類別：'+category+(data.notes?'\n'+data.notes:'');if(data.notes.length>2000)throw Error('備註內容過長。');}
-  if(data.date&&data.endDate&&data.endDate<data.date&&module!=='flights')throw Error('結束日期不可早於開始日期。');
-  if(['itinerary','activities'].includes(module)&&data.time&&data.endTime&&data.endTime<data.time)throw Error('結束時間不可早於開始時間。');
+  validateEntrySpan(data,module);
   return data;
 }
 function initHomeAdd(){
