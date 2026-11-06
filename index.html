@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#6960dc">
 <title>Itinerary Manager</title>
 <style>
-:root{color-scheme:light;--ink:#252747;--muted:#656982;--purple:#6654cf;--line:#e5e5f1;--shadow:0 16px 45px #35336b0c}*{box-sizing:border-box}body{margin:0;background:#f7f7fd;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}[hidden]{display:none!important}header{background:linear-gradient(110deg,#6552cb,#7868e7 58%,#599ee0);color:white;padding:26px max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.7px;line-height:1.3}#headerAccount{display:flex;gap:12px;align-items:center;margin-left:auto;max-width:100%;justify-content:flex-end}#headerEmail{font-size:13px;overflow-wrap:anywhere;text-align:right;min-width:0}.logout{flex-shrink:0;color:white;border:1px solid #ffffff70;background:#ffffff15;border-radius:10px;padding:7px 15px}main{max-width:1160px;margin:32px auto;padding:0 24px 40px}.status{border:1px solid #dfddf4;background:#efedff;color:#4c4380;padding:12px 16px;border-radius:13px;margin-bottom:20px;overflow-wrap:anywhere}.status[data-tone="error"]{background:#fff0f1;border-color:#f1cbd0;color:#962c42}.status[data-tone="success"]{background:#e9f8f1;border-color:#bde3cf;color:#216646}.card{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.4px}p{margin:6px 0 20px;color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:var(--purple);margin-bottom:12px}.login{max-width:650px;margin:60px auto;text-align:center;padding:44px 28px}.travel-art{font-size:64px;line-height:1.5;margin-bottom:16px}.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 22px;font-weight:650;box-shadow:0 6px 14px #6654cf20}.primary:hover{background:#5643ba}button:focus-visible,input:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.dashboard{display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start}.create{border-top:5px solid #9a88ed}.field{margin:20px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}input{width:100%;border:1px solid #d9dbea;background:#fcfcff;border-radius:11px;padding:12px;color:var(--ink)}input::placeholder{color:#9496aa}.hint{font-size:13px;color:var(--muted);margin:14px 0 0}.create .primary{width:100%}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:3px 0 18px}.section-heading h2{margin:0}.count{font-size:12px;border-radius:20px;background:#eae7fa;padding:5px 12px;color:#5d4ca8;white-space:nowrap}.trips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.trip{padding:0;overflow:hidden;box-shadow:var(--shadow);border-radius:19px;background:white;border:1px solid var(--line);min-width:0}.trip-top{padding:20px 22px;font-size:30px;background:var(--wash);display:flex;align-items:center;justify-content:space-between}.trip-number{font-size:11px;font-weight:750;letter-spacing:1px;color:#4a4968}.trip-body{padding:20px 22px}.trip h3{margin:0 0 8px;font-size:19px;overflow-wrap:anywhere}.destination{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.trip-meta{margin:18px 0 0;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#767a90}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:2px dashed #dddcee;border-radius:20px;background:#ffffff80}.empty-icon{font-size:40px;margin-bottom:12px}.empty p{margin:0}.sync{font-size:13px;color:var(--muted);margin:0 0 18px}.footer{text-align:center;color:#888ba1;font-size:12px;margin-top:40px}noscript{display:block;padding:24px;background:#fff0f1}@media(max-width:900px){.dashboard{grid-template-columns:1fr}.create form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.create .primary{grid-column:1/-1}.create .hint{grid-column:1/-1}}@media(max-width:540px){header{padding:22px 18px;gap:16px}#headerAccount{width:100%}main{padding:0 16px 28px;margin-top:22px}.card{padding:22px}.login{margin:30px auto;padding:32px 22px}.create form{display:block}.trips{grid-template-columns:1fr}.dashboard{gap:24px}.section-heading h2{font-size:20px}}
+:root{color-scheme:light;--ink:#252747;--muted:#656982;--purple:#6654cf;--line:#e5e5f1;--shadow:0 16px 45px #35336b0c}*{box-sizing:border-box}body{margin:0;background:#f7f7fd;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}[hidden]{display:none!important}header{background:linear-gradient(110deg,#6552cb,#7868e7 58%,#599ee0);color:white;padding:26px max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}h1{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.7px;line-height:1.3}#headerAccount{display:flex;gap:12px;align-items:center;margin-left:auto;max-width:100%;justify-content:flex-end}#headerEmail{font-size:13px;overflow-wrap:anywhere;text-align:right;min-width:0}.logout{flex-shrink:0;color:white;border:1px solid #ffffff70;background:#ffffff15;border-radius:10px;padding:7px 15px}main{max-width:1160px;margin:32px auto;padding:0 24px 40px}.status{border:1px solid #dfddf4;background:#efedff;color:#4c4380;padding:12px 16px;border-radius:13px;margin-bottom:20px;overflow-wrap:anywhere}.status[data-tone="error"]{background:#fff0f1;border-color:#f1cbd0;color:#962c42}.status[data-tone="success"]{background:#e9f8f1;border-color:#bde3cf;color:#216646}.card{background:white;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px}h2{font-size:22px;margin:0 0 8px;letter-spacing:-.4px}p{margin:6px 0 20px;color:var(--muted)}.eyebrow{font-size:12px;font-weight:750;letter-spacing:2px;color:var(--purple);margin-bottom:12px}.login{max-width:650px;margin:60px auto;text-align:center;padding:44px 28px}.travel-art{font-size:64px;line-height:1.5;margin-bottom:16px}.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 22px;font-weight:650;box-shadow:0 6px 14px #6654cf20}.primary:hover{background:#5643ba}button:focus-visible,input:focus-visible{outline:3px solid #e49d24;outline-offset:3px}.dashboard{display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start}.create{border-top:5px solid #9a88ed}.field{margin:20px 0}label{display:block;font-size:14px;font-weight:650;margin-bottom:8px}input{width:100%;border:1px solid #d9dbea;background:#fcfcff;border-radius:11px;padding:12px;color:var(--ink)}input::placeholder{color:#9496aa}.hint{font-size:13px;color:var(--muted);margin:14px 0 0}.create .primary{width:100%}.section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:3px 0 18px}.section-heading h2{margin:0}.count{font-size:12px;border-radius:20px;background:#eae7fa;padding:5px 12px;color:#5d4ca8;white-space:nowrap}.trips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.trip{padding:0;overflow:hidden;box-shadow:var(--shadow);border-radius:19px;background:white;border:1px solid var(--line);min-width:0}.trip-top{padding:20px 22px;font-size:30px;background:var(--wash);display:flex;align-items:center;justify-content:space-between}.trip-number{font-size:12px;font-weight:750;letter-spacing:1px;color:#4a4968}.trip-body{padding:20px 22px}.trip h3{margin:0 0 8px;font-size:19px;overflow-wrap:anywhere}.destination{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.trip-meta{margin:18px 0 0;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:#5f6378}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:2px dashed #dddcee;border-radius:20px;background:#ffffff80}.empty-icon{font-size:40px;margin-bottom:12px}.empty p{margin:0}.sync{font-size:13px;color:var(--muted);margin:0 0 18px}.footer{text-align:center;color:#6a6d85;font-size:12px;margin-top:40px}noscript{display:block;padding:24px;background:#fff0f1}@media(max-width:900px){.dashboard{grid-template-columns:1fr}.create form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.create .primary{grid-column:1/-1}.create .hint{grid-column:1/-1}}@media(max-width:540px){header{padding:22px 18px;gap:16px}#headerAccount{width:100%}main{padding:0 16px 28px;margin-top:22px}.card{padding:22px}.login{margin:30px auto;padding:32px 22px}.create form{display:block}.trips{grid-template-columns:1fr}.dashboard{gap:24px}.section-heading h2{font-size:20px}}
 
 .secondary{background:white;border:1px solid #d9d5ed;color:#51469c;border-radius:10px;padding:9px 15px;font-weight:600}.secondary:hover{background:#f2efff}.danger{color:#a52b45;border-color:#efc7d0}.trip .secondary{margin-top:14px;width:100%}.detail-hero{background:linear-gradient(120deg,#eee9ff,#e5f4fa);margin:20px 0;padding:26px;border-radius:22px}.detail-hero h2{font-size:28px;overflow-wrap:anywhere}.detail-hero p{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:0}.detail-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.module-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.module-tab{border:1px solid #dfdcec;background:white;border-radius:12px;color:#5d5e79;padding:10px 15px}.module-tab[aria-pressed="true"]{background:#6654cf;color:white;border-color:#6654cf}.module-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}.module-fields .field{margin:15px 0}.module-fields input,.module-fields textarea{background:#fcfcff;width:100%;border:1px solid #d9dbea;border-radius:10px;padding:10px;color:var(--ink)}textarea{resize:vertical;min-height:90px}.form-actions,.record-actions{display:flex;gap:8px;flex-wrap:wrap}.record-list{display:grid;gap:14px}.record{padding:22px}.record h3{margin:0;font-size:19px;overflow-wrap:anywhere}.record dl{display:grid;grid-template-columns:95px minmax(0,1fr);gap:7px 12px;font-size:14px;margin:16px 0}.record dt{color:var(--muted)}.record dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.record.done h3{text-decoration:line-through;color:#7e8195}.record-actions button{font-size:13px;padding:7px 12px}.record label{display:flex;gap:10px;align-items:center;margin:10px 0 0}.record input[type="checkbox"]{width:18px;height:18px}.filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 18px}.filter label{margin:0}.filter input{width:auto;padding:7px}.form-status{font-size:14px;margin:14px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.form-status[data-tone="error"]{color:#a52b45}.modal{border:1px solid var(--line);border-radius:20px;max-width:440px;width:calc(100% - 32px);padding:28px;color:var(--ink);box-shadow:var(--shadow)}.modal::backdrop{background:#25274770}.modal h2{font-size:21px}.modal p{overflow-wrap:anywhere}.trip-range{font-size:13px;color:var(--muted)}@media(max-width:900px){.module-layout{grid-template-columns:1fr}.module-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.module-fields .wide{grid-column:1/-1}}@media(max-width:540px){.module-fields{display:block}.module-tab{padding:9px 12px;font-size:14px}.detail-hero{padding:22px}.record dl{grid-template-columns:80px minmax(0,1fr)}}
 
@@ -15,7 +15,7 @@
 .check-tools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.check-tools button{font-size:13px;padding:7px 12px}.check-tools button[aria-pressed="true"]{color:white;background:var(--purple)}.check-group{border:1px solid var(--line);border-radius:18px;background:white;overflow:hidden}.check-group summary{cursor:pointer;padding:18px 20px;background:#f0edff;font-weight:700;overflow-wrap:anywhere}.group-count{font-size:12px;font-weight:500;margin-left:10px;color:var(--muted)}.group-progress{display:block;width:100%;height:5px;accent-color:#7260d4;border:0}.check-row{padding:14px 18px;border-top:1px solid var(--line)}.check-main{display:flex;align-items:flex-start;gap:12px}.check-main input{width:21px;height:21px;flex-shrink:0;margin-top:3px;accent-color:var(--purple)}.check-title{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:0;font-weight:650;overflow-wrap:anywhere;cursor:pointer;min-width:0;flex:1}.check-row.done .item-name{color:#85879b;text-decoration:line-through}.quantity-pill{font-size:12px;font-weight:500;background:#eeeafd;border-radius:20px;padding:2px 9px;color:#6654a4}.check-meta{margin:5px 0 0 33px;color:var(--muted);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.check-row .record-actions{margin:8px 0 0 33px}.check-row .record-actions button{padding:3px 9px;font-size:12px}.group-add{margin:12px 18px;font-size:13px}.bulk-help{font-size:13px;color:var(--muted);margin:8px 0}.bulk-counter{font-size:12px;color:var(--purple);margin:4px 0}.check-form-title{min-height:145px}.module-fields .category-field{order:-1}.checklist-form{display:flex!important;flex-direction:column;gap:0!important}
 
 .home-link{color:inherit;text-decoration:none;display:inline-block;border-radius:7px}.home-link:focus-visible{outline:3px solid #ffd283;outline-offset:5px}.category-select{width:100%;padding:11px;border:1px solid #d9dbea;border-radius:10px;background:#fcfcff;color:var(--ink)}.category-custom{margin-top:9px}.packing-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 40px;gap:8px;align-items:start;margin:10px 0}.packing-row label{font-size:12px;margin-bottom:5px}.packing-row input{padding:10px!important}.packing-row .remove-row{padding:8px;margin-top:26px;min-height:46px}.add-row{font-size:14px;margin-top:6px}.packing-help{font-size:13px;color:var(--muted);margin:10px 0}.packing-row .name-cell,.packing-row .quantity-cell{min-width:0}
-.map-link{color:#5d4caf;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}.calendar-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}.calendar-toolbar h2{margin:0 auto 0 0}.calendar-toolbar input{width:auto;padding:8px}.calendar-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.calendar-shortcuts button{font-size:13px}.calendar-week,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.calendar-week{background:#eeebfb;border-radius:12px 12px 0 0;text-align:center;font-size:13px;padding:10px 0}.calendar-grid{border-left:1px solid var(--line);border-top:1px solid var(--line)}.calendar-cell{min-height:128px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px;min-width:0;background:#fff}.calendar-cell.blank{background:#f8f8fc}.calendar-cell.selected{background:#f2efff;box-shadow:inset 0 0 0 2px #9c8ae2}.calendar-cell.in-trip{border-top:3px solid #c2b6f4}.calendar-date{border:0;background:transparent;color:var(--ink);font-weight:650;border-radius:20px;padding:3px 7px}.calendar-date[aria-current="date"]{background:var(--purple);color:white}.calendar-event{display:block;text-align:left;width:100%;background:#eae6ff;color:#51418c;border:0;border-radius:6px;padding:4px 6px;font-size:11px;line-height:1.5;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calendar-event[data-module="flights"]{background:#e2eeff;color:#315d95}.calendar-event[data-module="lodging"]{background:#ffeddb;color:#885b2a}.calendar-event[data-module="transport"]{background:#ddf1eb;color:#346e60}.calendar-event[data-module="activities"]{background:#ffe5ed;color:#984d65}.calendar-event[data-module="todos"]{background:#fff3c9;color:#7a651e}.calendar-more{font-size:11px;border:0;background:none;color:#6654cf;padding:3px}.calendar-agenda{margin-top:26px}.calendar-agenda h3{margin-bottom:12px}.agenda-item{display:flex;gap:12px;align-items:flex-start;border-top:1px solid var(--line);padding:13px 0}.agenda-item .agenda-open{flex:1;text-align:left;border:0;background:none;color:var(--ink);padding:0;min-width:0;overflow-wrap:anywhere}.agenda-item small{display:block;color:var(--muted);margin-top:4px}.calendar-notes{font-size:13px;color:var(--muted);margin:12px 0}.calendar-dot-count{display:none}.record:focus,.check-row:focus{outline:3px solid #b0a0ed;outline-offset:3px}@media(min-width:901px){.module-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}.module-fields .wide{grid-column:1/-1}.checklist-form .field{max-width:760px}.packing-row{grid-template-columns:minmax(0,1fr) 110px 42px}}@media(max-width:600px){#calendarArea{padding:14px}.calendar-cell{padding:4px;min-height:67px}.calendar-event{display:none}.calendar-dot-count{display:block;font-size:11px;color:#6654cf;padding:2px 0}.calendar-toolbar{gap:7px}.calendar-toolbar h2{width:100%;font-size:21px}.calendar-toolbar button{padding:7px 10px}.agenda-item{flex-wrap:wrap}.calendar-week{font-size:12px}}
+.map-link{color:#5d4caf;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}.calendar-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}.calendar-toolbar h2{margin:0 auto 0 0}.calendar-toolbar input{width:auto;padding:8px}.calendar-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.calendar-shortcuts button{font-size:13px}.calendar-week,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.calendar-week{background:#eeebfb;border-radius:12px 12px 0 0;text-align:center;font-size:13px;padding:10px 0}.calendar-grid{border-left:1px solid var(--line);border-top:1px solid var(--line)}.calendar-cell{min-height:128px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px;min-width:0;background:#fff}.calendar-cell.blank{background:#f8f8fc}.calendar-cell.selected{background:#f2efff;box-shadow:inset 0 0 0 2px #9c8ae2}.calendar-cell.in-trip{border-top:3px solid #c2b6f4}.calendar-date{border:0;background:transparent;color:var(--ink);font-weight:650;border-radius:20px;padding:3px 7px}.calendar-date[aria-current="date"]{background:var(--purple);color:white}.calendar-event{display:block;text-align:left;width:100%;background:#eae6ff;color:#51418c;border:0;border-radius:6px;padding:4px 6px;font-size:12px;line-height:1.5;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calendar-event[data-module="flights"]{background:#e2eeff;color:#315d95}.calendar-event[data-module="lodging"]{background:#ffeddb;color:#885b2a}.calendar-event[data-module="transport"]{background:#ddf1eb;color:#346e60}.calendar-event[data-module="activities"]{background:#ffe5ed;color:#984d65}.calendar-event[data-module="todos"]{background:#fff3c9;color:#7a651e}.calendar-more{font-size:12px;border:0;background:none;color:#6654cf;padding:3px}.calendar-agenda{margin-top:26px}.calendar-agenda h3{margin-bottom:12px}.agenda-item{display:flex;gap:12px;align-items:flex-start;border-top:1px solid var(--line);padding:13px 0}.agenda-item .agenda-open{flex:1;text-align:left;border:0;background:none;color:var(--ink);padding:0;min-width:0;overflow-wrap:anywhere}.agenda-item small{display:block;color:var(--muted);margin-top:4px}.calendar-notes{font-size:13px;color:var(--muted);margin:12px 0}.calendar-dot-count{display:none}.record:focus,.check-row:focus{outline:3px solid #b0a0ed;outline-offset:3px}@media(min-width:901px){.module-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}.module-fields .wide{grid-column:1/-1}.checklist-form .field{max-width:760px}.packing-row{grid-template-columns:minmax(0,1fr) 110px 42px}}@media(max-width:600px){#calendarArea{padding:14px}.calendar-cell{padding:4px;min-height:67px}.calendar-event{display:none}.calendar-dot-count{display:block;font-size:12px;color:#6654cf;padding:2px 0}.calendar-toolbar{gap:7px}.calendar-toolbar h2{width:100%;font-size:21px}.calendar-toolbar button{padding:7px 10px}.agenda-item{flex-wrap:wrap}.calendar-week{font-size:12px}}
 
 .undated-list{border-top:1px solid var(--line);padding-top:18px}.undated-list>summary{font-weight:700;cursor:pointer;padding:8px 0}
 .expense-amount{display:inline-block;font-size:14px;font-weight:650;color:#6450ad;white-space:nowrap}
@@ -27,7 +27,7 @@
 
 /* Compact home action and focused quick-add dialog. */
 .home-fab{position:fixed;right:max(26px,env(safe-area-inset-right));bottom:calc(26px + env(safe-area-inset-bottom));z-index:20;width:64px;height:64px;display:grid;place-items:center;border:1px solid #ffffff66;border-radius:22px;background:linear-gradient(145deg,#8571ee,#6050ca);color:white;box-shadow:0 12px 30px #6552cb42,inset 0 1px 0 #ffffff40;transition:transform .18s,box-shadow .18s}.home-fab span{font-size:36px;font-weight:350;line-height:1}.home-fab:hover{transform:translateY(-3px);box-shadow:0 16px 34px #6552cb55}.home-fab:focus-visible{outline:3px solid #e49d24;outline-offset:4px}.home-modal-open{overflow:hidden}
-dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height:calc(100dvh - 56px);margin:auto;padding:0;border:1px solid #e4dff5;border-radius:28px;background:#fff;box-shadow:0 30px 100px #28234540;overflow:auto;color:var(--ink)}.home-modal::backdrop{background:#25243d66;backdrop-filter:blur(5px)}.home-modal-heading{display:flex;align-items:center;gap:16px;padding:28px 30px 24px;background:linear-gradient(115deg,#f4f0ff,#faf9ff 65%,#eef8f7);border-bottom:1px solid #ece8f5}.home-modal-icon{display:grid;place-items:center;flex-shrink:0;width:50px;height:50px;border:1px solid #fff;border-radius:17px;background:#e7dffc;color:#7560d2;font-size:30px}.home-modal-heading .eyebrow{font-size:10px;letter-spacing:1.8px;margin-bottom:4px}.home-modal-heading h2{font-size:25px;margin:0}.home-modal-heading p{font-size:13px;margin:5px 0 0}.home-modal-close{align-self:flex-start;margin-left:auto;flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid #e4dfef;background:#ffffffba;color:#6d6680;font-size:24px;line-height:1}.home-modal-close:hover{background:#e9e2fa}.home-modal-body{padding:24px 30px 14px}.home-modal .module-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px}.home-modal .field{margin:0 0 19px;min-width:0}.home-modal label{font-size:12px;letter-spacing:.3px;color:#69637e;margin-bottom:7px;font-weight:650}.home-modal input,.home-modal select,.home-modal textarea{display:block;width:100%;min-width:0;min-height:48px;border:1px solid #e2deec;border-radius:12px;background:#fbfaff;color:var(--ink);padding:12px 14px;font-size:15px;line-height:1.5;transition:border-color .15s,box-shadow .15s}.home-modal textarea{min-height:96px;resize:vertical}.home-modal select{appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23877c9d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}.home-modal :is(input,select,textarea):focus-visible{outline:0;border-color:#9e89e4;box-shadow:0 0 0 3px #ad97e51f;background-color:white}.home-modal .home-selectors{padding-bottom:2px;margin-bottom:18px;border-bottom:1px solid #efedf5}.home-modal .wide{grid-column:1/-1}.home-modal details{margin:0 0 22px;padding:13px 16px;border:1px solid #ebe6f4;border-radius:12px;background:#fdfcff}.home-modal summary{font-size:13px;color:#76658f;cursor:pointer}.home-modal details[open] summary{margin-bottom:18px}.home-modal details .field:last-child{margin-bottom:0}.home-save-bar{display:flex;justify-content:space-between;gap:14px;align-items:center;padding-top:20px;border-top:1px solid #efedf5}.home-save-bar>span{font-size:11px;color:#91899e;max-width:140px}.home-save-bar .primary{font-size:14px;padding:13px 18px;border-radius:13px}.home-save-bar .primary span{margin-left:12px}.home-modal .form-status{font-size:13px;margin:12px 0;white-space:pre-wrap}.home-recent{grid-column:1/-1;padding:20px 24px}.home-recent h3{margin:0 0 12px;font-size:16px}.home-recent ul{list-style:none;padding:0;margin:0}.home-recent li{padding:11px 0;border-bottom:1px solid #f0edf6;font-size:14px;overflow-wrap:anywhere}.home-recent li:last-child{border:0}
+dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height:calc(100dvh - 56px);margin:auto;padding:0;border:1px solid #e4dff5;border-radius:28px;background:#fff;box-shadow:0 30px 100px #28234540;overflow:auto;color:var(--ink)}.home-modal::backdrop{background:#25243d66;backdrop-filter:blur(5px)}.home-modal-heading{display:flex;align-items:center;gap:16px;padding:28px 30px 24px;background:linear-gradient(115deg,#f4f0ff,#faf9ff 65%,#eef8f7);border-bottom:1px solid #ece8f5}.home-modal-icon{display:grid;place-items:center;flex-shrink:0;width:50px;height:50px;border:1px solid #fff;border-radius:17px;background:#e7dffc;color:#7560d2;font-size:30px}.home-modal-heading .eyebrow{font-size:12px;letter-spacing:1.8px;margin-bottom:4px}.home-modal-heading h2{font-size:25px;margin:0}.home-modal-heading p{font-size:13px;margin:5px 0 0}.home-modal-close{align-self:flex-start;margin-left:auto;flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid #e4dfef;background:#ffffffba;color:#6d6680;font-size:24px;line-height:1}.home-modal-close:hover{background:#e9e2fa}.home-modal-body{padding:24px 30px 14px}.home-modal .module-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px}.home-modal .field{margin:0 0 19px;min-width:0}.home-modal label{font-size:12px;letter-spacing:.3px;color:#69637e;margin-bottom:7px;font-weight:650}.home-modal input,.home-modal select,.home-modal textarea{display:block;width:100%;min-width:0;min-height:48px;border:1px solid #e2deec;border-radius:12px;background:#fbfaff;color:var(--ink);padding:12px 14px;font-size:15px;line-height:1.5;transition:border-color .15s,box-shadow .15s}.home-modal textarea{min-height:96px;resize:vertical}.home-modal select{appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23877c9d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}.home-modal :is(input,select,textarea):focus-visible{outline:0;border-color:#9e89e4;box-shadow:0 0 0 3px #ad97e51f;background-color:white}.home-modal .home-selectors{padding-bottom:2px;margin-bottom:18px;border-bottom:1px solid #efedf5}.home-modal .wide{grid-column:1/-1}.home-modal details{margin:0 0 22px;padding:13px 16px;border:1px solid #ebe6f4;border-radius:12px;background:#fdfcff}.home-modal summary{font-size:13px;color:#76658f;cursor:pointer}.home-modal details[open] summary{margin-bottom:18px}.home-modal details .field:last-child{margin-bottom:0}.home-save-bar{display:flex;justify-content:space-between;gap:14px;align-items:center;padding-top:20px;border-top:1px solid #efedf5}.home-save-bar>span{font-size:12px;color:#6b6580;max-width:140px}.home-save-bar .primary{font-size:14px;padding:13px 18px;border-radius:13px}.home-save-bar .primary span{margin-left:12px}.home-modal .form-status{font-size:13px;margin:12px 0;white-space:pre-wrap}.home-recent{grid-column:1/-1;padding:20px 24px}.home-recent h3{margin:0 0 12px;font-size:16px}.home-recent ul{list-style:none;padding:0;margin:0}.home-recent li{padding:11px 0;border-bottom:1px solid #f0edf6;font-size:14px;overflow-wrap:anywhere}.home-recent li:last-child{border:0}
 @media(max-width:540px){dialog.home-modal{width:calc(100vw - 20px);max-height:calc(100dvh - 24px);border-radius:22px}.home-modal-heading{padding:22px 20px;gap:12px}.home-modal-icon{width:40px;height:40px;border-radius:13px;font-size:25px}.home-modal-heading h2{font-size:21px}.home-modal-heading .eyebrow{font-size:8px;letter-spacing:1px}.home-modal-body{padding:22px 20px 12px}.home-modal input,.home-modal select,.home-modal textarea{font-size:16px}.home-modal .module-fields{grid-template-columns:minmax(0,1fr);gap:0 12px}.home-modal .home-selectors{grid-template-columns:minmax(0,1fr)}.home-modal .home-selectors .field{margin-bottom:16px}.home-save-bar{display:block}.home-save-bar>span{display:none}.home-save-bar .primary{width:100%}.home-fab{width:58px;height:58px;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));border-radius:20px}.footer{padding-bottom:60px}}
 @media(prefers-reduced-motion:reduce){.home-fab{transition:none}}
 
@@ -36,13 +36,37 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .home-modal input:is([type="date"],[type="time"]){min-width:0;width:100%;max-width:100%;min-inline-size:0}
 .home-modal input::-webkit-date-and-time-value{min-width:0;text-align:left}
 
-.calendar-todos{margin:22px 0 26px;padding:20px;border:1px solid #e6e0f2;border-radius:18px;background:#faf8ff}.calendar-todos .section-heading{margin:0 0 15px}.calendar-todos h3{margin:0;font-size:18px}.calendar-todo-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.calendar-todo{min-width:0;padding:16px;background:#fff;border:1px solid #ebe5f3;border-radius:13px}.todo-due{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#81738f;margin-bottom:12px}.todo-overdue,.todo-finished{font-size:10px;padding:2px 7px;border-radius:20px;background:#ffedf0;color:#a33b51}.todo-finished{background:#e8f6ef;color:#3c8060}.todo-body{display:flex;align-items:flex-start;gap:10px}.todo-body>input{appearance:auto;flex:0 0 19px;width:19px;height:19px;margin:4px 0 0;padding:0;accent-color:var(--purple)}.todo-content{flex:1;min-width:0}.todo-title{display:block;border:0;background:none;padding:0;color:var(--ink);font-size:15px;font-weight:650;text-align:left;overflow-wrap:anywhere}.todo-title:hover{text-decoration:underline}.todo-category{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:6px;background:#f0ecfa;color:#7b6997;font-size:11px}.todo-notes{margin:8px 0 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.calendar-todo.is-done .todo-title{text-decoration:line-through;color:#8b8697}.calendar-todo.is-overdue{border-color:#efced7}.todo-empty{margin:0;font-size:13px}@media(max-width:600px){.calendar-todos{padding:15px}.calendar-todo-list{grid-template-columns:minmax(0,1fr)}}
+.calendar-todos{margin:22px 0 26px;padding:20px;border:1px solid #e6e0f2;border-radius:18px;background:#faf8ff}.calendar-todos .section-heading{margin:0 0 15px}.calendar-todos h3{margin:0;font-size:18px}.calendar-todo-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.calendar-todo{min-width:0;padding:16px;background:#fff;border:1px solid #ebe5f3;border-radius:13px}.todo-due{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:#6b5f80;margin-bottom:12px}.todo-overdue,.todo-finished{font-size:12px;padding:2px 7px;border-radius:20px;background:#ffedf0;color:#a33b51}.todo-finished{background:#e8f6ef;color:#3c8060}.todo-body{display:flex;align-items:flex-start;gap:10px}.todo-body>input{appearance:auto;flex:0 0 19px;width:19px;height:19px;margin:4px 0 0;padding:0;accent-color:var(--purple)}.todo-content{flex:1;min-width:0}.todo-title{display:block;border:0;background:none;padding:0;color:var(--ink);font-size:15px;font-weight:650;text-align:left;overflow-wrap:anywhere}.todo-title:hover{text-decoration:underline}.todo-category{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:6px;background:#f0ecfa;color:#7b6997;font-size:12px}.todo-notes{margin:8px 0 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.calendar-todo.is-done .todo-title{text-decoration:line-through;color:#8b8697}.calendar-todo.is-overdue{border-color:#efced7}.todo-empty{margin:0;font-size:13px}@media(max-width:600px){.calendar-todos{padding:15px}.calendar-todo-list{grid-template-columns:minmax(0,1fr)}}
 
-.day-timeline{margin-bottom:32px}.timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.timeline-heading h3{font-size:18px;margin:0}.timeline-heading>span{font-size:11px;color:#9a8daa}.route-outline{padding:16px 18px;border:1px solid #e9e2f2;border-radius:16px;background:#f6f2fb;margin-bottom:20px}.route-outline summary{font-size:13px;color:#8c75ab;cursor:pointer}.route-path{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.route-pin{display:flex;gap:7px;align-items:center;font-size:12px}.route-pin>span{display:grid;place-items:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;background:#e5daf5;color:#8e76ac}.route-pin strong{font-weight:500;overflow-wrap:anywhere}.timeline-stop{display:grid;grid-template-columns:50px minmax(0,1fr);gap:13px}.timeline-rail{display:flex;flex-direction:column;align-items:center;gap:9px}.timeline-time{font-size:12px;font-weight:650;color:#8c7a9f;margin-top:15px}.timeline-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9dff5;color:#9273b8;font-size:11px}.timeline-card{padding:20px 22px;border-radius:18px;min-width:0}.timeline-kicker{font-size:10px;letter-spacing:1.4px;color:#b09cc8}.timeline-card h3{font-size:18px;margin:6px 0 10px;overflow-wrap:anywhere}.timeline-meta{font-size:12px;color:#a08dab;margin:6px 0}.timeline-notes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:12px 0;color:#94849f}.timeline-card .record-actions{margin-top:14px}.timeline-card .record-actions button{font-size:11px;padding:5px 10px}.timeline-card .expense-amount{display:block;margin-top:10px}.timeline-between{margin:12px 0 12px 63px;display:grid;gap:9px}.timeline-transport{padding:15px 18px;border:1px solid #e4dced;border-radius:14px;background:#f0ebf7}.timeline-transport-head{display:flex;justify-content:space-between;gap:10px;color:#89729f;font-size:13px;font-weight:600}.timeline-transport-head span:last-child{font-size:11px}.timeline-transport summary{cursor:pointer;font-size:12px;color:#a28ab8}.route-controls{display:flex;gap:15px;margin-top:12px;flex-wrap:wrap}.route-map-link,.route-edit{font-size:11px;color:#9e84b4;text-decoration:none}.route-edit{border:0;background:none;padding:0;cursor:pointer}.route-add{border:1px dashed #d9cce7;border-radius:11px;padding:10px;background:transparent;color:#aa94bd;font-size:12px}.route-unlinked{padding:16px;margin:20px 0;color:#9b88aa;font-size:12px}.route-unlinked button{display:block;margin-top:10px}.timeline-add-stop{margin:18px 0 0 63px;width:calc(100% - 63px);padding:14px;border:1px dashed #d2c0e4;border-radius:13px;background:#faf8fd;color:#a28aba}#routeEndpoints{overflow-wrap:anywhere}#routeStatus{font-size:13px;margin-top:15px}#routeDialog .form-actions{margin-top:18px}
-@media(max-width:600px){.timeline-stop{grid-template-columns:40px minmax(0,1fr);gap:10px}.timeline-between{margin-left:50px}.timeline-card{padding:16px}.timeline-card h3{font-size:16px}.timeline-time{font-size:11px}.timeline-heading{align-items:start;flex-direction:column;gap:3px}.timeline-add-stop{margin-left:50px;width:calc(100% - 50px)}.timeline-transport{padding:13px}.timeline-transport-head{flex-wrap:wrap}.route-outline{padding:14px}}
+.day-timeline{margin-bottom:32px}.timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.timeline-heading h3{font-size:18px;margin:0}.timeline-heading>span{font-size:12px;color:#6b5f80}.route-outline{padding:16px 18px;border:1px solid #e9e2f2;border-radius:16px;background:#f6f2fb;margin-bottom:20px}.route-outline summary{font-size:13px;color:#5f4f80;cursor:pointer}.route-path{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.route-pin{display:flex;gap:7px;align-items:center;font-size:12px}.route-pin>span{display:grid;place-items:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;background:#e5daf5;color:#6a4f9c}.route-pin strong{font-weight:500;overflow-wrap:anywhere}.timeline-stop{display:grid;grid-template-columns:50px minmax(0,1fr);gap:13px}.timeline-rail{display:flex;flex-direction:column;align-items:center;gap:9px}.timeline-time{font-size:12px;font-weight:650;color:#5f5275;margin-top:15px}.timeline-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9dff5;color:#6a4f9c;font-size:12px}.timeline-card{padding:20px 22px;border-radius:18px;min-width:0}.timeline-kicker{font-size:12px;letter-spacing:1.4px;color:#6b5f80}.timeline-card h3{font-size:18px;margin:6px 0 10px;overflow-wrap:anywhere}.timeline-meta{font-size:12px;color:#6b5f80;margin:6px 0}.timeline-notes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:12px 0;color:#625775}.timeline-card .record-actions{margin-top:14px}.timeline-card .record-actions button{font-size:12px;padding:5px 10px}.timeline-card .expense-amount{display:block;margin-top:10px}.timeline-between{margin:12px 0 12px 63px;display:grid;gap:9px}.timeline-transport{padding:15px 18px;border:1px solid #e4dced;border-radius:14px;background:#f0ebf7}.timeline-transport-head{display:flex;justify-content:space-between;gap:10px;color:#5f4f78;font-size:13px;font-weight:600}.timeline-transport-head span:last-child{font-size:12px}.timeline-transport summary{cursor:pointer;font-size:12px;color:#6b5f80}.route-controls{display:flex;gap:15px;margin-top:12px;flex-wrap:wrap}.route-map-link,.route-edit{font-size:12px;color:#5f4f80;text-decoration:none}.route-edit{border:0;background:none;padding:0;cursor:pointer}.route-add{border:1px dashed #d9cce7;border-radius:11px;padding:10px;background:transparent;color:#5f4f80;font-size:12px}.route-unlinked{padding:16px;margin:20px 0;color:#6b5f80;font-size:12px}.route-unlinked button{display:block;margin-top:10px}.timeline-add-stop{margin:18px 0 0 63px;width:calc(100% - 63px);padding:14px;border:1px dashed #d2c0e4;border-radius:13px;background:#faf8fd;color:#6b5f80}#routeEndpoints{overflow-wrap:anywhere}#routeStatus{font-size:13px;margin-top:15px}#routeDialog .form-actions{margin-top:18px}
+@media(max-width:600px){.timeline-stop{grid-template-columns:40px minmax(0,1fr);gap:10px}.timeline-between{margin-left:50px}.timeline-card{padding:16px}.timeline-card h3{font-size:16px}.timeline-time{font-size:12px}.timeline-heading{align-items:start;flex-direction:column;gap:3px}.timeline-add-stop{margin-left:50px;width:calc(100% - 50px)}.timeline-transport{padding:13px}.timeline-transport-head{flex-wrap:wrap}.route-outline{padding:14px}}
 .timeline-days{display:flex;gap:8px;overflow:auto;padding:3px 2px 12px;margin-bottom:8px}.timeline-days button{flex-shrink:0;font-size:12px}.timeline-days button[aria-pressed=true]{background:#7961ce;color:white;border-color:#7961ce}.timeline-rail:after{content:'';width:1px;background:#e5dced;flex:1;margin-top:4px}
-.legacy-itinerary-cost{padding:12px 14px;border-radius:11px;background:#fff7eb;margin-top:14px}.legacy-itinerary-cost .hint{margin:7px 0 10px}.legacy-itinerary-cost button{font-size:11px;padding:5px 10px}
-.expense-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:-8px 0 22px;padding:12px;background:#f0ecf9;border-radius:14px}.expense-nav .module-tab{font-size:13px;padding:7px 12px}.expense-origin{display:inline-block;margin:8px 8px 8px 0;padding:2px 8px;border-radius:7px;background:#f0ecfa;color:#5d4ca8;font-size:11px}.expense-origin+.expense-amount{margin:8px 0}
+.legacy-itinerary-cost{padding:12px 14px;border-radius:11px;background:#fff7eb;margin-top:14px}.legacy-itinerary-cost .hint{margin:7px 0 10px}.legacy-itinerary-cost button{font-size:12px;padding:5px 10px}
+.expense-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:-8px 0 22px;padding:12px;background:#f0ecf9;border-radius:14px}.expense-nav .module-tab{font-size:13px;padding:7px 12px}.expense-origin{display:inline-block;margin:8px 8px 8px 0;padding:2px 8px;border-radius:7px;background:#f0ecfa;color:#5d4ca8;font-size:12px}.expense-origin+.expense-amount{margin:8px 0}
+
+/* ===== UX revision ===== */
+.module-nav{position:sticky;top:0;z-index:6;background:#f7f7fd;padding:10px 0;margin:12px 0;align-items:center;gap:8px 20px}
+.nav-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-label{font-size:12px;font-weight:700;color:#6b5f80;letter-spacing:.5px}
+@media(max-width:600px){.module-nav{flex-wrap:nowrap;overflow-x:auto;gap:16px;-webkit-overflow-scrolling:touch}.nav-group{flex-wrap:nowrap;flex-shrink:0}.module-tab{white-space:nowrap}}
+.home-fab{width:auto;min-width:64px;padding:0 20px;grid-auto-flow:column;gap:10px}.fab-label{display:none;font-size:15px;font-weight:650}
+@media(min-width:901px){.home-fab{height:60px;border-radius:20px}.fab-label{display:inline}}
+@media(max-width:900px){.home-fab{width:58px;min-width:0;padding:0}}
+.toast{position:fixed;left:50%;bottom:calc(32px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:40;background:#2d2a4f;color:#fff;padding:12px 20px;border-radius:14px;box-shadow:0 12px 30px #25243d40;font-size:14px;max-width:calc(100vw - 40px);transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+.record-actions button,.check-row .record-actions button,.quick-saved-row .record-actions button,.timeline-card .record-actions button,.check-tools button,.group-add{min-height:40px;padding:8px 14px;font-size:13px}
+.route-add{min-height:44px;border:1px solid #cdbfe6;background:#f6f1fc;color:#5f4f80;font-size:13px;font-weight:600}
+.route-edit,.route-map-link{min-height:32px;display:inline-flex;align-items:center;font-size:12px}
+.calendar-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12px;color:#625775}
+.legend-chip{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#eae6ff;color:#51418c;font-size:12px}
+.legend-chip[data-module="transport"]{background:#ddf1eb;color:#346e60}.legend-chip[data-module="dining"]{background:#fff0db;color:#8a5e21}.legend-chip[data-module="shopping"]{background:#f5e6ff;color:#775395}.legend-chip[data-module="activities"]{background:#ffe5ed;color:#984d65}
+.calendar-extra{border-top:1px solid var(--line);margin-top:24px;padding-top:6px}.calendar-extra>summary{cursor:pointer;font-weight:700;padding:12px 0}.calendar-extra .expense-summary,.calendar-extra .calendar-todos{margin-top:8px}
+.trip-dates{font-size:13px;color:#4c4380;margin:8px 0 0}.trip-countdown{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:20px;background:#eae7fa;color:#5d4ca8;font-size:12px;font-weight:650}
+.req{color:#a52b45}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+.time-picker input[type="time"]{flex:1;min-width:130px;width:auto}
+.check-search{flex:1;min-width:160px;width:auto;padding:8px 12px}
+.trip-dates-row{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.trip-dates-row .field{margin-top:0}
 </style>
 </head>
 <body>
@@ -63,9 +87,10 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <p class="hint">登入後即可儲存旅行，並在不同裝置上同步。</p>
 </section>
 <section id="appArea" hidden aria-label="旅行管理">
-<div id="overviewArea" class="dashboard">
-<button id="homeAddToggle" class="home-fab" type="button" aria-label="新增項目" aria-haspopup="dialog" aria-controls="homeAddDialog"><span aria-hidden="true">＋</span></button>
+<button id="homeAddToggle" class="home-fab" type="button" aria-label="新增項目" title="新增項目" aria-haspopup="dialog" aria-controls="homeAddDialog"><span aria-hidden="true">＋</span><span class="fab-label">新增項目</span></button>
 <dialog id="homeAddDialog" class="home-modal" aria-labelledby="homeAddTitle" aria-describedby="homeAddIntro"><div class="home-modal-heading"><div class="home-modal-icon" aria-hidden="true">＋</div><div><div class="eyebrow">A LITTLE MORE ADVENTURE</div><h2 id="homeAddTitle">新增旅行項目</h2><p id="homeAddIntro">一筆安排，一段新的旅程。</p></div><button id="homeAddClose" class="home-modal-close" type="button" aria-label="關閉新增視窗">×</button></div><div class="home-modal-body"><form id="homeAddForm"><fieldset id="homeAddFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields home-selectors"><div class="field"><label for="homeTrip">旅行／專案</label><select id="homeTrip" required><option value="">請選擇旅行</option></select><p id="homeEmpty" class="hint">請先在下方建立一趟旅行。</p></div><div class="field"><label for="homeModule">大項目</label><select id="homeModule" required><option value="">請選擇大項目</option></select></div></div><div id="homeDetails" hidden><div class="field"><label for="homeCategory">類別</label><select id="homeCategory" required></select></div><div id="homeItemFields" class="module-fields"></div><div class="home-save-bar"><span>儲存至選定旅行，並更新消費統計</span><button type="submit" class="primary">儲存並新增下一筆 <span aria-hidden="true">↗</span></button></div></div></fieldset><p id="homeAddStatus" class="form-status" role="status" aria-live="polite"></p></form></div></dialog>
+<div id="overviewArea" class="dashboard">
+
 <section id="homeSaved" class="card home-recent" hidden><h3>剛剛新增</h3><ul id="homeSavedList"></ul><p class="hint">此處顯示本次操作最近 10 筆；完整紀錄請開啟對應旅行查看。</p></section>
 <section class="card create">
 <div class="eyebrow">LET’S GO SOMEWHERE</div>
@@ -75,6 +100,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <fieldset id="tripFields" disabled style="border:0;margin:0;padding:0;min-width:0;display:contents">
 <div class="field"><label for="tripName">旅行名稱</label><input id="tripName" name="tripName" required maxlength="80" placeholder="例如：春日京都散步" autocomplete="off"></div>
 <div class="field"><label for="destination">目的地</label><input id="destination" name="destination" required maxlength="120" placeholder="例如：日本・京都" autocomplete="off"></div>
+<div class="trip-dates-row"><div class="field"><label for="tripStart">開始日期（選填）</label><input id="tripStart" name="tripStart" type="date" min="1900-01-01" max="2199-12-31"></div><div class="field"><label for="tripEnd">結束日期（選填）</label><input id="tripEnd" name="tripEnd" type="date" min="1900-01-01" max="2199-12-31"></div></div>
 <button id="addTripBtn" class="primary" type="submit">＋ 新增旅行</button>
 </fieldset>
 <p class="hint">旅行會儲存到目前登入帳號的雲端空間。</p>
@@ -89,7 +115,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 </section>
 <section id="detailArea" hidden aria-label="旅行專屬管理">
 <button id="backBtn" type="button" class="secondary">← 返回我的旅行</button>
-<div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
+<div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><div class="detail-actions"><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button><button id="deleteTripBtn" type="button" class="secondary danger">刪除旅行</button></div></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
 <nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
 <nav id="expenseNav" class="expense-nav" aria-label="消費分類" hidden></nav>
 <section id="calendarArea" class="card" hidden aria-label="總表"></section>
@@ -103,7 +129,9 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 </div></section>
 <dialog id="routeDialog" class="home-modal" aria-labelledby="routeDialogTitle"><div class="home-modal-heading"><div><div class="eyebrow">GETTING THERE</div><h2 id="routeDialogTitle">兩站之間，怎麼去？</h2><p id="routeEndpoints"></p></div><button id="routeClose" class="home-modal-close" type="button" aria-label="關閉交通視窗">×</button></div><div class="home-modal-body"><form id="routeForm"><fieldset id="routeFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields"><div class="field"><label for="routeMode">交通工具</label><select id="routeMode" required></select></div><div class="field"><label for="routeMinutes">預估時間（分鐘）</label><input id="routeMinutes" type="number" min="0" max="9999" step="1" placeholder="例如：25"></div><div class="field"><label for="routeTime">出發時間</label><input id="routeTime" type="time"></div><div class="field"><label for="routeCurrency">幣別</label><select id="routeCurrency"></select></div><div class="field wide"><label for="routeAmount">交通費用</label><input id="routeAmount" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" placeholder="選填"></div><div class="field wide"><label for="routeNotes">路線、班次與轉乘資訊</label><textarea id="routeNotes" maxlength="2000" placeholder="例如：搭乘綠線至 Siam，從 2 號出口離站"></textarea></div></div><p class="hint">儲存為一筆交通紀錄，總表只計算一次；無須再到交通模組重複新增。</p><div class="form-actions"><button type="submit" class="primary">儲存交通</button><button id="routeRemove" type="button" class="secondary" hidden>刪除此段交通</button></div></fieldset><p id="routeStatus" role="status"></p></form></div></dialog>
 <dialog id="tripDialog" class="modal"><h2>編輯旅行資料</h2><form id="tripEditForm"><fieldset id="tripEditFields" style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="editName">旅行名稱</label><input id="editName" required maxlength="80"></div><div class="field"><label for="editDestination">目的地</label><input id="editDestination" required maxlength="120"></div><div class="field"><label for="editStart">開始日期</label><input id="editStart" type="date"></div><div class="field"><label for="editEnd">結束日期</label><input id="editEnd" type="date"></div><div class="form-actions"><button class="primary" type="submit">儲存</button><button id="closeTripDialog" type="button" class="secondary">取消</button></div></fieldset><p id="tripEditFeedback" role="status" class="form-status"></p></form></dialog>
+<dialog id="deleteTripDialog" class="modal"><h2>刪除整趟旅行？</h2><p id="deleteTripLabel"></p><p>旅行與其中所有紀錄都會一併刪除，無法復原。</p><div class="form-actions"><button id="confirmDeleteTripBtn" type="button" class="primary">確認刪除旅行</button><button id="cancelDeleteTripBtn" type="button" class="secondary">取消</button></div><p id="deleteTripFeedback" class="form-status" role="status"></p></dialog>
 <dialog id="deleteDialog" class="modal"><h2>刪除這筆紀錄？</h2><p id="deleteLabel"></p><p>刪除後無法復原。</p><div class="form-actions"><button id="confirmDeleteBtn" type="button" class="primary">確認刪除</button><button id="cancelDeleteBtn" type="button" class="secondary">取消</button></div><p id="deleteFeedback" class="form-status" role="status"></p></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div class="footer">Itinerary Manager · Made for your next adventure</div>
 <noscript>請啟用 JavaScript，才能使用 Google 登入與旅行雲端同步。</noscript>
 </main>
@@ -157,6 +185,21 @@ function emptyState(title, detail) {
   const p = document.createElement('p'); p.textContent = detail;
   box.append(icon, heading, p); $('tripList').replaceChildren(box);
 }
+function tripDateInfo(data) {
+  const start = typeof data.startDate === 'string' && validDate(data.startDate) ? data.startDate : '';
+  const end = typeof data.endDate === 'string' && validDate(data.endDate) ? data.endDate : '';
+  if (!start && !end) return null;
+  const p = document.createElement('p'); p.className = 'trip-dates';
+  p.append('📅 ' + (start || '?') + ' → ' + (end || '?'));
+  const today = dateKey(new Date());
+  const days = (a,b) => Math.round((new Date(a + 'T00:00:00Z') - new Date(b + 'T00:00:00Z')) / 86400000);
+  let label = '';
+  if (end && today > end) label = '已結束';
+  else if (start && today < start) label = '還有 ' + days(start,today) + ' 天出發';
+  else if (start) label = '旅行中';
+  if (label) { const chip = document.createElement('span'); chip.className = 'trip-countdown'; chip.textContent = label; p.append(chip); }
+  return p;
+}
 function safeString(value, length, fallback) {
   return typeof value === 'string' && value.trim() ? value.slice(0, length) : fallback;
 }
@@ -179,11 +222,12 @@ function renderTrips(snapshot) {
     const body = document.createElement('div'); body.className = 'trip-body';
     const heading = document.createElement('h3'); heading.textContent = safeString(item.data.name,80,'未命名旅行');
     const place = document.createElement('p'); place.className = 'destination'; place.textContent = '📍 ' + safeString(item.data.destination,120,'尚未設定目的地');
+    const tripDates = tripDateInfo(item.data);
     const meta = document.createElement('p'); meta.className = 'trip-meta';
     const date = item.data.createdAt?.toDate?.();
     meta.textContent = item.pending ? '等待雲端儲存…' : date instanceof Date && Number.isFinite(date.getTime()) ? `建立於 ${new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium'}).format(date)}` : '旅行計畫';
     const open = document.createElement('button'); open.type = 'button'; open.className = 'secondary'; open.textContent = '開啟旅行 →'; open.addEventListener('click',() => openTrip(item.id));
-    body.append(heading,place,meta,open); article.append(top,body); fragment.append(article);
+    body.append(heading,place,...(tripDates ? [tripDates] : []),meta,open); article.append(top,body); fragment.append(article);
   });
   // User and database strings are always text nodes, never HTML.
   $('tripList').replaceChildren(fragment);
@@ -238,13 +282,17 @@ async function start() {
     event.preventDefault();
     if (!currentUser || saving || !$('tripForm').reportValidity()) return;
     const name = $('tripName').value.trim(); const destination = $('destination').value.trim();
+    const startDate = $('tripStart').value, endDate = $('tripEnd').value;
+    if ((startDate && !validDate(startDate)) || (endDate && !validDate(endDate)) || (startDate && endDate && endDate < startDate)) {
+      notice('請確認日期有效，且結束日期不早於開始日期。','error'); return;
+    }
     if (!name || !destination || name.length > 80 || destination.length > 120) {
       notice('請輸入有效的旅行名稱（最多 80 字）與目的地（最多 120 字）。','error'); return;
     }
     const token = generation; const uid = currentUser.uid;
     saving = true; $('tripFields').disabled = true; $('addTripBtn').textContent = '儲存中…'; notice('正在儲存旅行；若網路中斷，請等待連線恢復。');
     try {
-      await addDoc(collection(db,'users',uid,'trips'), {name,destination,createdAt:serverTimestamp()});
+      await addDoc(collection(db,'users',uid,'trips'), {name,destination,createdAt:serverTimestamp(),...(startDate ? {startDate} : {}),...(endDate ? {endDate} : {})});
       if (generation !== token) return;
       $('tripForm').reset(); notice('旅行已儲存到雲端！','success');
     } catch(error) { if (generation === token) notice(errorText(error),'error'); }
@@ -399,11 +447,20 @@ const shortcutCategoryNames={transport:'交通',dining:'餐飲',shopping:'購物
 let shortcutDraft=readShortcutDraft();
 let calendarMonth='', calendarDay='', pendingRecordId=null;
 const collapsedCategories=new Set();
+const calendarClosed=new Set();let checklistQuery='',defaultEntryDate='';
 const categorySuggestions={packing:['證件與票券','衣物','盥洗用品','電子用品','藥品','其他'],todos:['出發前準備','訂位與預約','證件與保險','旅途中','返家後','其他']};
 function node(tag,text,className) {
   const el=document.createElement(tag); if(text !== undefined) el.textContent=text; if(className) el.className=className; return el;
 }
-function feedback(message,tone='info') { $('recordFeedback').textContent=message; $('recordFeedback').dataset.tone=tone; }
+let toastTimer=null;
+function toast(message){
+  const el=$('toast');if(!el||!message)return;
+  el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+function feedback(message,tone='info') {
+  $('recordFeedback').textContent=message; $('recordFeedback').dataset.tone=tone;
+  if(tone==='error'&&message)$('recordFeedback').scrollIntoView({block:'nearest',behavior:'smooth'});
+}
 function abandonDraft() {
   if(recordBusy || deleteBusy || tripEditBusy){notice('請等待目前的儲存或刪除完成，再切換頁面。');return false;}
   if(isDirty() && !window.confirm('表單有尚未儲存的內容，確定放棄並切換嗎？')) return false;
@@ -419,7 +476,7 @@ function isDirty() {
   return fields.some(field=>{
     const el=document.getElementById('entry_'+field.key); if(!el)return false;
     if(!editingEntryId && moduleDefinitions[activeModule].checkable && field.key==='detail')return false;
-    const fallback=field.type==='number'?'1':field.type==='currency'?'TWD':'';
+    const fallback=field.type==='number'?'1':field.type==='currency'?'TWD':field.key==='date'?defaultEntryDate:'';
     const initial=original ? String(entryField(original,field.key) ?? fallback) : fallback;
     return el.value !== initial;
   });
@@ -427,7 +484,7 @@ function isDirty() {
 function closeDetail() {
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
   quickMode=false;selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
-  $('tripDialog').close(); $('deleteDialog').close();$('routeDialog').close();routeContext=null;
+  $('tripDialog').close(); $('deleteDialog').close();$('deleteTripDialog').close();$('routeDialog').close();routeContext=null;
   $('tripEditFields').disabled=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;
   $('detailArea').hidden=true; $('overviewArea').hidden=false;
   $('moduleFields').replaceChildren(); $('recordList').replaceChildren(); feedback('');
@@ -661,7 +718,8 @@ function renderExpenseTotals(){
     const list=node('div',undefined,'expense-module-totals');
     for(const key of expenseModules){
       const subtotal=group.modules.get(key);if(!subtotal)continue;
-      const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));button.addEventListener('click',()=>switchModule(key));list.append(button);
+      const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));if(group.total>0n){const pct=Number(subtotal.total*1000n/group.total)/10;button.style.background='linear-gradient(90deg,#e4defa '+pct+'%,transparent '+pct+'%)';}
+      button.addEventListener('click',()=>switchModule(key));list.append(button);
     }
     card.append(list);grid.append(card);
   }
@@ -699,6 +757,11 @@ function renderCalendarTodos(){
   section.append(list);return section;
 }
 
+function calendarLegend(){
+  const box=node('div',undefined,'calendar-legend');box.append(node('span','圖例：'));
+  for(const [module,label] of [['itinerary','一般行程'],['transport','交通'],['dining','餐飲'],['shopping','購物'],['activities','娛樂']]){const chip=node('span',label,'legend-chip');chip.dataset.module=module;box.append(chip);}
+  return box;
+}
 function renderCalendar(){
   const trip=tripsById.get(selectedTripId) || {};
   if(!calendarMonth){
@@ -712,9 +775,8 @@ function renderCalendar(){
   const previous=node('button','‹ 上個月','secondary');previous.type='button';previous.disabled=calendarMonth==='1900-01';previous.addEventListener('click',()=>changeCalendarMonth(-1));
   const picker=node('input');picker.type='month';picker.value=calendarMonth;picker.min='1900-01';picker.max='2199-12';picker.setAttribute('aria-label','行事曆月份');picker.addEventListener('change',()=>{if(/^\d{4}-\d{2}$/.test(picker.value) && validDate(picker.value+'-01')){calendarMonth=picker.value;calendarDay=calendarMonth+'-01';renderCalendar();}});
   const next=node('button','下個月 ›','secondary');next.type='button';next.disabled=calendarMonth==='2199-12';next.addEventListener('click',()=>changeCalendarMonth(1));
-  const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar,renderExpenseTotals());
+  const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar,calendarLegend());
   fragment.append(node('p','點日期查看當日行程，點項目前往每日行程。時間依填寫的當地時間顯示。','calendar-notes'));
-  fragment.append(renderCalendarTodos());
   const week=node('div',undefined,'calendar-week');for(const day of ['日','一','二','三','四','五','六'])week.append(node('span',day));fragment.append(week);
   const grid=node('div',undefined,'calendar-grid');grid.setAttribute('aria-label',`${year} 年 ${month} 月`);
   for(let i=0;i<first.getDay();i++)grid.append(node('div',undefined,'calendar-cell blank'));
@@ -732,48 +794,41 @@ function renderCalendar(){
   const events=eventsOnDay(calendarDay);if(!events.length)agenda.append(node('p','這一天還沒有安排。'));
   for(const item of events)agenda.append(agendaRow(item));
   const add=node('button','＋ 新增這一天的每日行程','secondary');add.type='button';add.addEventListener('click',()=>{const day=calendarDay;if(!abandonDraft())return;switchModule('itinerary',true);$('entry_date').value=day;setFormOpen(true);focusEntryInput();});agenda.append(add);fragment.append(agenda);
+  const todosBox=node('details',undefined,'calendar-extra'),moneyBox=node('details',undefined,'calendar-extra');
+  todosBox.append(node('summary','✅ 待辦事項'),renderCalendarTodos());moneyBox.append(node('summary','💰 本趟旅行消費'),renderExpenseTotals());
+  for(const [box,key] of [[todosBox,'todos'],[moneyBox,'money']]){box.open=!calendarClosed.has(key);box.addEventListener('toggle',()=>{if(!box.isConnected)return;if(box.open)calendarClosed.delete(key);else calendarClosed.add(key);});}
+  fragment.append(todosBox,moneyBox);
   $('calendarArea').replaceChildren(fragment);
 }
 
 
 function createTimePicker(field) {
-  const wrapper=node('div');
-  const row=node('div',undefined,'time-picker');
-  const value=node('input');value.type='hidden';value.id='entry_'+field.key;value.name=field.key;
-  const hour=node('select');hour.id=value.id+'_hour';hour.setAttribute('aria-label',field.label+'：小時（24 小時制）');
-  const minute=node('select');minute.id=value.id+'_minute';minute.setAttribute('aria-label',field.label+'：分鐘');minute.disabled=true;
-  function option(select,text,value){const o=node('option',text);o.value=value;select.append(o);}
-  option(hour,'','');option(minute,'','');
-  for(let i=0;i<24;i++){const v=String(i).padStart(2,'0');option(hour,v,v);}
-  for(let i=0;i<60;i++){const v=String(i).padStart(2,'0');option(minute,v,v);}
+  const wrapper=node('div'),row=node('div',undefined,'time-picker');
+  const input=node('input');input.type='time';input.id='entry_'+field.key;input.name=field.key;
   const clear=node('button','清除','secondary clear-time');clear.type='button';clear.setAttribute('aria-label','清除'+field.label);
-  hour.addEventListener('change',()=>{
-    if(!hour.value){setTimeValue(field.key,'');return;}
-    minute.disabled=false;if(!minute.value)minute.value='00';value.value=hour.value+':'+minute.value;
-  });
-  minute.addEventListener('change',()=>{
-    if(hour.value){if(!minute.value)minute.value='00';value.value=hour.value+':'+minute.value;}
-  });
-  clear.addEventListener('click',()=>{setTimeValue(field.key,'');hour.focus();});
-  row.append(hour,node('span','時','time-unit'),minute,node('span','分','time-unit'),clear);
-  wrapper.append(value,row,node('p','24 小時制，例如下午 3:30 請選 15 時 30 分。','time-help'));
-  return wrapper;
+  clear.addEventListener('click',()=>{input.value='';input.focus();});
+  row.append(input,clear);wrapper.append(row);return wrapper;
 }
 function setTimeValue(key,value) {
-  const input=$('entry_'+key),hour=$('entry_'+key+'_hour'),minute=$('entry_'+key+'_minute');
-  const valid=/^([01]\d|2[0-3]):[0-5]\d$/.test(value);
-  input.value=valid?value:'';hour.value=valid?value.slice(0,2):'';minute.value=valid?value.slice(3,5):'';minute.disabled=!valid;
+  const input=$('entry_'+key);if(!input)return;
+  input.value=/^([01]\d|2[0-3]):[0-5]\d$/.test(value)?value:'';
 }
+function syncStayMin(){const d=$('entry_date'),e=$('entry_endDate');if(activeModule==='lodging'&&d&&e)e.min=d.value||'';}
 function resetRecordForm() {
   editingEntryId=null; $('recordForm').reset();
   if(activeModule==='itinerary'){syncAnchorExpenseFields('entry','');populateAnchorPicker('entry','',[]);}
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
+  {
+    const trip=tripsById.get(selectedTripId)||{},dateField=moduleDefinitions[activeModule].fields.find(f=>f.key==='date');let dv='';
+    if(dateField?.required&&$('entry_date')){dv=validDate(calendarDay||'')?calendarDay:validDate(trip.startDate||'')?trip.startDate:'';if(dv)$('entry_date').value=dv;}
+    defaultEntryDate=dv;syncStayMin();
+  }
   $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');configureQuickEntry(isQuickModule());setFormOpen(false);
 }
 function switchModule(key,force=false) {
   if(!moduleDefinitions[key] || (!force && !abandonDraft()))return;
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
-  checklistFilter='all';collapsedCategories.clear();
+  checklistFilter='all';checklistQuery='';collapsedCategories.clear();
   activeModule=key;editingEntryId=null;entryDocs=[];recordBusy=false;entriesReady=false;
   const def=moduleDefinitions[key];
   $('calendarArea').hidden=key!=='calendar';$('moduleLayout').hidden=key==='calendar';
@@ -785,17 +840,17 @@ function switchModule(key,force=false) {
   $('recordCount').textContent='0 筆';$('recordSync').textContent='正在載入…';$('recordList').setAttribute('aria-busy','true');
   $('recordList').replaceChildren();$('dayFilterArea').hidden=key!=='itinerary';$('dayFilter').value='';
   $('expenseNav').hidden=!isExpenseView;
-  for(const btn of $('moduleNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===(isExpenseView?'expenses':key)));
+  for(const btn of $('moduleNav').querySelectorAll('button'))btn.setAttribute('aria-pressed',String(btn.dataset.module===(isExpenseView?'expenses':key)));
   for(const btn of $('expenseNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===key));
   const fragment=document.createDocumentFragment();
   for(const field of def.fields){
     const wrap=node('div',undefined,'field'+(field.type==='textarea'?' wide':''));
     const label=node('label',field.label+(field.required?' *':''));label.htmlFor='entry_'+field.key;
     if(field.type==='time'){
-      label.htmlFor='entry_'+field.key+'_hour';
+      label.htmlFor='entry_'+field.key;
       wrap.append(label,createTimePicker(field));fragment.append(wrap);continue;
     }
-    const input=node(['currency','itineraryCategory'].includes(field.type)?'select':field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
+    const input=node(['currency','itineraryCategory'].includes(field.type)?'select':field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;if(field.required)input.setAttribute('aria-required','true');
     if(input.tagName==='INPUT')input.type=field.type==='decimal'?'number':field.type;
     if(field.type==='decimal'){input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填，例如：1500';}
     if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries({...itineraryAnchors,...itineraryCategories}))input.append(new Option(label,key));input.addEventListener('change',()=>{syncAnchorExpenseFields('entry',input.value);populateAnchorPicker('entry',input.value,entryDocs);});}
@@ -825,7 +880,12 @@ function switchModule(key,force=false) {
     if(field.type==='itineraryCategory')fragment.append(createAnchorPicker('entry'));
   }
   $('moduleFields').classList.toggle('checklist-form',!!def.checkable);
-  $('moduleFields').replaceChildren(fragment);refreshCategorySuggestions();resetRecordForm();renderChecklistTools();$('recordFields').disabled=true;
+  $('moduleFields').replaceChildren(fragment);
+  if(key==='lodging'||key==='flights'){
+    const dateEl=$('entry_date'),endEl=$('entry_endDate');
+    if(dateEl&&endEl)dateEl.addEventListener('change',()=>{syncStayMin();if(key==='flights'&&!endEl.value)endEl.value=dateEl.value;});
+  }
+  refreshCategorySuggestions();resetRecordForm();renderChecklistTools();$('recordFields').disabled=true;
   const token=moduleGeneration,authToken=generation,uid=currentUser.uid,trip=selectedTripId;
   unsubscribeEntries=onSnapshot(collection(db,'users',uid,'trips',trip,'entries'),{includeMetadataChanges:true},snapshot=>{
     if(token!==moduleGeneration || authToken!==generation)return;
@@ -952,6 +1012,18 @@ function renderChecklistTools(){
     const button=node('button',title,'secondary');button.type='button';button.setAttribute('aria-pressed',String(checklistFilter===key));
     button.addEventListener('click',()=>{checklistFilter=key;renderChecklistTools();renderEntries();});tools.append(button);
   }
+  const search=node('input',undefined,'check-search');search.type='search';search.placeholder='搜尋項目';search.value=checklistQuery;search.setAttribute('aria-label','搜尋項目');
+  search.addEventListener('input',()=>{checklistQuery=search.value;renderEntries();});tools.append(search);
+  const expand=node('button','全部展開','secondary');expand.type='button';expand.addEventListener('click',()=>{collapsedCategories.clear();renderEntries();});
+  const collapse=node('button','全部收合','secondary');collapse.type='button';collapse.addEventListener('click',()=>{for(const item of entryDocs)if(item.data.module===activeModule)collapsedCategories.add((safeString(item.data.detail,160,'未分類').trim())||'未分類');renderEntries();});
+  const clearDone=node('button','清除已完成','secondary danger');clearDone.type='button';
+  clearDone.addEventListener('click',async()=>{
+    const done=entryDocs.filter(x=>x.data.module===activeModule&&x.data.done===true&&!x.pending);
+    if(!done.length){feedback('目前沒有已完成項目。');return;}
+    if(!confirm('刪除 '+done.length+' 個已完成項目？刪除後無法復原。'))return;
+    await mutateEntry(async()=>{for(let i=0;i<done.length;i+=400){const batch=writeBatch(db);for(const item of done.slice(i,i+400))batch.delete(entryRef(item.id));await batch.commit();}},()=>feedback('已清除 '+done.length+' 個已完成項目。'));
+  });
+  tools.append(expand,collapse,clearDone);
 }
 function renderChecklist(items){
   const completed=items.filter(x=>x.data.done===true).length;
@@ -965,7 +1037,7 @@ function renderChecklist(items){
   const fragment=document.createDocumentFragment();let visibleGroups=0;
   const names=[...groups.keys()].sort((a,b)=>a==='未分類'?1:b==='未分類'?-1:a.localeCompare(b,'zh-Hant'));
   for(const name of names){
-    const all=groups.get(name),visible=all.filter(item=>checklistFilter==='all' || (checklistFilter==='done')===(item.data.done===true));
+    const all=groups.get(name),visible=all.filter(item=>checklistFilter==='all' || (checklistFilter==='done')===(item.data.done===true)).filter(item=>!checklistQuery.trim()||(safeString(item.data.title,160,'')+' '+safeString(item.data.notes,2000,'')).toLowerCase().includes(checklistQuery.trim().toLowerCase()));
     if(!visible.length)continue;visibleGroups++;
     visible.sort((a,b)=>Number(a.data.done===true)-Number(b.data.done===true) || (a.data.date||'9999').localeCompare(b.data.date||'9999') || a.id.localeCompare(b.id));
     const group=node('details',undefined,'check-group');group.open=!collapsedCategories.has(name);
@@ -992,7 +1064,7 @@ function renderChecklist(items){
     const add=node('button','＋ 在此類別新增','secondary group-add');add.type='button';add.disabled=recordBusy || deleteBusy;
     add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);setCategoryValue(name==='未分類'?'':name);if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();});group.append(add);fragment.append(group);
   }
-  $('recordList').replaceChildren(visibleGroups?fragment:node('p',checklistFilter==='done'?'還沒有已完成項目。':'全部完成了！','empty'));
+  $('recordList').replaceChildren(visibleGroups?fragment:node('p',checklistQuery.trim()?'找不到符合的項目。':checklistFilter==='done'?'還沒有已完成項目。':'全部完成了！','empty'));
 }
 
 function renderQuickRecords(items){
@@ -1049,7 +1121,7 @@ function renderItineraryTimeline(items){
   const dates=node('nav',undefined,'timeline-days');dates.setAttribute('aria-label','每日行程日期');for(const date of ['',...itineraryGroups(entryDocs).map(([d])=>d).filter(validDate)]){const b=node('button',date||'全部日期','secondary');b.type='button';b.setAttribute('aria-pressed',String(date===filter));b.addEventListener('click',()=>{$('dayFilter').value=date;renderEntries();});dates.append(b);}fragment.append(dates);
   if(!groups.length){$('recordList').replaceChildren(node('p','這一天還沒有安排，按「新增」建立第一站。','empty'));return;}
   for(const [date,stops] of groups){
-    const section=node('section',undefined,'day-timeline'),heading=node('div',undefined,'timeline-heading');heading.append(node('h3',date),node('span',stops.length+' 個站點 · 當地時間'));section.append(heading);
+    const section=node('section',undefined,'day-timeline'),heading=node('div',undefined,'timeline-heading');heading.append(node('h3',dayHeading(date)),node('span',stops.length+' 個站點 · 當地時間'));section.append(heading);
     const outline=node('details',undefined,'route-outline'),summary=node('summary','當日路線 · '+stops.length+' 站');outline.append(summary);
     const path=node('div',undefined,'route-path');stops.forEach((stop,i)=>{const pin=node('div',undefined,'route-pin');pin.append(node('span',String(i+1)),node('strong',safeString(stop.data.title,160,'未命名')));path.append(pin);});outline.append(path,node('p','路線順序示意，依開始時間排序；點各站地點或交通路段可開啟 Google Maps。','hint'));section.append(outline);
     const matched=new Set();
@@ -1076,13 +1148,21 @@ function renderItineraryTimeline(items){
         const controls=node('div',undefined,'route-controls'),link=routeMapLink(item,next);if(link)controls.append(link);
         const edit=node('button','編輯交通','route-edit');edit.type='button';edit.disabled=recordBusy||route.pending;edit.addEventListener('click',()=>openRouteDialog(item,next,route));controls.append(edit);box.append(controls);between.append(box);
       }
-      const add=node('button',routes.length?'＋ 新增另一段交通':'＋ 新增交通方式','route-add');add.type='button';add.disabled=recordBusy||deleteBusy;add.addEventListener('click',()=>openRouteDialog(item,next));between.append(add);section.append(between);
+      const add=node('button',routes.length?'＋ 新增另一段交通':'🚶 🚇 🚕 ＋ 新增交通方式','route-add');add.type='button';add.disabled=recordBusy||deleteBusy;add.addEventListener('click',()=>openRouteDialog(item,next));between.append(add);section.append(between);
     });
     const extras=entryDocs.filter(x=>x.data.module==='transport'&&x.data.date===date&&!matched.has(x.id));
     if(extras.length){const more=node('details',undefined,'route-unlinked');more.append(node('summary','當日其他交通 · '+extras.length+' 筆'),node('p','獨立新增、或站點順序調整後的交通，仍保留在交通模組及消費統計。','hint'));for(const x of extras){const b=node('button',safeString(x.data.title,160,'交通')+' · '+(formatExpense(x.data)||'未填金額'),'secondary');b.type='button';b.addEventListener('click',()=>jumpToEntry(x));more.append(b);}section.append(more);}
     const add=node('button','＋ 新增這一天的站點','timeline-add-stop');add.type='button';add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);if(validDate(date))$('entry_date').value=date;focusEntryInput();});section.append(add);fragment.append(section);
   }
   $('recordList').replaceChildren(fragment);
+}
+function dayHeading(date){
+  if(!validDate(date))return date;
+  const trip=tripsById.get(selectedTripId)||{};
+  const weekday='日一二三四五六'[new Date(date+'T12:00:00').getDay()];
+  const start=validDate(trip.startDate||'')?trip.startDate:'';
+  const n=start&&date>=start?Math.round((new Date(date+'T00:00:00Z')-new Date(start+'T00:00:00Z'))/86400000)+1:0;
+  return (n?'Day '+n+' · ':'')+date+'（'+weekday+'）';
 }
 function openRouteDialog(from,to,existing=null){
   if(!abandonDraft())return;
@@ -1173,6 +1253,7 @@ function editEntry(id) {
     const value=field.type==='number'?String(entryField(item.data,field.key) || 1):safeString(entryField(item.data,field.key),field.max || 160,field.type==='currency'?'TWD':'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
   }
+  syncStayMin();
   if(activeModule==='itinerary'){const category=$('entry_itineraryCategory').value;syncAnchorExpenseFields('entry',category);populateAnchorPicker('entry',category,entryDocs);}
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
   $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
@@ -1224,7 +1305,7 @@ async function mutateEntry(action,success) {
   try{
     await action();
     if(token!==moduleGeneration || authToken!==generation)return false;
-    if(success)success();return true;
+    if(success){success();toast($('recordFeedback').textContent);}return true;
   }catch(error){if(token===moduleGeneration && authToken===generation)feedback(errorText(error),'error');return false;}
   finally{
     if(token===moduleGeneration && authToken===generation){recordBusy=false;$('recordFields').disabled=!entriesReady;renderEntries();}
@@ -1270,8 +1351,8 @@ function refreshHomeTrips(){
   $('homeEmpty').hidden=tripsById.size>0;
 }
 function homeField(field){
-  const wrap=node('div',undefined,'field'+(['title','amount'].includes(field.key)?' wide':'')),label=node('label',field.label);label.htmlFor='home_'+field.key;
-  const input=node(field.type==='textarea'?'textarea':field.type==='currency'?'select':'input');input.id='home_'+field.key;input.name=field.key;input.required=!!field.required;
+  const wrap=node('div',undefined,'field'+(['title','amount'].includes(field.key)?' wide':'')),label=node('label',field.label+(field.required?' *':''));label.htmlFor='home_'+field.key;
+  const input=node(field.type==='textarea'?'textarea':field.type==='currency'?'select':'input');input.id='home_'+field.key;input.name=field.key;input.required=!!field.required;if(field.required)input.setAttribute('aria-required','true');
   if(field.type==='currency'){for(const [code,name] of Object.entries(currencyOptions))input.append(new Option(name,code));input.value='TWD';}
   else if(field.type==='decimal'){input.type='number';input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填';}
   else if(field.type==='number'){input.type='number';input.min='1';input.max='999';input.step='1';input.value='1';}
@@ -1316,7 +1397,20 @@ function buildHomeEntry(module,category,values){
 function initHomeAdd(){
   for(const [key,def] of Object.entries(moduleDefinitions))if(key!=='calendar')$('homeModule').append(new Option(def.label,key));
   const modal=$('homeAddDialog');
-  $('homeAddToggle').addEventListener('click',()=>{if(!currentUser)return;refreshHomeTrips();modal.showModal();document.body.classList.add('home-modal-open');$('homeTrip').focus();});
+  $('homeAddToggle').addEventListener('click',()=>{
+    if(!currentUser)return;refreshHomeTrips();
+    const inTrip=!!selectedTripId&&tripsById.has(selectedTripId);
+    if(inTrip){
+      $('homeTrip').value=selectedTripId;
+      const m=activeModule==='calendar'?'':activeModule;
+      if(m&&Object.hasOwn(homeCategories,m)&&$('homeModule').value!==m){$('homeModule').value=m;renderHomeFields();$('homeModule').dataset.previous=m;}
+      const dateEl=document.getElementById('home_date');
+      if(dateEl&&validDate(calendarDay||''))dateEl.value=calendarDay;
+      refreshHomeAnchorPicker();
+    }
+    modal.showModal();document.body.classList.add('home-modal-open');
+    (inTrip?($('homeModule').value?$('homeCategory'):$('homeModule')):$('homeTrip')).focus();
+  });
   $('homeAddClose').addEventListener('click',()=>{if(!homeBusy)modal.close();});
   modal.addEventListener('cancel',event=>{if(homeBusy)event.preventDefault();});
   modal.addEventListener('close',()=>{document.body.classList.remove('home-modal-open');});
@@ -1335,12 +1429,18 @@ function initHomeAdd(){
       const saved=node('li',tripName+' · '+moduleDefinitions[module].label+' · '+data.title+(data.amount?' · '+data.currency+' '+data.amount:''));$('homeSavedList').prepend(saved);while($('homeSavedList').children.length>10)$('homeSavedList').lastElementChild.remove();$('homeSaved').hidden=false;
       for(const key of ['title','amount','notes','reference']){const el=document.getElementById('home_'+key);if(el)el.value='';}
       if($('homeAnchorSource'))$('homeAnchorSource').value='';
-      $('homeAddStatus').textContent='已儲存，可繼續新增下一筆。';
+      $('homeAddStatus').textContent='已儲存，可繼續新增下一筆。';toast('已新增：'+data.title);
     }catch(e){if(authToken===generation)$('homeAddStatus').textContent=errorText(e);}
     finally{homeBusy=false;$('homeAddClose').disabled=false;$('homeAddFields').disabled=false;if(authToken===generation&&$('homeAddDialog').open)$('home_title')?.focus();}
   });
 }
 
+let navGroups=null;
+function groupsEnsure(){
+  if(navGroups)return navGroups;
+  navGroups=['規劃','預訂','清單與花費'].map(name=>{const g=node('div',undefined,'nav-group');g.setAttribute('role','group');g.setAttribute('aria-label',name);g.append(node('span',name,'nav-label'));$('moduleNav').append(g);return g;});
+  return navGroups;
+}
 function initModules(){
   initRouteDialog();
   initHomeAdd();
@@ -1356,12 +1456,12 @@ function initModules(){
       expenses.setAttribute('aria-controls','expenseNav');
       expenses.setAttribute('aria-pressed','false');
       expenses.addEventListener('click',()=>{if(!Object.hasOwn(itineraryCategories,activeModule))switchModule('transport');});
-      $('moduleNav').append(expenses);
+      groupsEnsure()[2].append(expenses);
     }
     const btn=node('button',def.label,'module-tab');
     btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');
     btn.addEventListener('click',()=>{if(activeModule!==key)switchModule(key);});
-    $(isExpense?'expenseNav':'moduleNav').append(btn);
+    (isExpense?$('expenseNav'):groupsEnsure()[({calendar:0,itinerary:0,flights:1,lodging:1})[key]??2]).append(btn);
   }
   $('backBtn').addEventListener('click',()=>{if(abandonDraft()){closeDetail();$('tripsHeading').scrollIntoView({block:'start'});}});
   $('recordForm').addEventListener('submit',saveEntry);
@@ -1374,9 +1474,28 @@ function initModules(){
     const id=deleteTarget,token=moduleGeneration,authToken=generation,ref=entryRef(id);
     deleteBusy=true;$('confirmDeleteBtn').disabled=true;$('cancelDeleteBtn').disabled=true;$('deleteFeedback').textContent='正在刪除，請等待雲端確認…';
     try{await deleteDoc(ref);if(token!==moduleGeneration || authToken!==generation)return;
-      if(editingEntryId===id)resetRecordForm();$('deleteDialog').close();feedback('紀錄已刪除。');
+      if(editingEntryId===id)resetRecordForm();$('deleteDialog').close();feedback('紀錄已刪除。');toast('紀錄已刪除。');
     }catch(error){if(token===moduleGeneration && authToken===generation)$('deleteFeedback').textContent=errorText(error);}
     finally{if(token===moduleGeneration && authToken===generation){deleteBusy=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;}}
+  });
+  $('deleteTripBtn').addEventListener('click',()=>{
+    if(recordBusy||deleteBusy||tripEditBusy)return;
+    const trip=tripsById.get(selectedTripId);if(!trip)return;
+    $('deleteTripLabel').textContent=safeString(trip.name,80,'未命名旅行');$('deleteTripFeedback').textContent='';$('deleteTripDialog').showModal();$('cancelDeleteTripBtn').focus();
+  });
+  $('cancelDeleteTripBtn').addEventListener('click',()=>{if(!tripEditBusy)$('deleteTripDialog').close();});
+  $('deleteTripDialog').addEventListener('cancel',event=>{if(tripEditBusy)event.preventDefault();});
+  $('confirmDeleteTripBtn').addEventListener('click',async()=>{
+    if(tripEditBusy||!currentUser||!selectedTripId)return;
+    const authToken=generation,trip=selectedTripId,uid=currentUser.uid;
+    tripEditBusy=true;$('confirmDeleteTripBtn').disabled=true;$('cancelDeleteTripBtn').disabled=true;$('deleteTripFeedback').textContent='正在刪除，請等待雲端確認…';
+    try{
+      const entries=await getDocs(collection(db,'users',uid,'trips',trip,'entries'));
+      for(let i=0;i<entries.docs.length;i+=400){const batch=writeBatch(db);for(const item of entries.docs.slice(i,i+400))batch.delete(item.ref);await batch.commit();}
+      await deleteDoc(doc(db,'users',uid,'trips',trip));
+      if(authToken===generation){$('deleteTripDialog').close();toast('旅行已刪除。');}
+    }catch(error){if(authToken===generation)$('deleteTripFeedback').textContent=errorText(error);}
+    finally{tripEditBusy=false;$('confirmDeleteTripBtn').disabled=false;$('cancelDeleteTripBtn').disabled=false;}
   });
   $('editTripBtn').addEventListener('click',()=>{
     if(recordBusy || deleteBusy)return;
