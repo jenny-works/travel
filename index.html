@@ -601,41 +601,22 @@ function setFormOpen(open){
 }
 function focusEntryInput(){if(quickMode && isQuickModule()){$('quickRows')?.querySelector('.quick-name')?.focus();return;}if(activeModule==='packing')$('packingRows')?.querySelector('.packing-name')?.focus();else $('entry_title')?.focus();}
 function dateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
-function datesForEntry(data){
-  if(!moduleDefinitions[data.module] || data.module==='calendar')return [];
-  const dates=[];
-  if(validDate(data.date || ''))dates.push({date:data.date,label:data.module==='flights'?'出發':data.module==='lodging'?'入住':data.module==='todos'?'截止':''});
-  if(data.module==='flights' && validDate(data.endDate || ''))dates.push({date:data.endDate,label:'抵達'});
-  if(data.module==='lodging' && validDate(data.date || '') && validDate(data.endDate || '') && data.endDate>=data.date){
-    // Calendar ranges are evaluated per visible month rather than expanded into unbounded arrays.
-    if(data.endDate!==data.date)dates.push({date:data.endDate,label:'退房'});
-  }
-  return dates;
-}
 function eventsOnDay(day){
-  const events=[];
-  const firstStop=itineraryGroups(entryDocs,day)[0]?.[1][0];
-  const hiddenStartId=firstStop?.data.module==='itinerary' &&
-    Object.values(itineraryAnchors).includes(firstStop.data.detail) ? firstStop.id : null;
-  for(const item of entryDocs){
-    if(item.id===hiddenStartId)continue;
-    const data=item.data;if(!moduleDefinitions[data.module] || data.module==='calendar')continue;
-    for(const event of datesForEntry(data))if(event.date===day)events.push({...item,eventLabel:event.label,eventTime:event.label==='抵達'||event.label==='退房'?data.endTime:data.time});
-    if(data.module==='lodging' && validDate(data.date || '') && validDate(data.endDate || '') && day>data.date && day<data.endDate)events.push({...item,eventLabel:'住宿中',eventTime:''});
-  }
-  return events.sort((a,b)=>(a.eventTime || '99').localeCompare(b.eventTime || '99') || String(a.data.title || '').localeCompare(String(b.data.title || ''),'zh-Hant'));
+  const stops=itineraryGroups(entryDocs,day)[0]?.[1] || [];
+  const first=stops[0]?.data;
+  if(first?.module==='itinerary' && Object.values(itineraryAnchors).includes(first.detail))return stops.slice(1);
+  return stops;
 }
-function jumpToEntry(item){
+function jumpToEntry(item,key=item.data.module){
   if(!abandonDraft())return;
-  pendingRecordId=item.id;switchModule(item.data.module,true);
+  pendingRecordId=item.id;switchModule(key,true);
 }
-function agendaRow(item,label=''){
+function agendaRow(item){
   const row=node('div',undefined,'agenda-item');
   const button=node('button',undefined,'agenda-open');button.type='button';
-  button.append(node('strong',safeString(item.data.title,160,'未命名項目')),node('small',`${moduleDefinitions[item.data.module].label} ${label}${item.eventTime?' · '+item.eventTime:''}${item.data.done===true?' · 已完成':''}`));
-  button.addEventListener('click',()=>jumpToEntry(item));row.append(button);
-  if(item.data.module!=='flights' && item.data.location)row.append(mapLink(safeString(item.data.location,160,'')));
-  if(formatExpense(item.data))row.append(node('span',formatExpense(item.data),'expense-amount'));
+  button.append(node('strong',safeString(item.data.title,160,'未命名項目')),node('small',item.data.time || '未設定時間'));
+  button.addEventListener('click',()=>jumpToEntry(item,'itinerary'));row.append(button);
+  if(item.data.location)row.append(mapLink(safeString(item.data.location,160,'')));
   return row;
 }
 function changeCalendarMonth(amount){
@@ -721,7 +702,7 @@ function renderCalendarTodos(){
 function renderCalendar(){
   const trip=tripsById.get(selectedTripId) || {};
   if(!calendarMonth){
-    const dates=entryDocs.flatMap(item=>datesForEntry(item.data).map(event=>event.date)).sort();
+    const dates=itineraryGroups(entryDocs).map(([date])=>date).filter(validDate);
     calendarDay=validDate(trip.startDate || '')?trip.startDate:dates[0] || dateKey(new Date());calendarMonth=calendarDay.slice(0,7);
   }
   if(!calendarDay || calendarDay.slice(0,7)!==calendarMonth)calendarDay=calendarMonth+'-01';
@@ -732,7 +713,7 @@ function renderCalendar(){
   const picker=node('input');picker.type='month';picker.value=calendarMonth;picker.min='1900-01';picker.max='2199-12';picker.setAttribute('aria-label','行事曆月份');picker.addEventListener('change',()=>{if(/^\d{4}-\d{2}$/.test(picker.value) && validDate(picker.value+'-01')){calendarMonth=picker.value;calendarDay=calendarMonth+'-01';renderCalendar();}});
   const next=node('button','下個月 ›','secondary');next.type='button';next.disabled=calendarMonth==='2199-12';next.addEventListener('click',()=>changeCalendarMonth(1));
   const today=node('button','今天','secondary');today.type='button';today.addEventListener('click',()=>{calendarDay=dateKey(new Date());calendarMonth=calendarDay.slice(0,7);renderCalendar();});toolbar.append(previous,picker,next,today);fragment.append(toolbar,renderExpenseTotals());
-  fragment.append(node('p','點日期查看當日安排，點活動前往對應模組。住宿會顯示入住、住宿期間與退房；時間依填寫的當地時間顯示。','calendar-notes'));
+  fragment.append(node('p','點日期查看當日行程，點項目前往每日行程。時間依填寫的當地時間顯示。','calendar-notes'));
   fragment.append(renderCalendarTodos());
   const week=node('div',undefined,'calendar-week');for(const day of ['日','一','二','三','四','五','六'])week.append(node('span',day));fragment.append(week);
   const grid=node('div',undefined,'calendar-grid');grid.setAttribute('aria-label',`${year} 年 ${month} 月`);
@@ -742,14 +723,14 @@ function renderCalendar(){
     const cell=node('div',undefined,'calendar-cell'+(date===calendarDay?' selected':'')+(trip.startDate && trip.endDate && date>=trip.startDate && date<=trip.endDate?' in-trip':''));
     const button=node('button',String(day),'calendar-date');button.type='button';button.setAttribute('aria-label',date+`，${events.length} 筆安排`);button.setAttribute('aria-pressed',String(date===calendarDay));if(date===dateKey(new Date()))button.setAttribute('aria-current','date');
     button.addEventListener('click',()=>{calendarDay=date;renderCalendar();$('calendarAgenda').scrollIntoView({block:'nearest',behavior:'smooth'});});cell.append(button);
-    for(const item of events.slice(0,3)){const event=node('button',`${item.eventTime || ''} ${moduleDefinitions[item.data.module].label} ${item.eventLabel} ${safeString(item.data.title,160,'未命名')}`.trim(),'calendar-event');event.type='button';event.dataset.module=item.data.module;event.title=event.textContent;event.addEventListener('click',()=>jumpToEntry(item));cell.append(event);}
+    for(const item of events.slice(0,3)){const event=node('button',`${item.data.time || ''} ${safeString(item.data.title,160,'未命名')}`.trim(),'calendar-event');event.type='button';event.dataset.module=item.data.module;event.title=event.textContent;event.addEventListener('click',()=>jumpToEntry(item,'itinerary'));cell.append(event);}
     if(events.length>3){const more=node('button',`＋ ${events.length-3} 筆`,'calendar-more');more.type='button';more.addEventListener('click',()=>{calendarDay=date;renderCalendar();$('calendarAgenda').scrollIntoView({block:'nearest'});});cell.append(more);}
     if(events.length)cell.append(node('span',events.length+' 筆','calendar-dot-count'));grid.append(cell);
   }
   while(grid.children.length%7)grid.append(node('div',undefined,'calendar-cell blank'));fragment.append(grid);
   const agenda=node('section',undefined,'calendar-agenda');agenda.id='calendarAgenda';agenda.append(node('h3',calendarDay+' 的安排'));
   const events=eventsOnDay(calendarDay);if(!events.length)agenda.append(node('p','這一天還沒有安排。'));
-  for(const item of events)agenda.append(agendaRow(item,item.eventLabel));
+  for(const item of events)agenda.append(agendaRow(item));
   const add=node('button','＋ 新增這一天的每日行程','secondary');add.type='button';add.addEventListener('click',()=>{const day=calendarDay;if(!abandonDraft())return;switchModule('itinerary',true);$('entry_date').value=day;setFormOpen(true);focusEntryInput();});agenda.append(add);fragment.append(agenda);
   $('calendarArea').replaceChildren(fragment);
 }
