@@ -94,11 +94,36 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .expense-details>summary{cursor:pointer;padding:12px 0;font-weight:700}
 .expense-details-body{display:grid;gap:14px;padding:4px 0 16px}
 @media(max-width:540px){.chart-row{grid-template-columns:84px minmax(0,1fr)}.chart-row .chart-value{grid-column:2}.expense-chart{padding:18px}}
+/* Desktop workspace */
+:root{color-scheme:dark;--ink:#eef4fb;--muted:#a7b7c9;--purple:#62e5cb;--line:#29394b;--shadow:none;--surface:#152131;--deep:#0e1723;--accent:#62e5cb}
+body{background:#0b131e;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif}
+body>header{min-height:67px;padding:12px max(22px,calc((100vw - 1550px)/2));background:#101b29;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:8}
+body>header h1{font-size:17px;letter-spacing:.02em}.home-link{display:flex;align-items:center;gap:10px;color:var(--ink)}.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#24443e;color:var(--accent);font-size:19px}.header-tag{font-size:10px;letter-spacing:.16em;color:#8ca1b7;border-left:1px solid #35465a;padding-left:14px;margin-left:6px}.logout{background:#1a2839;border-color:#35465a;color:#e0e9f3}
+main{max-width:1550px;margin:0 auto;padding:26px 28px 45px}.footer{color:#899eb4}
+#detailArea{display:grid;grid-template-columns:210px minmax(0,1fr);align-items:start;gap:24px}.workspace-sidebar{position:sticky;top:94px;min-width:0;border:1px solid var(--line);border-radius:19px;background:#111c2a;padding:14px}.workspace-sidebar #backBtn{width:100%;text-align:left;margin:0 0 12px}.sidebar-kicker{padding:9px 9px 2px;color:#7d96af;font-size:10px;letter-spacing:.18em;font-weight:700}.workspace-main{min-width:0}.workspace-sidebar #moduleNav{display:grid;gap:9px;margin:0}.workspace-sidebar .nav-group{display:grid;gap:4px;width:100%;padding:0;background:none;border:0}.workspace-sidebar .nav-label{margin:0;padding:10px 9px 4px;color:#9baec3;font-size:11px;font-weight:600}.workspace-sidebar .module-tab{width:100%;text-align:left;min-height:42px;border:1px solid transparent;border-radius:9px;padding:8px 10px;background:transparent;color:#bacbde;font-size:14px}.workspace-sidebar .module-tab:hover{background:#1d2b3c;color:#eef4fb}.workspace-sidebar .module-tab[aria-pressed=true]{background:#203b3b;border-color:#345752;color:#9bf2df}.sidebar-foot{display:flex;align-items:center;gap:8px;color:#91a7bd;font-size:11px;margin:14px 0 0;padding:12px 9px 4px;border-top:1px solid var(--line)}.sidebar-foot::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%}
+.detail-hero,.dashboard-hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(115deg,#152635 5%,#142b34 63%,#194239 100%);border:1px solid #2c4a53;border-radius:20px;padding:27px 30px;margin:0 0 19px}.detail-hero:after,.dashboard-hero:after{content:'';pointer-events:none;position:absolute;z-index:-1;inset:0 0 0 45%;background:repeating-radial-gradient(ellipse at 84% 85%,transparent 0 25px,#8af6d519 26px 27px,transparent 28px 42px);mask-image:linear-gradient(90deg,transparent,#000)}.detail-hero h2,.dashboard-hero h2{margin:3px 0 8px;font-size:clamp(27px,4vw,43px);letter-spacing:-.035em;color:#f1faf9}.detail-hero p,.dashboard-hero p{color:#b4cbcf;margin:3px 0}.eyebrow,.detail-hero .eyebrow{color:#86dbc9;letter-spacing:.17em;font-size:10px}.dashboard-hero{grid-column:1/-1;margin:0;padding:32px}.dashboard-hero h2{margin:8px 0}.dashboard{grid-template-columns:minmax(0,1fr) minmax(270px,335px);gap:21px}.dashboard .create{grid-column:2;grid-row:2;border-top:1px solid var(--line)}.dashboard .trip-library{grid-column:1;grid-row:2}.dashboard .home-recent{grid-row:3}.trips{gap:15px}.trip-top{color:#9eeada;background:linear-gradient(120deg,#1d3543,#1c313c);padding:16px 20px}.trip-number{color:#a7c0d4}.trip h3{color:var(--ink)}.trip-dates{color:#a7b9cb}.trip-countdown,.count{background:#213b43;color:#a8e6df}
+.card,.trip,.expense-chart,.expense-details,.expense-total-card,.calendar-todo,.quick-saved-row,.check-row,.check-group,.quick-entry,.route-outline,.timeline-card,.timeline-transport,.modal,dialog.home-modal{background:var(--surface);border-color:var(--line);color:var(--ink);box-shadow:none}
+.primary,.home-fab{background:var(--accent);border-color:var(--accent);color:#102c2a;box-shadow:none}.primary:hover,.home-fab:hover{background:#9af3e1}.secondary,.module-tab{background:#1c2939;color:#d6e3f0;border-color:#34465a}.secondary:hover,.module-tab:hover{background:#263a50;color:white}.danger{color:#ffb3b9;border-color:#663d48}.expense-nav{background:#111c2a;border:1px solid var(--line);margin:0 0 16px}.expense-nav .module-tab[aria-pressed=true],.chart-currency[aria-pressed=true],.timeline-days button[aria-pressed=true]{background:#294941;border-color:#457569;color:#acf2e2}
+p,.hint,.sync,.calendar-notes,.quick-guide,.time-help,.timeline-meta,.timeline-notes,.quick-saved-meta,.chart-sub,.chart-day-label,.expense-summary-note,.destination,.trip-meta,.calendar-legend,.todo-due,.todo-notes,.form-status{color:var(--muted)}
+input,select,textarea,.category-select,.quick-row input,.quick-row select,.home-modal input,.home-modal select,.home-modal textarea{background:#101a27;color:#edf6ff;border:1px solid #394a5d;color-scheme:dark}.home-modal label,label{color:#c3d2e2}.home-modal :is(input,select,textarea):focus-visible{background:#142336;border-color:var(--accent);box-shadow:0 0 0 2px #62e5cb36}.home-modal-heading{background:#1a303a;border-color:var(--line)}.home-modal-close,.home-modal-icon{background:#243e45;color:#c0eee7;border-color:#355a60}.home-modal-close:hover{background:#31515c}.home-modal details,.quick-extra,.home-recent li,.home-modal .home-selectors,.home-save-bar{background:transparent;border-color:var(--line)}
+.empty,.status{background:#15263a;border-color:#30475d;color:#c6d7e9}.status[data-tone=success]{background:#153933;border-color:#326454;color:#a4f0d9}.status[data-tone=error]{background:#40252e;border-color:#814555;color:#ffc1c8}.expense-summary,.calendar-todos{background:#111c2a;border-color:var(--line)}.expense-module-total{background:transparent;color:#d2e0ef}.expense-module-total:hover,.chart-row:hover,.chart-row[aria-current=true]{background:#203646}.expense-currency,.expense-total-value,.expense-amount,.chart-total,.chart-value,.chart-day-value,.chart-title{color:#9cebdc}.chart-fill,.chart-day-bar,.chart-row[aria-current=true] .chart-fill{background:#61cbbb}.chart-track,.chart-day-label{border-color:var(--line)}
+.calendar-dashboard{display:grid;grid-template-columns:minmax(0,1fr) minmax(235px,285px);align-items:start;gap:19px}.calendar-side{min-width:0;display:grid;gap:13px}.calendar-side .calendar-extra{background:#111c2a;border:1px solid var(--line);border-radius:14px;margin:0;padding:0 13px}.calendar-side .calendar-extra>summary{color:#c9dae8}.calendar-side :is(.expense-summary,.calendar-todos){padding:12px;margin:0 0 12px;border:0}.calendar-side .expense-total-grid,.calendar-side .calendar-todo-list{grid-template-columns:minmax(0,1fr)}.calendar-side .expense-total-card{padding:13px}.calendar-side .expense-summary .detail-heading,.calendar-side .calendar-todos .section-heading{flex-wrap:wrap;gap:6px}.calendar-side .expense-summary-note{overflow-wrap:anywhere}
+.calendar-week{background:#223344;color:#c9daea}.calendar-grid,.calendar-cell,.agenda-item{border-color:#2d3e51}.calendar-cell{background:#121e2d;min-height:88px}.calendar-cell.blank{background:#0e1825}.calendar-cell.selected{background:#1c373c;box-shadow:inset 0 0 0 1px #60b9ab}.calendar-cell.in-trip{border-top-color:#447e77}.calendar-date{color:#deebf5}.calendar-date[aria-current=date]{background:#65e3ce;color:#153532}.calendar-event,.legend-chip{background:#26384f;color:#d1dffa}.calendar-event[data-module=dining],.legend-chip[data-module=dining]{background:#453926;color:#f5d69a}.calendar-event[data-module=transport],.legend-chip[data-module=transport]{background:#254740;color:#abf0d5}.calendar-event[data-module=shopping],.legend-chip[data-module=shopping]{background:#3c3354;color:#e2ccff}.calendar-event[data-module=activities],.legend-chip[data-module=activities]{background:#492f44;color:#ffd1ea}.calendar-event[data-module=airport],.legend-chip[data-module=airport]{background:#263d54;color:#c0e3ff}.calendar-event[data-module=hotel],.legend-chip[data-module=hotel]{background:#473828;color:#ffe0b6}.calendar-dot-count,.calendar-more,.map-link,.route-map-link,.route-edit,.route-outline summary,.timeline-add-stop,.route-add,.quick-count{color:#a1e9da}
+.timeline-dot,.route-pin>span{background:#254941;color:#b7f2df}.timeline-time,.timeline-kicker,.timeline-transport-head,.todo-category,.expense-origin{color:#b7e3d9}.timeline-rail:after{background:#2f4b56}.route-add,.timeline-add-stop{background:#12232e;border-color:#416a70}.todo-category,.expense-origin,.quantity-pill,.group-count{background:#24423f;color:#b8ebe2}.legacy-itinerary-cost{background:#3c3022}.login{margin:7vh auto;padding:50px 30px;background:linear-gradient(145deg,#142231,#1a3237)}
+@media(max-width:1250px){.calendar-dashboard{grid-template-columns:minmax(0,1fr)}.calendar-side{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){#detailArea{grid-template-columns:minmax(0,1fr);gap:14px}.workspace-sidebar{position:static;padding:10px}.workspace-sidebar #moduleNav{display:flex;overflow:auto;gap:8px}.workspace-sidebar .nav-group{display:flex;width:auto;flex-shrink:0}.workspace-sidebar .module-tab{width:auto;white-space:nowrap}.workspace-sidebar .nav-label,.sidebar-foot,.sidebar-kicker{display:none}.workspace-sidebar #backBtn{width:auto;margin:0 0 7px}.dashboard{grid-template-columns:minmax(0,1fr)}.dashboard .trip-library,.dashboard .create,.dashboard .home-recent{grid-column:1;grid-row:auto}.dashboard .trip-library{order:1}.dashboard .create{order:2}.dashboard .home-recent{order:3}}
+@media(max-width:600px){body>header{position:static;padding:14px 16px}.header-tag{display:none}main{padding:15px 12px 40px}.calendar-side{grid-template-columns:minmax(0,1fr)}.calendar-cell{min-height:59px}.detail-hero,.dashboard-hero{padding:18px}.workspace-sidebar .module-tab{font-size:13px}}
+.workspace-sidebar #moduleNav{background:transparent;border:0;box-shadow:none;padding:0}
+.home-fab .fab-label{font-size:14px;font-weight:700}
+.calendar-side .expense-summary h3,.calendar-side .calendar-todos h3{display:none}
+.calendar-side .calendar-todos .section-heading{justify-content:flex-end}
+.calendar-side .expense-summary .detail-heading{justify-content:flex-start}
+@media(min-width:1251px){.detail-hero{padding-block:20px}.calendar-cell{min-height:73px}}
 </style>
 </head>
 <body>
 <header>
-<h1><a id="homeLink" class="home-link" href="#">✈️ Itinerary Manager</a></h1>
+<h1><a id="homeLink" class="home-link" href="#"><span class="brand-mark" aria-hidden="true">✈</span>Itinerary Manager<span class="header-tag" aria-hidden="true">FLIGHT DECK</span></a></h1>
 <div id="headerAccount" hidden><span id="headerEmail"></span><button id="logoutBtn" class="logout" type="button">登出</button></div>
 </header>
 
@@ -117,6 +142,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <button id="homeAddToggle" class="home-fab" type="button" aria-label="新增項目" title="新增項目" aria-haspopup="dialog" aria-controls="homeAddDialog"><span aria-hidden="true">＋</span><span class="fab-label">新增項目</span></button>
 <dialog id="homeAddDialog" class="home-modal" aria-labelledby="homeAddTitle" aria-describedby="homeAddIntro"><div class="home-modal-heading"><div class="home-modal-icon" aria-hidden="true">＋</div><div><div class="eyebrow">A LITTLE MORE ADVENTURE</div><h2 id="homeAddTitle">新增旅行項目</h2><p id="homeAddIntro">一筆安排，一段新的旅程。</p></div><button id="homeAddClose" class="home-modal-close" type="button" aria-label="關閉新增視窗">×</button></div><div class="home-modal-body"><form id="homeAddForm"><fieldset id="homeAddFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields home-selectors"><div class="field"><label for="homeTrip">旅行／專案</label><select id="homeTrip" required><option value="">請選擇旅行</option></select><p id="homeEmpty" class="hint">請先在下方建立一趟旅行。</p></div><div class="field"><label for="homeModule">大項目</label><select id="homeModule" required><option value="">請選擇大項目</option></select></div></div><div id="homeDetails" hidden><div class="field"><label for="homeCategory">類別</label><select id="homeCategory" required></select></div><div id="homeItemFields" class="module-fields"></div><div class="home-save-bar"><span>儲存至選定旅行，並更新消費統計</span><button type="submit" class="primary">儲存並新增下一筆 <span aria-hidden="true">↗</span></button></div></div></fieldset><p id="homeAddStatus" class="form-status" role="status" aria-live="polite"></p></form></div></dialog>
 <div id="overviewArea" class="dashboard">
+<section class="dashboard-hero"><div class="eyebrow">TRAVEL OPERATIONS / 旅程控制台</div><h2>我的旅行工作區</h2><p>開啟旅行，查看每日安排、預訂與支出。</p></section>
 
 <section id="homeSaved" class="card home-recent" hidden><h3>剛剛新增</h3><ul id="homeSavedList"></ul><p class="hint">此處顯示本次操作最近 10 筆；完整紀錄請開啟對應旅行查看。</p></section>
 <section class="card create">
@@ -133,7 +159,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <p class="hint">旅行會儲存到目前登入帳號的雲端空間。</p>
 </form>
 </section>
-<section aria-labelledby="tripsHeading">
+<section class="trip-library" aria-labelledby="tripsHeading">
 <div class="section-heading"><h2 id="tripsHeading">🧳 我的旅行</h2><span id="tripCount" class="count">0 趟旅行</span></div>
 <p id="syncStatus" class="sync" role="status" aria-live="polite">正在同步旅行…</p>
 <div id="tripList" class="trips" aria-busy="true"></div>
@@ -141,9 +167,9 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 </div>
 </section>
 <section id="detailArea" hidden aria-label="旅行專屬管理">
-<button id="backBtn" type="button" class="secondary">← 返回我的旅行</button>
-<div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><div class="detail-actions"><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button><button id="deleteTripBtn" type="button" class="secondary danger">刪除旅行</button></div></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
-<nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
+<aside class="workspace-sidebar"><div class="sidebar-kicker">WORKSPACE / 旅行工作區</div><button id="backBtn" type="button" class="secondary">← 返回我的旅行</button><nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
+<p class="sidebar-foot">旅程管理</p></aside>
+<div class="workspace-main"><div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><div class="detail-actions"><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button><button id="deleteTripBtn" type="button" class="secondary danger">刪除旅行</button></div></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
 <nav id="expenseNav" class="expense-nav" aria-label="消費分類" hidden></nav>
 <section id="calendarArea" class="card" hidden aria-label="總表"></section>
 <div id="moduleLayout" class="module-layout">
@@ -153,7 +179,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <section aria-label="模組紀錄"><div class="section-heading"><h2 id="recordsHeading">紀錄清單</h2><span id="recordCount" class="count">0 筆</span></div>
 <div id="dayFilterArea" class="filter" hidden><label for="dayFilter">依日期篩選</label><input id="dayFilter" type="date"><button id="clearFilterBtn" type="button" class="secondary">顯示全部</button></div>
 <div id="checklistTools" class="check-tools" hidden aria-label="清單顯示篩選"></div><p id="recordSync" class="sync" role="status" aria-live="polite"></p><div id="recordList" class="record-list" aria-busy="false"></div></section>
-</div></section>
+</div></div></section>
 <dialog id="routeDialog" class="home-modal" aria-labelledby="routeDialogTitle"><div class="home-modal-heading"><div><div class="eyebrow">GETTING THERE</div><h2 id="routeDialogTitle">兩站之間，怎麼去？</h2><p id="routeEndpoints"></p></div><button id="routeClose" class="home-modal-close" type="button" aria-label="關閉交通視窗">×</button></div><div class="home-modal-body"><form id="routeForm"><fieldset id="routeFields" style="border:0;padding:0;margin:0;min-width:0"><div class="module-fields"><div class="field"><label for="routeMode">交通工具</label><select id="routeMode" required></select></div><div class="field"><label for="routeMinutes">預估時間（分鐘）</label><input id="routeMinutes" type="number" min="0" max="9999" step="1" placeholder="例如：25"></div><div class="field"><label for="routeTime">出發時間</label><input id="routeTime" type="time"></div><div class="field"><label for="routeCurrency">幣別</label><select id="routeCurrency"></select></div><div class="field wide"><label for="routeAmount">交通費用</label><input id="routeAmount" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" placeholder="選填"></div><div class="field wide"><label for="routeNotes">路線、班次與轉乘資訊</label><textarea id="routeNotes" maxlength="2000" placeholder="例如：搭乘綠線至 Siam，從 2 號出口離站"></textarea></div></div><p class="hint">儲存為一筆交通紀錄，總表只計算一次；無須再到交通模組重複新增。</p><div class="form-actions"><button type="submit" class="primary">儲存交通</button><button id="routeRemove" type="button" class="secondary" hidden>刪除此段交通</button></div></fieldset><p id="routeStatus" role="status"></p></form></div></dialog>
 <dialog id="tripDialog" class="modal"><h2>編輯旅行資料</h2><form id="tripEditForm"><fieldset id="tripEditFields" style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="editName">旅行名稱</label><input id="editName" required maxlength="80"></div><div class="field"><label for="editDestination">目的地</label><input id="editDestination" required maxlength="120"></div><div class="field"><label for="editStart">開始日期</label><input id="editStart" type="date"></div><div class="field"><label for="editEnd">結束日期</label><input id="editEnd" type="date"></div><div class="form-actions"><button class="primary" type="submit">儲存</button><button id="closeTripDialog" type="button" class="secondary">取消</button></div></fieldset><p id="tripEditFeedback" role="status" class="form-status"></p></form></dialog>
 <dialog id="deleteTripDialog" class="modal"><h2>刪除整趟旅行？</h2><p id="deleteTripLabel"></p><p>旅行與其中所有紀錄都會一併刪除，無法復原。</p><div class="form-actions"><button id="confirmDeleteTripBtn" type="button" class="primary">確認刪除旅行</button><button id="cancelDeleteTripBtn" type="button" class="secondary">取消</button></div><p id="deleteTripFeedback" class="form-status" role="status"></p></dialog>
@@ -527,7 +553,7 @@ function refreshSelectedTrip() {
 function openTrip(id) {
   if(!currentUser || !tripsById.has(id))return;
   selectedTripId=id; $('overviewArea').hidden=true;$('detailArea').hidden=false;
-  calendarMonth='';calendarDay='';pendingRecordId=null;refreshSelectedTrip(); if(shortcutDraft)applyShortcutDraft();else switchModule('calendar',true); $('backBtn').focus();
+  calendarMonth='';calendarDay='';pendingRecordId=null;refreshSelectedTrip(); if(shortcutDraft)applyShortcutDraft();else switchModule('calendar',true); $('backBtn').focus({preventScroll:true});window.scrollTo(0,0);
 }
 let quickMode=false, quickRowCounter=0,quickDefaultDate='',quickDefaultCurrency='TWD';
 const quickTypes={transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物']};
@@ -824,8 +850,15 @@ function renderCalendar(){
   const todosBox=node('details',undefined,'calendar-extra'),moneyBox=node('details',undefined,'calendar-extra');
   todosBox.append(node('summary','✅ 待辦事項'),renderCalendarTodos());moneyBox.append(node('summary','💰 本趟旅行消費'),renderExpenseTotals());
   for(const [box,key] of [[todosBox,'todos'],[moneyBox,'money']]){box.open=!calendarClosed.has(key);box.addEventListener('toggle',()=>{if(!box.isConnected)return;if(box.open)calendarClosed.delete(key);else calendarClosed.add(key);});}
-  fragment.append(todosBox,moneyBox);
-  $('calendarArea').replaceChildren(fragment);
+  const dashboard=node('div',undefined,'calendar-dashboard');
+  const schedule=node('section',undefined,'calendar-main');
+  schedule.setAttribute('aria-label','行程月曆');
+  schedule.append(fragment);
+  const side=node('aside',undefined,'calendar-side');
+  side.setAttribute('aria-label','待辦與旅費');
+  side.append(todosBox,moneyBox);
+  dashboard.append(schedule,side);
+  $('calendarArea').replaceChildren(dashboard);
 }
 
 
