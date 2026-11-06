@@ -119,7 +119,7 @@ window.itineraryBootTimer = setTimeout(() => {
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, updateDoc, deleteDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
+import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, getDocs, updateDoc, deleteDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
 
 clearTimeout(window.itineraryBootTimer);
 const $ = id => document.getElementById(id);
@@ -294,6 +294,83 @@ function syncAnchorExpenseFields(prefix,category){
     if(!input)continue;
     input.disabled=hide;
     input.closest('.field').hidden=hide;
+  }
+}
+function anchorSuggestions(category, entries){
+  const suggestions=[];
+  for(const {data} of entries){
+    if(category==='hotel'&&data.module==='lodging'){
+      const title=safeString(data.title,160,'飯店');
+      suggestions.push({label:[title,data.date].filter(Boolean).join(' · '),title,location:safeString(data.location,160,''),date:validDate(data.date)?data.date:''});
+    }
+    if(category==='airport'&&data.module==='flights'){
+      for(const leg of [
+        {field:'departureAirport',label:'出發',date:data.date,time:data.time},
+        {field:'arrivalAirport',label:'抵達',date:data.endDate,time:data.endTime}
+      ]){
+        const location=safeString(entryField(data,leg.field),160,'');
+        if(!location)continue;
+        const title=(leg.label+' '+location).slice(0,160);
+        suggestions.push({
+          label:[title,data.title,leg.date].filter(Boolean).join(' · '),title,location,
+          date:validDate(leg.date)?leg.date:'',
+          time:/^([01]\d|2[0-3]):[0-5]\d$/.test(leg.time||'')?leg.time:''
+        });
+      }
+    }
+  }
+  return suggestions.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||a.label.localeCompare(b.label,'zh-Hant'));
+}
+function createAnchorPicker(prefix){
+  const field=node('div',undefined,'field wide');
+  field.hidden=true;
+  const label=node('label','帶入已儲存的資料（選填）');
+  const select=node('select',undefined,'category-select');
+  select.id=prefix+'AnchorSource';
+  label.htmlFor=select.id;
+  field.append(label,select,node('p','選好後可調整資料。飯店保留目前選的日期，機場請確認航班日期及時間。','hint'));
+  return field;
+}
+function populateAnchorPicker(prefix,category,entries,emptyLabel='沒有可帶入的資料，可手動輸入'){
+  const select=$(prefix+'AnchorSource');
+  if(!select)return;
+  select.closest('.field').hidden=!Object.hasOwn(itineraryAnchors,category);
+  const choices=anchorSuggestions(category,entries);
+  select.replaceChildren(new Option(choices.length?'請選擇已儲存的'+(category==='airport'?'機場':'飯店'):emptyLabel,''));
+  select.disabled=!choices.length;
+  choices.forEach((choice,index)=>select.append(new Option(choice.label,String(index))));
+  select.onchange=()=>{
+    if(select.value==='')return;
+    const choice=choices[Number(select.value)];
+    $(prefix+'_title').value=choice.title;
+    $(prefix+'_location').value=choice.location;
+    const date=$(prefix+'_date');
+    if(choice.date&&(category==='airport'||!date.value))date.value=choice.date;
+    if(category==='airport'){
+      if(prefix==='entry')setTimeValue('time',choice.time);
+      else $(prefix+'_time').value=choice.time;
+    }
+  };
+}
+async function refreshHomeAnchorPicker(){
+  const select=$('homeAnchorSource');
+  if(!select)return;
+  const category=homeItineraryTypes[$('homeCategory').value];
+  const trip=$('homeTrip').value;
+  const uid=currentUser?.uid;
+  const request=Symbol();
+  select.anchorRequest=request;
+  if(!Object.hasOwn(itineraryAnchors,category)||!uid||!tripsById.has(trip)){
+    populateAnchorPicker('home',category,[],'請先選擇旅行');
+    return;
+  }
+  populateAnchorPicker('home',category,[],'正在讀取已儲存的資料…');
+  const stillCurrent=()=>$('homeAnchorSource')===select&&select.anchorRequest===request&&currentUser?.uid===uid;
+  try{
+    const snapshot=await getDocs(collection(db,'users',uid,'trips',trip,'entries'));
+    if(stillCurrent())populateAnchorPicker('home',category,snapshot.docs.map(doc=>({data:doc.data()})));
+  }catch{
+    if(stillCurrent())populateAnchorPicker('home',category,[],'讀取失敗，可手動輸入');
   }
 }
 function entryField(data,key){
@@ -704,7 +781,7 @@ function setTimeValue(key,value) {
 }
 function resetRecordForm() {
   editingEntryId=null; $('recordForm').reset();
-  if(activeModule==='itinerary')syncAnchorExpenseFields('entry','');
+  if(activeModule==='itinerary'){syncAnchorExpenseFields('entry','');populateAnchorPicker('entry','',[]);}
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
   $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');configureQuickEntry(isQuickModule());setFormOpen(false);
 }
@@ -736,7 +813,7 @@ function switchModule(key,force=false) {
     const input=node(['currency','itineraryCategory'].includes(field.type)?'select':field.type==='textarea' || (def.checkable && field.key==='title')?'textarea':'input');input.id='entry_'+field.key;input.name=field.key;input.required=field.required;
     if(input.tagName==='INPUT')input.type=field.type==='decimal'?'number':field.type;
     if(field.type==='decimal'){input.min='0';input.max='999999999.99';input.step='0.01';input.inputMode='decimal';input.placeholder='選填，例如：1500';}
-    if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries({...itineraryAnchors,...itineraryCategories}))input.append(new Option(label,key));input.addEventListener('change',()=>syncAnchorExpenseFields('entry',input.value));}
+    if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries({...itineraryAnchors,...itineraryCategories}))input.append(new Option(label,key));input.addEventListener('change',()=>{syncAnchorExpenseFields('entry',input.value);populateAnchorPicker('entry',input.value,entryDocs);});}
     if(field.type==='currency'){
       input.className='category-select';
       for(const [code,text] of Object.entries(currencyOptions)){const option=node('option',text);option.value=code;option.defaultSelected=code==='TWD';input.append(option);}
@@ -760,6 +837,7 @@ function switchModule(key,force=false) {
       const count=node('p',undefined,'bulk-counter');count.id='bulkCount';count.setAttribute('aria-live','polite');wrap.append(count);
     }
     if(def.checkable && field.key==='detail')fragment.prepend(wrap);else fragment.append(wrap);
+    if(field.type==='itineraryCategory')fragment.append(createAnchorPicker('entry'));
   }
   $('moduleFields').classList.toggle('checklist-form',!!def.checkable);
   $('moduleFields').replaceChildren(fragment);refreshCategorySuggestions();resetRecordForm();renderChecklistTools();$('recordFields').disabled=true;
@@ -768,6 +846,7 @@ function switchModule(key,force=false) {
     if(token!==moduleGeneration || authToken!==generation)return;
     entryDocs=snapshot.docs.map(item=>({id:item.id,data:item.data(),pending:item.metadata.hasPendingWrites}));
     refreshCategorySuggestions();
+    if(activeModule==='itinerary')populateAnchorPicker('entry',$('entry_itineraryCategory').value,entryDocs);
     entriesReady=true;$('recordFields').disabled=recordBusy;
     $('recordList').setAttribute('aria-busy','false');
     $('recordSync').textContent=snapshot.metadata.fromCache?'目前顯示暫存資料，等待雲端連線…':snapshot.metadata.hasPendingWrites?'正在同步變更…':'已與雲端同步';
@@ -1109,7 +1188,7 @@ function editEntry(id) {
     const value=field.type==='number'?String(entryField(item.data,field.key) || 1):safeString(entryField(item.data,field.key),field.max || 160,field.type==='currency'?'TWD':'');
     if(field.type==='time')setTimeValue(field.key,value);else $('entry_'+field.key).value=value;
   }
-  if(activeModule==='itinerary')syncAnchorExpenseFields('entry',$('entry_itineraryCategory').value);
+  if(activeModule==='itinerary'){const category=$('entry_itineraryCategory').value;syncAnchorExpenseFields('entry',category);populateAnchorPicker('entry',category,entryDocs);}
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
   $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
 }
@@ -1226,6 +1305,7 @@ function renderHomeFields(){
   const optional=node('details',undefined,'wide'),summary=node('summary','更多資料（時間、地點、備註等）'),extra=node('div',undefined,'module-fields');optional.append(summary,extra);
   for(const field of ordered){if(field.type==='itineraryCategory')continue;if(usesDetail&&field.key==='detail')continue;if(field.required||['currency','amount'].includes(field.key))$('homeItemFields').append(homeField(field));else extra.append(homeField(field));}
   if(extra.children.length)$('homeItemFields').append(optional);
+  if(module==='itinerary')$('homeItemFields').prepend(createAnchorPicker('home'));
   for(const input of $('homeItemFields').querySelectorAll('input,textarea,select'))input.dataset.initial=input.value;
 }
 function buildHomeEntry(module,category,values){
@@ -1256,7 +1336,8 @@ function initHomeAdd(){
   modal.addEventListener('cancel',event=>{if(homeBusy)event.preventDefault();});
   modal.addEventListener('close',()=>{document.body.classList.remove('home-modal-open');});
   modal.addEventListener('click',event=>{const rect=modal.getBoundingClientRect();if(event.target===modal&&!homeBusy&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom))modal.close();});
-  $('homeCategory').addEventListener('change',()=>{if($('homeModule').value==='itinerary')syncAnchorExpenseFields('home',homeItineraryTypes[$('homeCategory').value]);});
+  $('homeTrip').addEventListener('change',refreshHomeAnchorPicker);
+  $('homeCategory').addEventListener('change',()=>{if($('homeModule').value==='itinerary'){syncAnchorExpenseFields('home',homeItineraryTypes[$('homeCategory').value]);refreshHomeAnchorPicker();}});
   $('homeModule').addEventListener('change',()=>{if([...$('homeItemFields').querySelectorAll('input,textarea,select')].some(x=>x.value!==(x.dataset.initial||''))){if(!confirm('切換大項目會清除目前填寫的項目內容，要繼續嗎？')){$('homeModule').value=$('homeModule').dataset.previous||'';return;}}renderHomeFields();$('homeModule').dataset.previous=$('homeModule').value;});
   $('homeAddForm').addEventListener('submit',async event=>{
     event.preventDefault();if(homeBusy||!currentUser||!$('homeAddForm').reportValidity())return;
@@ -1268,6 +1349,7 @@ function initHomeAdd(){
     try{await addDoc(collection(db,'users',uid,'trips',trip,'entries'),{...data,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});if(authToken!==generation)return;
       const saved=node('li',tripName+' · '+moduleDefinitions[module].label+' · '+data.title+(data.amount?' · '+data.currency+' '+data.amount:''));$('homeSavedList').prepend(saved);while($('homeSavedList').children.length>10)$('homeSavedList').lastElementChild.remove();$('homeSaved').hidden=false;
       for(const key of ['title','amount','notes','reference']){const el=document.getElementById('home_'+key);if(el)el.value='';}
+      if($('homeAnchorSource'))$('homeAnchorSource').value='';
       $('homeAddStatus').textContent='已儲存，可繼續新增下一筆。';
     }catch(e){if(authToken===generation)$('homeAddStatus').textContent=errorText(e);}
     finally{homeBusy=false;$('homeAddClose').disabled=false;$('homeAddFields').disabled=false;if(authToken===generation&&$('homeAddDialog').open)$('home_title')?.focus();}
