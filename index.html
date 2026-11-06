@@ -199,6 +199,9 @@ input:is([type=date],[type=time],[type=month])::-webkit-datetime-edit{padding:0}
   .timeline-transport-head{align-items:flex-start}
   input:is([type=date],[type=time],[type=month]){font-size:16px}
 }
+.chart-breakdown{padding:0;list-style:none;margin:0}
+.chart-breakdown li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.chart-breakdown strong{flex-shrink:0;color:#9cebdc;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -814,8 +817,8 @@ function changeCalendarMonth(amount){
   if(date.getFullYear()<1900 || date.getFullYear()>2199)return;
   calendarMonth=dateKey(date).slice(0,7);calendarDay=calendarMonth+'-01';renderCalendar();
 }
-const expenseModules=['itinerary','lodging','transport','dining','shopping','activities'];
-function expenseCategory(module){return module==='flights'?'transport':module;}
+const expenseModules=['itinerary','flights','lodging','transport','dining','shopping','activities'];
+const expenseTabs=['flights','lodging','transport','shopping','dining','activities'];
 function amountToMinor(value){
   if(typeof value!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))return null;
   const [whole,fraction='']=value.split('.');return BigInt(whole)*100n+BigInt(fraction.padEnd(2,'0'));
@@ -828,7 +831,7 @@ function calculateExpenseTotals(entries){
   const currencies=new Map(),seen=new Set();let filled=0,missing=0,pending=0;
   for(const item of entries){
     if(seen.has(item.id))continue;seen.add(item.id);
-    const data=item.data,category=expenseCategory(data.module);if(!expenseModules.includes(category))continue;
+    const data=item.data,category=data.module;if(!expenseModules.includes(category))continue;
     const minor=amountToMinor(data.amount);
     if(data.module==='itinerary'&&minor===null)continue;
     if(minor===null){missing++;continue;}
@@ -966,15 +969,16 @@ function resetRecordForm() {
   }
   $('saveRecordBtn').textContent=moduleDefinitions[activeModule].checkable?'＋ 加入清單':'＋ 新增';$('cancelEditBtn').hidden=false;feedback('');configureChecklistForm(false);setCategoryValue('');configureQuickEntry(isQuickModule());setFormOpen(false);
 }
-function switchModule(key,force=false) {
+function switchModule(key,force=false,expenseView=Object.hasOwn(itineraryCategories,key)) {
   if(!moduleDefinitions[key] || (!force && !abandonDraft()))return;
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
   checklistFilter='all';checklistQuery='';collapsedCategories.clear();
+  expenseViewActive=expenseView;expenseChartCategory='';
   activeModule=key;editingEntryId=null;entryDocs=[];recordBusy=false;entriesReady=false;
   const def=moduleDefinitions[key];
   $('calendarArea').hidden=key!=='calendar';$('moduleLayout').hidden=key==='calendar';
   if(key==='calendar')$('calendarArea').replaceChildren(node('p','正在載入行事曆…'));
-  const isExpenseView=Object.hasOwn(itineraryCategories,key);
+  const isExpenseView=expenseViewActive;
   $('moduleTitle').textContent=isExpenseView?'消費明細 · '+def.label:def.label;
   $('moduleDescription').textContent=isExpenseView?'按分類查看消費。從每日行程加入的項目會標示來源，可在這裡修改金額。':def.description;
   $('recordsHeading').textContent=isExpenseView?'消費紀錄':def.checkable?'檢查清單':'紀錄清單';
@@ -985,7 +989,8 @@ function switchModule(key,force=false) {
   for(const btn of $('expenseNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===key));
   const fragment=document.createDocumentFragment();
   for(const field of def.fields){
-    const wrap=node('div',undefined,'field'+(field.type==='textarea'?' wide':''));
+    const wide=field.type==='textarea'||(key==='itinerary'&&['itineraryCategory','title','location'].includes(field.key));
+    const wrap=node('div',undefined,'field'+(wide?' wide':''));
     const label=node('label',field.label+(field.required?' *':''));label.htmlFor='entry_'+field.key;
     if(field.type==='time'){
       label.htmlFor='entry_'+field.key;
@@ -1231,16 +1236,6 @@ function renderQuickRecords(items){
     for(const item of sorted){
       const card=node('article',undefined,'quick-saved-row');card.id='record_'+item.id;card.tabIndex=-1;
       const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',formatExpense(item.data) || '未填金額','expense-amount'));card.append(main);
-      if(item.data.module==='flights'){
-        card.append(node('span','✈️ 機票','expense-origin'));
-        const airports=['departureAirport','arrivalAirport'].map(key=>entryField(item.data,key)).filter(Boolean);
-        if(airports.length)card.append(node('p',airports.join(' → '),'quick-saved-meta'));
-        const open=node('button','查看機票','secondary');
-        open.type='button';open.disabled=recordBusy||deleteBusy;
-        open.addEventListener('click',()=>jumpToEntry(item));
-        const actions=node('div',undefined,'record-actions');actions.append(open);card.append(actions);
-        list.append(card);continue;
-      }
       const shared=item.data.showInItinerary===true;
       if(shared)card.append(node('span','每日行程','expense-origin'));
       const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');
@@ -1312,7 +1307,7 @@ function renderItineraryTimeline(items){
         add.title='新增另一段交通';
       }
       add.addEventListener('click',()=>openRouteDialog(item,next));
-      for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',formatExpense(r)||'未填金額'));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
+      for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',formatExpense(r)||(r.title==='步行'?'免費':'未填金額')));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
         if(r.time)box.append(node('p','出發 '+safeString(r.time,5,''),'timeline-meta'));
         if(r.notes){const details=node('details');details.append(node('summary','路線與轉乘資訊'),node('p',safeString(r.notes,2000,''),'timeline-notes'));box.append(details);}
         const controls=node('div',undefined,'route-controls'),link=routeMapLink(item,next);if(link)controls.append(link);
@@ -1341,9 +1336,19 @@ function openRouteDialog(from,to,existing=null){
   $('routeForm').reset();$('routeStatus').textContent='';$('routeEndpoints').textContent=from.data.title+' → '+to.data.title;
   $('routeMode').value=Object.hasOwn(routeModes,data.title)?data.title:'其他交通';if(!existing)$('routeMode').value='步行';
   $('routeMinutes').value=/^約 (\d+) 分鐘$/.exec(data.detail||'')?.[1]||'';$('routeAmount').value=data.amount||'';$('routeCurrency').value=data.currency||'TWD';$('routeNotes').value=data.notes||'';$('routeTime').value=data.time||from.data.endTime||'';
+  syncRouteCostFields();
   $('routeRemove').hidden=!existing;$('routeDialog').showModal();
 }
+function syncRouteCostFields(){
+  const walking=$('routeMode').value==='步行';
+  for(const id of ['routeAmount','routeCurrency']){
+    const input=$(id);
+    input.closest('.field').hidden=walking;
+    input.disabled=walking;
+  }
+}
 function collectRoute(values,from,to){
+  if(values.mode==='步行')values={...values,amount:'',currency:'TWD'};
   if(!Object.hasOwn(routeModes,values.mode))throw Error('請選擇交通工具。');
   if(values.minutes&&!/^\d{1,4}$/.test(values.minutes))throw Error('交通時間請填寫 0 至 9999 分鐘。');
   if(values.amount&&amountToMinor(values.amount)===null)throw Error('金額最多兩位小數，且不可為負數。');
@@ -1355,6 +1360,7 @@ function collectRoute(values,from,to){
   data.location=(safeString(from.data.location,160,from.data.title)+' → '+safeString(to.data.location,160,to.data.title)).slice(0,160);data.notes=values.notes;return data;
 }
 function initRouteDialog(){
+  $('routeMode').addEventListener('change',syncRouteCostFields);
   for(const [name,icon] of Object.entries(routeModes))$('routeMode').append(new Option(icon+' '+name,name));
   for(const [code,name] of Object.entries(currencyOptions))$('routeCurrency').append(new Option(name,code));
   $('routeClose').addEventListener('click',()=>{if(!routeBusy)$('routeDialog').close();});$('routeDialog').addEventListener('cancel',event=>{if(routeBusy)event.preventDefault();});
@@ -1372,11 +1378,11 @@ async function saveRoute(remove){
   finally{routeBusy=false;$('routeFields').disabled=false;$('routeClose').disabled=false;}
 }
 
-let expenseCurrency='',expenseDetailsOpen=false;
+let expenseCurrency='',expenseDetailsOpen=false,expenseViewActive=false,expenseChartCategory='';
 function expenseData(){
   const out=new Map();
   for(const item of entryDocs){
-    const d=item.data,category=expenseCategory(d.module);if(!expenseModules.includes(category))continue;
+    const d=item.data,category=d.module;if(!expenseModules.includes(category))continue;
     const minor=amountToMinor(d.amount);if(minor===null)continue;
     const currency=d.currency||'TWD';if(!Object.hasOwn(currencyOptions,currency))continue;
     if(!out.has(currency))out.set(currency,{total:0n,count:0,modules:new Map(),days:new Map()});
@@ -1404,30 +1410,45 @@ function renderExpenseCharts(){
   const head=node('div',undefined,'chart-head');head.append(node('h3','📊 消費圖表'));
   if(currencies.length>1){
     const box=node('div',undefined,'chart-currencies');box.setAttribute('role','group');box.setAttribute('aria-label','選擇幣別');
-    for(const c of currencies){const b=node('button',c,'secondary chart-currency');b.type='button';b.setAttribute('aria-pressed',String(c===expenseCurrency));b.addEventListener('click',()=>{expenseCurrency=c;renderEntries();});box.append(b);}
+    for(const c of currencies){const b=node('button',c,'secondary chart-currency');b.type='button';b.setAttribute('aria-pressed',String(c===expenseCurrency));b.addEventListener('click',()=>{expenseCurrency=c;expenseChartCategory='';renderEntries();});box.append(b);}
     head.append(box);
   }
   section.append(head,node('div',currencyOptions[expenseCurrency].split(' ')[0]+' '+formatMinor(g.total),'chart-total'),node('p','整趟旅行 · '+g.count+' 筆消費 · 不同幣別分開統計，不換算匯率','chart-sub'));
-  section.append(node('h4','各類別佔比（點選可切換類別）','chart-title'));
+  section.append(node('h4','各類別佔比（點選查看明細）','chart-title'));
   const rows=expenseModules.filter(k=>g.modules.has(k)).sort((a,b)=>(g.modules.get(b)>g.modules.get(a)?1:g.modules.get(b)<g.modules.get(a)?-1:0));
   const max=g.modules.get(rows[0]);
   for(const key of rows){
-    const v=g.modules.get(key),pct=Number(v*1000n/g.total)/10,width=Number(v*1000n/max)/10;
-    const row=node('button',undefined,'chart-row');row.type='button';row.setAttribute('aria-current',String(key===activeModule));
+    const v=g.modules.get(key),pct=g.total>0n?Number(v*1000n/g.total)/10:0,width=max>0n?Number(v*1000n/max)/10:0;
+    const row=node('button',undefined,'chart-row');row.type='button';row.setAttribute('aria-pressed',String(key===expenseChartCategory));row.setAttribute('aria-current',String(key===expenseChartCategory));
     const track=node('span',undefined,'chart-track'),fill=node('span',undefined,'chart-fill');fill.style.width=width+'%';track.append(fill);
     row.append(node('span',moduleDefinitions[key].label),track,node('span',formatMinor(v)+' · '+pct+'%','chart-value'));
     row.setAttribute('aria-label',moduleDefinitions[key].label+' '+formatMinor(v)+'，佔 '+pct+'%');
-    row.addEventListener('click',()=>{if(key!==activeModule)switchModule(key);});attachTip(section,row,moduleDefinitions[key].label+'：'+formatMinor(v)+'（'+pct+'%）');
+    row.addEventListener('click',()=>{expenseChartCategory=expenseChartCategory===key?'':key;renderEntries();$('recordList').querySelector('[data-chart-category='+key+']')?.focus({preventScroll:true});});row.dataset.chartCategory=key;attachTip(section,row,moduleDefinitions[key].label+'：'+formatMinor(v)+'（'+pct+'%）');
     section.append(row);
   }
-  const days=g.days.get(activeModule);
-  section.append(node('h4','每日消費 · '+moduleDefinitions[activeModule].label,'chart-title'));
-  if(!days||!days.size){section.append(node('p','此類別在 '+expenseCurrency+' 尚無金額。','hint'));return section;}
+  const selected=expenseChartCategory;
+  if(!g.modules.has(selected)){
+    section.append(node('p','選擇上方類別以查看每筆支出的佔比。','hint'));
+    return section;
+  }
+  const subtotal=g.modules.get(selected);
+  section.append(node('h4','明細佔比 · '+moduleDefinitions[selected].label,'chart-title'));
+  const breakdown=node('ul',undefined,'chart-breakdown');
+  const records=entryDocs.filter(({data})=>data.module===selected&&(data.currency||'TWD')===expenseCurrency&&amountToMinor(data.amount)!==null);
+  for(const {data} of records){
+    const amount=amountToMinor(data.amount);
+    const percent=subtotal>0n?Number(amount*1000n/subtotal)/10:0;
+    const row=node('li');
+    row.append(node('span',safeString(data.title,160,'未命名紀錄')),node('strong',formatMinor(amount)+' · '+percent+'%'));
+    breakdown.append(row);
+  }
+  section.append(breakdown,node('h4','每日消費 · '+moduleDefinitions[selected].label,'chart-title'));
+  const days=g.days.get(selected);
   const entries=[...days].sort(([a],[b])=>a.localeCompare(b)),dayMax=entries.reduce((m,[,v])=>v>m?v:m,0n);
   const wrap=node('div',undefined,'chart-days');
   for(const [day,v] of entries){
     const b=node('button',undefined,'chart-day');b.type='button';
-    const h=Math.max(2,Math.round(Number(v*1000n/dayMax)/1000*110));
+    const h=dayMax>0n?Math.max(2,Math.round(Number(v*1000n/dayMax)/1000*110)):2;
     const bar=node('span',undefined,'chart-day-bar');bar.style.height=h+'px';
     b.append(node('span',formatMinor(v),'chart-day-value'),bar,node('span',validDate(day)?day.slice(5).replace('-','/'):day,'chart-day-label'));
     b.setAttribute('aria-label',day+'：'+expenseCurrency+' '+formatMinor(v));attachTip(section,b,day+'：'+expenseCurrency+' '+formatMinor(v));
@@ -1436,7 +1457,7 @@ function renderExpenseCharts(){
   section.append(wrap);return section;
 }
 function decorateExpenseView(){
-  if(!Object.hasOwn(itineraryCategories,activeModule)||!entriesReady)return;
+  if(!expenseViewActive||!entriesReady)return;
   const list=$('recordList'),children=[...list.childNodes];
   const details=node('details',undefined,'expense-details');details.open=expenseDetailsOpen;
   details.append(node('summary','查看明細 · '+$('recordCount').textContent));
@@ -1448,7 +1469,7 @@ function renderEntries(){renderEntriesCore();decorateExpenseView();}
 function renderEntriesCore() {
   if(activeModule==='calendar'){renderCalendar();return;}
   const def=moduleDefinitions[activeModule];
-  let items=entryDocs.filter(item=>activeModule==='itinerary'?isItineraryEntry(item.data):item.data.module===activeModule||(activeModule==='transport'&&item.data.module==='flights'));
+  let items=entryDocs.filter(item=>activeModule==='itinerary'?isItineraryEntry(item.data):item.data.module===activeModule);
   const total=items.length;
   if(isQuickModule()){renderQuickRecords(items);return;}
   if(def.checkable){renderChecklist(items);return;}
@@ -1619,7 +1640,7 @@ function renderHomeFields(){
   const usesDetail=['transport','dining','shopping','todos','packing'].includes(module);
   const ordered=[...fields.filter(f=>!['amount','currency','notes'].includes(f.key)),...fields.filter(f=>f.key==='currency'),...fields.filter(f=>f.key==='amount'),...fields.filter(f=>f.key==='notes')];
   const optional=node('details',undefined,'wide'),summary=node('summary','更多資料（時間、地點、備註等）'),extra=node('div',undefined,'module-fields');optional.append(summary,extra);
-  for(const field of ordered){if(field.type==='itineraryCategory')continue;if(usesDetail&&field.key==='detail')continue;if(field.required||['currency','amount'].includes(field.key))$('homeItemFields').append(homeField(field));else extra.append(homeField(field));}
+  for(const field of ordered){if(field.type==='itineraryCategory')continue;if(usesDetail&&field.key==='detail')continue;if(field.required||['currency','amount'].includes(field.key)||(module==='itinerary'&&['time','endDate','endTime','location'].includes(field.key)))$('homeItemFields').append(homeField(field));else extra.append(homeField(field));}
   if(extra.children.length)$('homeItemFields').append(optional);
   if(module==='itinerary')$('homeItemFields').prepend(createAnchorPicker('home'));
   for(const input of $('homeItemFields').querySelectorAll('input,textarea,select'))input.dataset.initial=input.value;
@@ -1704,13 +1725,19 @@ function initModules(){
       expenses.type='button';expenses.dataset.module='expenses';
       expenses.setAttribute('aria-controls','expenseNav');
       expenses.setAttribute('aria-pressed','false');
-      expenses.addEventListener('click',()=>{if(!Object.hasOwn(itineraryCategories,activeModule))switchModule('transport');});
+      expenses.addEventListener('click',()=>{if(!expenseViewActive)switchModule('transport');});
       groupsEnsure()[2].append(expenses);
     }
     const btn=node('button',def.label,'module-tab');
     btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');
-    btn.addEventListener('click',()=>{if(activeModule!==key)switchModule(key);});
+    btn.addEventListener('click',()=>{if(activeModule!==key||expenseViewActive!==isExpense)switchModule(key);});
     (isExpense?$('expenseNav'):groupsEnsure()[({calendar:0,itinerary:0,flights:1,lodging:1})[key]??2]).append(btn);
+  }
+  for(const key of expenseTabs.filter(key=>!Object.hasOwn(itineraryCategories,key))){
+    const button=node('button',moduleDefinitions[key].label,'module-tab');
+    button.type='button';button.dataset.module=key;button.setAttribute('aria-pressed','false');
+    button.addEventListener('click',()=>{if(activeModule!==key||!expenseViewActive)switchModule(key,false,true);});
+    $('expenseNav').append(button);
   }
   $('backBtn').addEventListener('click',()=>{if(abandonDraft()){closeDetail();$('tripsHeading').scrollIntoView({block:'start'});}});
   $('recordForm').addEventListener('submit',saveEntry);
