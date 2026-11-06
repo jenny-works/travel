@@ -614,7 +614,11 @@ function datesForEntry(data){
 }
 function eventsOnDay(day){
   const events=[];
+  const firstStop=itineraryGroups(entryDocs,day)[0]?.[1][0];
+  const hiddenStartId=firstStop?.data.module==='itinerary' &&
+    Object.values(itineraryAnchors).includes(firstStop.data.detail) ? firstStop.id : null;
   for(const item of entryDocs){
+    if(item.id===hiddenStartId)continue;
     const data=item.data;if(!moduleDefinitions[data.module] || data.module==='calendar')continue;
     for(const event of datesForEntry(data))if(event.date===day)events.push({...item,eventLabel:event.label,eventTime:event.label==='抵達'||event.label==='退房'?data.endTime:data.time});
     if(data.module==='lodging' && validDate(data.date || '') && validDate(data.endDate || '') && day>data.date && day<data.endDate)events.push({...item,eventLabel:'住宿中',eventTime:''});
