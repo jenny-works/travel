@@ -140,6 +140,55 @@ input,select,textarea,.category-select,.quick-row input,.quick-row select,.home-
 #recordForm .field :is(input[type=date],input[type=time]){min-width:0;max-width:100%}
 #recordForm .field input::-webkit-calendar-picker-indicator{opacity:1}
 .field-example{margin:7px 0 0;font-size:12px;line-height:1.5;color:#b2c4d7}
+/* Warm route segments are distinct from the itinerary stops. */
+.timeline-transport{
+  background:linear-gradient(110deg,#392c21,#251f20);
+  border:1px solid #6a5138;
+  border-inline-start:4px solid #edaf66;
+}
+.timeline-transport-head{align-items:center;color:#ffe0ad;gap:10px}
+.timeline-transport-head>span:first-child{font-weight:750}
+.timeline-transport-head>span:last-child{
+  padding:4px 9px;border-radius:8px;background:#513925;color:#ffdfac;
+  font-variant-numeric:tabular-nums;
+}
+.timeline-transport :is(.timeline-meta,.timeline-notes){color:#dac4ac}
+.timeline-transport :is(summary,.route-map-link,.route-edit){color:#ffd095}
+.timeline-between .route-add{
+  color:#ffd29c;background:#241e20;border-color:#795d40;
+}
+.timeline-between .route-add:hover{background:#382a22;border-color:#edaf66}
+
+/* Keep native pickers and style the controls across all entry points. */
+:is(#recordForm,#homeAddDialog,#routeDialog,#tripForm,#tripDialog) input:is([type=date],[type=time]),
+:is(#dayFilter,#calendarArea input[type=month]){
+  min-width:0;max-width:100%;min-height:46px;
+  padding:9px 12px;
+  border:1px solid #47647d;border-radius:12px;
+  background:#132437;color:#eef6ff;color-scheme:dark;
+  font-variant-numeric:tabular-nums;
+}
+:is(#recordForm,#homeAddDialog,#routeDialog,#tripForm,#tripDialog) input[type=time]{
+  background:#122b31;border-color:#3c6a6b;
+}
+:is(#recordForm,#homeAddDialog,#routeDialog,#tripForm,#tripDialog,#calendarArea,#dayFilterArea)
+input:is([type=date],[type=time],[type=month]):hover{border-color:#82b2c1}
+:is(#recordForm,#homeAddDialog,#routeDialog,#tripForm,#tripDialog,#calendarArea,#dayFilterArea)
+input:is([type=date],[type=time],[type=month]):focus-visible{
+  border-color:#62e5cb;outline:2px solid #62e5cb;outline-offset:2px;
+}
+input:is([type=date],[type=time],[type=month])::-webkit-calendar-picker-indicator{
+  opacity:1;cursor:pointer;padding:5px;border-radius:6px;background-color:#ffffff12;
+}
+input:is([type=date],[type=time],[type=month])::-webkit-calendar-picker-indicator:hover{
+  background-color:#ffffff24;
+}
+input:is([type=date],[type=time],[type=month])::-webkit-datetime-edit{padding:0}
+.time-picker .clear-time{min-height:42px;align-self:center}
+@media(max-width:600px){
+  .timeline-transport-head{align-items:flex-start}
+  input:is([type=date],[type=time],[type=month]){font-size:16px}
+}
 </style>
 </head>
 <body>
