@@ -42,6 +42,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 @media(max-width:600px){.timeline-stop{grid-template-columns:40px minmax(0,1fr);gap:10px}.timeline-between{margin-left:50px}.timeline-card{padding:16px}.timeline-card h3{font-size:16px}.timeline-time{font-size:11px}.timeline-heading{align-items:start;flex-direction:column;gap:3px}.timeline-add-stop{margin-left:50px;width:calc(100% - 50px)}.timeline-transport{padding:13px}.timeline-transport-head{flex-wrap:wrap}.route-outline{padding:14px}}
 .timeline-days{display:flex;gap:8px;overflow:auto;padding:3px 2px 12px;margin-bottom:8px}.timeline-days button{flex-shrink:0;font-size:12px}.timeline-days button[aria-pressed=true]{background:#7961ce;color:white;border-color:#7961ce}.timeline-rail:after{content:'';width:1px;background:#e5dced;flex:1;margin-top:4px}
 .legacy-itinerary-cost{padding:12px 14px;border-radius:11px;background:#fff7eb;margin-top:14px}.legacy-itinerary-cost .hint{margin:7px 0 10px}.legacy-itinerary-cost button{font-size:11px;padding:5px 10px}
+.expense-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:-8px 0 22px;padding:12px;background:#f0ecf9;border-radius:14px}.expense-nav .module-tab{font-size:13px;padding:7px 12px}.expense-origin{display:inline-block;margin:8px 8px 8px 0;padding:2px 8px;border-radius:7px;background:#f0ecfa;color:#5d4ca8;font-size:11px}.expense-origin+.expense-amount{margin:8px 0}
 </style>
 </head>
 <body>
@@ -90,6 +91,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <button id="backBtn" type="button" class="secondary">← 返回我的旅行</button>
 <div class="detail-hero"><div class="eyebrow">YOUR TRAVEL WORKSPACE</div><div class="detail-heading"><h2 id="detailTitle"></h2><button id="editTripBtn" type="button" class="secondary">編輯旅行資料</button></div><p id="detailDestination"></p><p id="detailDates" class="trip-range"></p></div>
 <nav id="moduleNav" class="module-nav" aria-label="旅行模組"></nav>
+<nav id="expenseNav" class="expense-nav" aria-label="消費分類" hidden></nav>
 <section id="calendarArea" class="card" hidden aria-label="總表"></section>
 <div id="moduleLayout" class="module-layout">
 <section class="card"><div class="detail-heading"><h2 id="moduleTitle"></h2><button id="showFormBtn" type="button" class="primary" aria-expanded="false" aria-controls="recordForm">＋ 新增</button></div><p id="moduleDescription"></p>
@@ -690,11 +692,15 @@ function switchModule(key,force=false) {
   const def=moduleDefinitions[key];
   $('calendarArea').hidden=key!=='calendar';$('moduleLayout').hidden=key==='calendar';
   if(key==='calendar')$('calendarArea').replaceChildren(node('p','正在載入行事曆…'));
-  $('moduleTitle').textContent=def.label;$('moduleDescription').textContent=def.description;
-  $('recordsHeading').textContent=def.checkable?'檢查清單':'紀錄清單';
+  const isExpenseView=Object.hasOwn(itineraryCategories,key);
+  $('moduleTitle').textContent=isExpenseView?'消費明細 · '+def.label:def.label;
+  $('moduleDescription').textContent=isExpenseView?'按分類查看消費。從每日行程加入的項目會標示來源，可在這裡修改金額。':def.description;
+  $('recordsHeading').textContent=isExpenseView?'消費紀錄':def.checkable?'檢查清單':'紀錄清單';
   $('recordCount').textContent='0 筆';$('recordSync').textContent='正在載入…';$('recordList').setAttribute('aria-busy','true');
   $('recordList').replaceChildren();$('dayFilterArea').hidden=key!=='itinerary';$('dayFilter').value='';
-  for(const btn of $('moduleNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===key));
+  $('expenseNav').hidden=!isExpenseView;
+  for(const btn of $('moduleNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===(isExpenseView?'expenses':key)));
+  for(const btn of $('expenseNav').children)btn.setAttribute('aria-pressed',String(btn.dataset.module===key));
   const fragment=document.createDocumentFragment();
   for(const field of def.fields){
     const wrap=node('div',undefined,'field'+(field.type==='textarea'?' wide':''));
@@ -914,13 +920,18 @@ function renderQuickRecords(items){
     for(const item of sorted){
       const card=node('article',undefined,'quick-saved-row');card.id='record_'+item.id;card.tabIndex=-1;
       const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',formatExpense(item.data) || '未填金額','expense-amount'));card.append(main);
-      const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');if(meta)card.append(node('p',meta,'quick-saved-meta'));
-      if(item.data.location)card.append(mapLink(safeString(item.data.location,160,'')));
-      if(item.data.endTime || item.data.reference || item.data.notes){
-        const details=node('details',undefined,'quick-extra');details.append(node('summary','詳細資料'));
-        for(const [label,key] of [['結束時間','endTime'],['預約編號','reference'],['備註','notes']])if(item.data[key])details.append(node('p',label+'：'+safeString(item.data[key],key==='notes'?2000:160,'')));
-        card.append(details);
+      const shared=item.data.showInItinerary===true;
+      if(shared)card.append(node('span','每日行程','expense-origin'));
+      const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');
+      const details=node('details',undefined,'quick-extra');
+      details.append(node('summary',shared?'查看行程資料':'詳細資料'));
+      const overview=shared?details:card;
+      if(meta)overview.append(node('p',meta,'quick-saved-meta'));
+      if(item.data.location)overview.append(mapLink(safeString(item.data.location,160,'')));
+      for(const [label,key] of [['結束時間','endTime'],['預約編號','reference'],['備註','notes']]){
+        if(item.data[key])details.append(node('p',label+'：'+safeString(item.data[key],key==='notes'?2000:160,'')));
       }
+      if(details.children.length>1)card.append(details);
       const actions=node('div',undefined,'record-actions');
       for(const [label,action,cls] of [['編輯',()=>editEntry(item.id),'secondary'],['刪除',()=>requestDelete(item.id),'secondary danger']]){const button=node('button',label,cls);button.type='button';button.disabled=recordBusy || deleteBusy || item.pending;button.addEventListener('click',action);actions.append(button);}
       if(item.pending)card.append(node('p','等待雲端確認…','hint'));card.append(actions);list.append(card);
@@ -1054,7 +1065,10 @@ function renderEntries() {
       if(value===undefined || value==='')continue;
       const dd=node('dd');if(field.key==='amount')dd.textContent=formatExpense(item.data);else if(field.key==='location' && item.data.module!=='flights')dd.append(mapLink(safeString(value,160,'')));else dd.textContent=field.type==='number'?String(Number.isInteger(value)?value:1):safeString(value,field.max || 160,'');dl.append(node('dt',field.label),dd);
     }
-    card.append(dl);
+    if(item.data.showInItinerary){
+      card.append(node('span','每日行程','expense-origin'),node('p',formatExpense(item.data)||'未填金額','expense-amount'));
+      const details=node('details',undefined,'quick-extra');details.append(node('summary','查看行程資料'),dl);card.append(details);
+    }else card.append(dl);
     if(item.pending)card.append(node('p','等待雲端確認…','hint'));
     const actions=node('div',undefined,'record-actions');
     const edit=node('button','編輯','secondary');edit.type='button';edit.disabled=recordBusy || item.pending;edit.addEventListener('click',()=>editEntry(item.id));
@@ -1236,7 +1250,19 @@ function initModules(){
   $('showFormBtn').addEventListener('click',()=>{if($('recordForm').hidden){setFormOpen(true);focusEntryInput();}else if(abandonDraft())resetRecordForm();});
   $('homeLink').addEventListener('click',event=>{event.preventDefault();goHome();});
   for(const [key,def] of Object.entries(moduleDefinitions)){
-    const btn=node('button',def.label,'module-tab');btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');btn.addEventListener('click',()=>switchModule(key));$('moduleNav').append(btn);
+    const isExpense=Object.hasOwn(itineraryCategories,key);
+    if(key==='transport'){
+      const expenses=node('button','💳 消費明細','module-tab');
+      expenses.type='button';expenses.dataset.module='expenses';
+      expenses.setAttribute('aria-controls','expenseNav');
+      expenses.setAttribute('aria-pressed','false');
+      expenses.addEventListener('click',()=>{if(!Object.hasOwn(itineraryCategories,activeModule))switchModule('transport');});
+      $('moduleNav').append(expenses);
+    }
+    const btn=node('button',def.label,'module-tab');
+    btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');
+    btn.addEventListener('click',()=>{if(activeModule!==key)switchModule(key);});
+    $(isExpense?'expenseNav':'moduleNav').append(btn);
   }
   $('backBtn').addEventListener('click',()=>{if(abandonDraft()){closeDetail();$('tripsHeading').scrollIntoView({block:'start'});}});
   $('recordForm').addEventListener('submit',saveEntry);
