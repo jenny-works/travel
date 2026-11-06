@@ -814,7 +814,8 @@ function changeCalendarMonth(amount){
   if(date.getFullYear()<1900 || date.getFullYear()>2199)return;
   calendarMonth=dateKey(date).slice(0,7);calendarDay=calendarMonth+'-01';renderCalendar();
 }
-const expenseModules=['itinerary','flights','lodging','transport','dining','shopping','activities'];
+const expenseModules=['itinerary','lodging','transport','dining','shopping','activities'];
+function expenseCategory(module){return module==='flights'?'transport':module;}
 function amountToMinor(value){
   if(typeof value!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(value))return null;
   const [whole,fraction='']=value.split('.');return BigInt(whole)*100n+BigInt(fraction.padEnd(2,'0'));
@@ -827,7 +828,7 @@ function calculateExpenseTotals(entries){
   const currencies=new Map(),seen=new Set();let filled=0,missing=0,pending=0;
   for(const item of entries){
     if(seen.has(item.id))continue;seen.add(item.id);
-    const data=item.data;if(!expenseModules.includes(data.module))continue;
+    const data=item.data,category=expenseCategory(data.module);if(!expenseModules.includes(category))continue;
     const minor=amountToMinor(data.amount);
     if(data.module==='itinerary'&&minor===null)continue;
     if(minor===null){missing++;continue;}
@@ -835,7 +836,7 @@ function calculateExpenseTotals(entries){
     if(!Object.hasOwn(currencyOptions,currency)){missing++;continue;}
     if(!currencies.has(currency))currencies.set(currency,{total:0n,count:0,modules:new Map()});
     const group=currencies.get(currency);group.total+=minor;group.count++;filled++;if(item.pending)pending++;
-    const module=group.modules.get(data.module) || {total:0n,count:0};module.total+=minor;module.count++;group.modules.set(data.module,module);
+    const module=group.modules.get(category) || {total:0n,count:0};module.total+=minor;module.count++;group.modules.set(category,module);
   }
   return {currencies,filled,missing,pending};
 }
@@ -1230,6 +1231,16 @@ function renderQuickRecords(items){
     for(const item of sorted){
       const card=node('article',undefined,'quick-saved-row');card.id='record_'+item.id;card.tabIndex=-1;
       const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',formatExpense(item.data) || '未填金額','expense-amount'));card.append(main);
+      if(item.data.module==='flights'){
+        card.append(node('span','✈️ 機票','expense-origin'));
+        const airports=['departureAirport','arrivalAirport'].map(key=>entryField(item.data,key)).filter(Boolean);
+        if(airports.length)card.append(node('p',airports.join(' → '),'quick-saved-meta'));
+        const open=node('button','查看機票','secondary');
+        open.type='button';open.disabled=recordBusy||deleteBusy;
+        open.addEventListener('click',()=>jumpToEntry(item));
+        const actions=node('div',undefined,'record-actions');actions.append(open);card.append(actions);
+        list.append(card);continue;
+      }
       const shared=item.data.showInItinerary===true;
       if(shared)card.append(node('span','每日行程','expense-origin'));
       const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');
@@ -1365,15 +1376,15 @@ let expenseCurrency='',expenseDetailsOpen=false;
 function expenseData(){
   const out=new Map();
   for(const item of entryDocs){
-    const d=item.data;if(!expenseModules.includes(d.module))continue;
+    const d=item.data,category=expenseCategory(d.module);if(!expenseModules.includes(category))continue;
     const minor=amountToMinor(d.amount);if(minor===null)continue;
     const currency=d.currency||'TWD';if(!Object.hasOwn(currencyOptions,currency))continue;
     if(!out.has(currency))out.set(currency,{total:0n,count:0,modules:new Map(),days:new Map()});
     const g=out.get(currency);g.total+=minor;g.count++;
-    g.modules.set(d.module,(g.modules.get(d.module)||0n)+minor);
+    g.modules.set(category,(g.modules.get(category)||0n)+minor);
     const day=validDate(d.date||'')?d.date:'未排日期';
-    if(!g.days.has(d.module))g.days.set(d.module,new Map());
-    const days=g.days.get(d.module);days.set(day,(days.get(day)||0n)+minor);
+    if(!g.days.has(category))g.days.set(category,new Map());
+    const days=g.days.get(category);days.set(day,(days.get(day)||0n)+minor);
   }
   return out;
 }
@@ -1437,7 +1448,7 @@ function renderEntries(){renderEntriesCore();decorateExpenseView();}
 function renderEntriesCore() {
   if(activeModule==='calendar'){renderCalendar();return;}
   const def=moduleDefinitions[activeModule];
-  let items=entryDocs.filter(item=>activeModule==='itinerary'?isItineraryEntry(item.data):item.data.module===activeModule);
+  let items=entryDocs.filter(item=>activeModule==='itinerary'?isItineraryEntry(item.data):item.data.module===activeModule||(activeModule==='transport'&&item.data.module==='flights'));
   const total=items.length;
   if(isQuickModule()){renderQuickRecords(items);return;}
   if(def.checkable){renderChecklist(items);return;}
