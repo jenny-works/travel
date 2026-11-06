@@ -119,6 +119,9 @@ input,select,textarea,.category-select,.quick-row input,.quick-row select,.home-
 .calendar-side .calendar-todos .section-heading{justify-content:flex-end}
 .calendar-side .expense-summary .detail-heading{justify-content:flex-start}
 @media(min-width:1251px){.detail-hero{padding-block:20px}.calendar-cell{min-height:73px}}
+.expense-module-total{position:relative;align-items:baseline;gap:8px;padding:8px 0 12px;margin-bottom:4px}
+.expense-module-total strong{flex-shrink:0;font-variant-numeric:tabular-nums}
+.expense-module-total::after{content:'';position:absolute;left:0;right:0;bottom:3px;height:3px;border-radius:3px;background:linear-gradient(90deg,#62c9b7 var(--expense-share,0%),#2c3d50 var(--expense-share,0%));pointer-events:none}
 </style>
 </head>
 <body>
@@ -771,7 +774,7 @@ function renderExpenseTotals(){
     const list=node('div',undefined,'expense-module-totals');
     for(const key of expenseModules){
       const subtotal=group.modules.get(key);if(!subtotal)continue;
-      const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));if(group.total>0n){const pct=Number(subtotal.total*1000n/group.total)/10;button.style.background='linear-gradient(90deg,#e4defa '+pct+'%,transparent '+pct+'%)';}
+      const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));if(group.total>0n){const pct=Number(subtotal.total*1000n/group.total)/10;button.style.setProperty('--expense-share',pct+'%');}
       button.addEventListener('click',()=>switchModule(key));list.append(button);
     }
     card.append(list);grid.append(card);
