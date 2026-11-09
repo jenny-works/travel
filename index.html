@@ -442,12 +442,12 @@ async function start() {
 // Each trip owns an entries subcollection. Fields are bounded text, never HTML.
 const F = (key,label,type='text',required=false,max=160) => ({key,label,type,required,max});
 const commonNotes = F('notes','備註','textarea',false,2000);
-const placeCategories=['景點','餐廳'];
+const placeCategories=['景點','餐廳','購物店家'];
 const moduleDefinitions = {
   calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
   itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。餐飲、購物等行程與消費可一次填寫。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','開始日期','date',true),F('time','開始時間','time'),F('endDate','結束日期（跨日才填）','date'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
-  places:{label:'📍 景點與餐廳名單',description:'先收藏想去的地方，確定日期後再加入每日行程。',fields:[F('detail','分類','placeCategory',true),F('title','名稱','text',true),F('location','地點或地址'),commonNotes]},
+  places:{label:'📍 口袋名單',description:'收藏景點、餐廳與購物店家，確定日期後再加入每日行程。',fields:[F('detail','分類','placeCategory',true),F('title','名稱','text',true),F('location','地點或地址'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
   transport:{label:'🚆 交通',description:'記錄火車、租車、巴士等移動安排。時間皆為當地時間。',fields:[F('title','交通名稱／班次','text',true),F('date','日期','date',true),F('time','出發時間','time'),F('endTime','抵達時間','time'),F('location','出發地 → 目的地'),F('detail','類型／座位資訊'),F('reference','預約編號'),commonNotes]},
   shopping:{label:'🛍️ 購物',description:'快速記錄購物品項與消費，一次儲存多筆。',fields:[F('title','商店／購買內容','text',true),F('date','日期','date',true),F('time','購買時間','time'),F('location','商店地點'),F('detail','購物類型'),commonNotes]},
@@ -1025,7 +1025,7 @@ function switchModule(key,force=false,expenseView=Object.hasOwn(itineraryCategor
       input.append(new Option('請選擇分類',''));
       for(const category of placeCategories)input.append(new Option(category,category));
     }
-    if(key==='places'&&field.key==='title')input.placeholder='例如：大皇宮、河畔餐廳';
+    if(key==='places'&&field.key==='title')input.placeholder='例如：大皇宮、河畔餐廳、暹羅百貨';
     if(key==='places'&&field.key==='location')input.placeholder='例如：店家名稱、地址或所在區域';
     if(field.type==='itineraryCategory'){input.className='category-select';input.append(new Option('請選擇類別',''));for(const [key,label] of Object.entries({...itineraryAnchors,...itineraryCategories}))input.append(new Option(label,key));input.addEventListener('change',()=>{syncAnchorExpenseFields('entry',input.value);populateAnchorPicker('entry',input.value,entryDocs);});}
     if(field.type==='currency'){
@@ -1549,7 +1549,7 @@ function renderEntriesCore() {
 function planSavedPlace(data){
   if(!abandonDraft())return;
   switchModule('itinerary',true);
-  $('entry_itineraryCategory').value=data.detail==='餐廳'?'dining':'activities';
+  $('entry_itineraryCategory').value=({'餐廳':'dining','購物店家':'shopping'})[data.detail]||'activities';
   $('entry_title').value=data.title;
   $('entry_location').value=data.location||'';
   $('entry_notes').value=data.notes||'';
@@ -1589,7 +1589,7 @@ function collectEntry() {
     const value=$('entry_'+field.key).value.trim();
     if(field.required && !value)throw new Error('請填寫'+field.label+'。');
     if(field.type==='placeCategory'){
-      if(!placeCategories.includes(value))throw Error('請選擇景點或餐廳。');
+      if(!placeCategories.includes(value))throw Error('請選擇景點、餐廳或購物店家。');
       data.detail=value;
     }
     else if(field.type==='itineraryCategory'){assignItineraryCategory(data,value);}
