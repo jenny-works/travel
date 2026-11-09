@@ -569,6 +569,13 @@ function entryField(data,key){
   }
   return data[key];
 }
+function isFreeWalking(data){
+  return data.module==='transport' && (data.title==='步行'||data.detail==='步行')
+    && (data.amount==null||data.amount==='');
+}
+function expenseDisplay(data){
+  return isFreeWalking(data)?'免費':formatExpense(data)||'未填金額';
+}
 function formatExpense(data){
   if(typeof data.amount!=='string' || !/^(0|[1-9][0-9]{0,8})([.][0-9]{1,2})?$/.test(data.amount))return '';
   const currency=Object.hasOwn(currencyOptions,data.currency)?data.currency:'TWD';
@@ -833,7 +840,7 @@ function calculateExpenseTotals(entries){
     if(seen.has(item.id))continue;seen.add(item.id);
     const data=item.data,category=data.module;if(!expenseModules.includes(category))continue;
     const minor=amountToMinor(data.amount);
-    if(data.module==='itinerary'&&minor===null)continue;
+    if((data.module==='itinerary'||isFreeWalking(data))&&minor===null)continue;
     if(minor===null){missing++;continue;}
     const currency=data.currency || 'TWD';
     if(!Object.hasOwn(currencyOptions,currency)){missing++;continue;}
@@ -1235,7 +1242,7 @@ function renderQuickRecords(items){
     const sorted=groups.get(date).sort((a,b)=>(a.data.time || '99').localeCompare(b.data.time || '99') || a.id.localeCompare(b.id));
     for(const item of sorted){
       const card=node('article',undefined,'quick-saved-row');card.id='record_'+item.id;card.tabIndex=-1;
-      const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',formatExpense(item.data) || '未填金額','expense-amount'));card.append(main);
+      const main=node('div',undefined,'quick-saved-main');main.append(node('strong',safeString(item.data.title,160,'未命名紀錄')),node('span',expenseDisplay(item.data),'expense-amount'));card.append(main);
       const shared=item.data.showInItinerary===true;
       if(shared)card.append(node('span','每日行程','expense-origin'));
       const meta=[safeString(item.data.detail,160,''),safeString(item.data.time,5,'')].filter(Boolean).join(' · ');
@@ -1307,7 +1314,7 @@ function renderItineraryTimeline(items){
         add.title='新增另一段交通';
       }
       add.addEventListener('click',()=>openRouteDialog(item,next));
-      for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',formatExpense(r)||(r.title==='步行'?'免費':'未填金額')));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
+      for(const route of routes){matched.add(route.id);const r=route.data,box=node('article',undefined,'timeline-transport'),head=node('div',undefined,'timeline-transport-head');head.append(node('span',(routeModes[r.title]||'🚐')+' '+safeString(r.title,160,'交通')),node('span',expenseDisplay(r)));box.append(head,node('p',safeString(r.detail,160,'未填交通時間'),'timeline-meta'));
         if(r.time)box.append(node('p','出發 '+safeString(r.time,5,''),'timeline-meta'));
         if(r.notes){const details=node('details');details.append(node('summary','路線與轉乘資訊'),node('p',safeString(r.notes,2000,''),'timeline-notes'));box.append(details);}
         const controls=node('div',undefined,'route-controls'),link=routeMapLink(item,next);if(link)controls.append(link);
@@ -1317,7 +1324,7 @@ function renderItineraryTimeline(items){
       section.append(between);
     });
     const extras=entryDocs.filter(x=>x.data.module==='transport'&&x.data.date===date&&!matched.has(x.id));
-    if(extras.length){const more=node('details',undefined,'route-unlinked');more.append(node('summary','當日其他交通 · '+extras.length+' 筆'),node('p','獨立新增、或站點順序調整後的交通，仍保留在交通模組及消費統計。','hint'));for(const x of extras){const b=node('button',safeString(x.data.title,160,'交通')+' · '+(formatExpense(x.data)||'未填金額'),'secondary');b.type='button';b.addEventListener('click',()=>jumpToEntry(x));more.append(b);}section.append(more);}
+    if(extras.length){const more=node('details',undefined,'route-unlinked');more.append(node('summary','當日其他交通 · '+extras.length+' 筆'),node('p','獨立新增、或站點順序調整後的交通，仍保留在交通模組及消費統計。','hint'));for(const x of extras){const b=node('button',safeString(x.data.title,160,'交通')+' · '+(expenseDisplay(x.data)),'secondary');b.type='button';b.addEventListener('click',()=>jumpToEntry(x));more.append(b);}section.append(more);}
     const add=node('button','＋ 新增這一天的站點','timeline-add-stop');add.type='button';add.addEventListener('click',()=>{if(!abandonDraft())return;resetRecordForm();setFormOpen(true);if(validDate(date))$('entry_date').value=date;focusEntryInput();});section.append(add);fragment.append(section);
   }
   $('recordList').replaceChildren(fragment);
