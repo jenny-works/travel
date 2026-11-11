@@ -801,7 +801,7 @@ const commonNotes = F('notes','備註','textarea',false,2000);
 const placeCategories=['景點','餐廳','購物店家'];
 const moduleDefinitions = {
   calendar:{label:'📅 總表',description:'集中查看這趟旅行的安排。',fields:[]},
-  itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。餐飲、購物等行程與消費可一次填寫。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','開始日期','date',true),F('time','開始時間','time'),F('endDate','結束日期（跨日才填）','date'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
+  itinerary:{label:'🗓️ 每日行程',description:'可把機場或飯店排在當天第一站，再於兩站之間新增交通。站點的時間填「到達那裡的時間」，搭乘的車程請用站與站之間的交通段記錄，不必另外建成站點。時間皆為當地時間。',fields:[F('itineraryCategory','類別','itineraryCategory',true),F('title','行程名稱','text',true),F('date','開始日期','date',true),F('time','開始時間','time'),F('endDate','結束日期（跨日才填）','date'),F('endTime','結束時間','time'),F('location','地點'),commonNotes]},
   flights:{label:'✈️ 機票',description:'記錄航班與訂位資訊。起降日期及時間皆為各機場當地時間。',fields:[F('title','航班號碼／名稱','text',true),F('detail','航空公司'),F('departureAirport','出發機場'),F('arrivalAirport','抵達機場'),F('date','出發日期','date',true),F('time','出發時間','time'),F('endDate','抵達日期','date'),F('endTime','抵達時間','time'),F('reference','訂位代碼'),commonNotes]},
   places:{label:'📍 口袋名單',description:'收藏景點、餐廳與購物店家，確定日期後再加入每日行程。',fields:[F('detail','分類','placeCategory',true),F('title','名稱','text',true),F('location','地點或地址'),commonNotes]},
   lodging:{label:'🏨 住宿',description:'集中管理住宿地址、入住日期與訂房資訊。',fields:[F('title','住宿名稱','text',true),F('location','地址'),F('date','入住日期','date',true),F('endDate','退房日期','date',true),F('time','入住時間','time'),F('endTime','退房時間','time'),F('detail','房型／房間資訊'),F('reference','訂房編號'),commonNotes]},
@@ -1856,6 +1856,13 @@ function renderStopRow(item){
   });
   box.append(toggle,panel);li.append(time,rail,box);return li;
 }
+async function shiftStopStart(stop,newTime){
+  const data=stop.data,end=timeToMinutes(data.endTime),start=timeToMinutes(newTime);
+  const patch={time:newTime,updatedAt:serverTimestamp()};
+  // An end time that is no longer after the new start would be meaningless, so it is cleared.
+  if(end!==null&&start!==null&&end<=start&&(!data.endDate||data.endDate===data.date))patch.endTime='';
+  await mutateEntry(()=>updateDoc(entryRef(stop.id),patch),()=>feedback('已把「'+safeString(data.title,160,'下一站')+'」的開始時間改為 '+newTime+(patch.endTime===''?'，並清除不合理的結束時間。':'。')));
+}
 function renderLegRow(from,to,matched){
   const routes=routesBetween(entryDocs,from,to);
   const li=node('li',undefined,'leg'+(routes.length?'':' is-empty'));
@@ -1870,13 +1877,20 @@ function renderLegRow(from,to,matched){
     if(mins!==null)row.append(node('span',formatDuration(mins),'leg-chip'));
     const cost=isFreeWalking(r)?'免費':formatExpense(r);
     if(cost)row.append(node('span',cost,'leg-chip'));
-    const dep=timeToMinutes(r.time);
+    const dep=timeToMinutes(r.time);let fix=null;
     if(dep!==null&&mins!==null&&dep+mins<1440){
       const arrive=dep+mins;
       row.append(node('span','出發 '+r.time+' → 抵達 '+minutesToTime(arrive),'leg-time'));
-      if(startB!==null&&arrive>startB)row.append(node('span','⚠ 晚於下一站 '+to.data.time,'leg-warn'));
+      if(startB!==null&&arrive>startB){
+        row.append(node('span','⚠ 晚於下一站原定的 '+to.data.time,'leg-warn'));
+        fix=node('button','下一站改為 '+minutesToTime(arrive),'leg-btn');fix.type='button';
+        fix.title='把「'+safeString(to.data.title,160,'下一站')+'」的開始時間改成抵達時間';
+        fix.disabled=recordBusy||deleteBusy||to.pending;
+        fix.addEventListener('click',()=>shiftStopStart(to,minutesToTime(arrive)));
+      }
     }else if(dep!==null)row.append(node('span','出發 '+r.time,'leg-time'));
     const actions=node('span',undefined,'leg-actions'),link=routeMapLink(from,to);
+    if(fix)actions.append(fix);
     if(link)actions.append(link);
     const edit=node('button','編輯','leg-btn');edit.type='button';edit.disabled=recordBusy||route.pending;edit.addEventListener('click',()=>openRouteDialog(from,to,route));actions.append(edit);
     if(route===routes.at(-1)){
