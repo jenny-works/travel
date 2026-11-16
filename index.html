@@ -1279,9 +1279,19 @@ function openPdf(pdf){
     setTimeout(()=>URL.revokeObjectURL(url),120000);
   }catch{toast('無法開啟這份 PDF。');}
 }
+function syncAttachInput(){const el=$('attachInput');if(el)el.disabled=attachDraft.length>=MAX_ATTACH&&pdfDraft.length>=MAX_PDF;}
+async function addFiles(files){
+  const isPdf=file=>file.type==='application/pdf'||/\.pdf$/i.test(file.name);
+  const pdfs=files.filter(isPdf),images=files.filter(file=>!isPdf(file)&&file.type.startsWith('image/'));
+  const others=files.filter(file=>!pdfs.includes(file)&&!images.includes(file));
+  const messages=others.map(file=>'「'+file.name+'」不是圖片或 PDF，未加入。');
+  if(images.length)messages.unshift(await addAttachments(images));
+  if(pdfs.length)messages.unshift(await addPdfs(pdfs));
+  const status=$('attachStatus');if(status)status.textContent=[...messages.filter(Boolean),'按儲存後才會存到雲端。'].join(' ');
+}
 async function addPdfs(files){
   const token=moduleGeneration,room=MAX_PDF-pdfDraft.length,errors=[];
-  if(room<=0){$('attachStatus').textContent='已達 '+MAX_PDF+' 個 PDF 上限，請先移除一個。';return;}
+  if(room<=0)return '已達 '+MAX_PDF+' 個 PDF 上限，請先移除一個。';
   if(files.length>room)errors.push('最多再加 '+room+' 個，其餘未加入。');
   attachBusy=true;$('attachStatus').textContent='正在讀取 PDF…';
   let used=attachChars();const added=[];
@@ -1297,9 +1307,9 @@ async function addPdfs(files){
     }catch(error){errors.push(error.message);}
   }
   attachBusy=false;
-  if(token!==moduleGeneration||!$('attachStatus'))return;
+  if(token!==moduleGeneration||!$('attachStatus'))return '';
   pdfDraft.push(...added);renderPdfList();
-  $('attachStatus').textContent=[added.length?'已加入 '+added.length+' 個 PDF，按儲存後才會存到雲端。':'',...errors].filter(Boolean).join(' ');
+  return [added.length?'已加入 '+added.length+' 個 PDF。':'',...errors].filter(Boolean).join(' ');
 }
 function renderPdfList(){
   const list=$('pdfList');if(!list)return;
@@ -1312,7 +1322,7 @@ function renderPdfList(){
     remove.addEventListener('click',()=>{pdfDraft.splice(i,1);renderPdfList();const status=$('attachStatus');if(status)status.textContent='已移除，按儲存後生效。';});
     item.append(open,remove);list.append(item);
   });
-  const input=$('pdfInput');if(input)input.disabled=pdfDraft.length>=MAX_PDF;
+  syncAttachInput();
   updateAttachBudget();
 }
 function attachmentsDirty(){
@@ -1353,36 +1363,31 @@ async function compressImage(file){
 }
 async function addAttachments(files){
   const token=moduleGeneration,room=MAX_ATTACH-attachDraft.length,errors=[];
-  if(room<=0){$('attachStatus').textContent='已達 '+MAX_ATTACH+' 張上限，請先移除一張。';return;}
+  if(room<=0)return '已達 '+MAX_ATTACH+' 張截圖上限，請先移除一張。';
   if(files.length>room)errors.push('最多再加 '+room+' 張，其餘未加入。');
   attachBusy=true;$('attachStatus').textContent='正在壓縮圖片…';
   const added=[];
   let used=attachChars();
   for(const file of files.slice(0,room)){try{const url=await compressImage(file);if(used+url.length>ATTACH_TOTAL_CHARS)throw new Error('此筆紀錄的附件容量已滿（約 '+charsToKb(ATTACH_TOTAL_CHARS)+' KB），「'+file.name+'」未加入。');added.push(url);used+=url.length;}catch(error){errors.push(error.message);}}
   attachBusy=false;
-  if(token!==moduleGeneration||!$('attachStatus'))return;
+  if(token!==moduleGeneration||!$('attachStatus'))return '';
   attachDraft.push(...added);renderAttachList();
-  $('attachStatus').textContent=[added.length?'已加入 '+added.length+' 張，按儲存後才會存到雲端。':'',...errors].filter(Boolean).join(' ');
+  return [added.length?'已加入 '+added.length+' 張截圖。':'',...errors].filter(Boolean).join(' ');
 }
 function createAttachField(){
   const wrap=node('div',undefined,'field wide attach-field');
-  const section=(title,forId)=>{const box=node('div',undefined,'attach-section'),label=node('label',title);label.htmlFor=forId;box.append(label);return box;};
-  const imageBox=section('附加截圖（最多 '+MAX_ATTACH+' 張，選填）','attachInput');
-  const input=node('input');input.type='file';input.id='attachInput';input.accept='image/*';input.multiple=true;
-  input.addEventListener('change',()=>{const files=[...input.files];input.value='';if(files.length)addAttachments(files);});
+  const label=node('label','附加檔案（截圖或 PDF，選填）');label.htmlFor='attachInput';
+  const input=node('input');input.type='file';input.id='attachInput';input.accept='image/*,application/pdf,.pdf';input.multiple=true;
+  input.addEventListener('change',()=>{const files=[...input.files];input.value='';if(files.length)addFiles(files);});
+  const help=node('p','截圖最多 '+MAX_ATTACH+' 張（自動壓縮），PDF 最多 '+MAX_PDF+' 個、每個 '+MAX_PDF_KB+' KB 內，共用同一筆紀錄的容量。可放訂房確認信、機票或票券 QR code。','field-example');
   const list=node('div',undefined,'attach-list');list.id='attachList';
-  imageBox.append(input,node('p','可放訂房確認信、機票或票券 QR code 的截圖，會在瀏覽器內自動壓縮。','field-example'),list);
-  const pdfBox=section('附加 PDF（最多 '+MAX_PDF+' 個，每個 '+MAX_PDF_KB+' KB 內，選填）','pdfInput');
-  const pdfInput=node('input');pdfInput.type='file';pdfInput.id='pdfInput';pdfInput.accept='application/pdf,.pdf';pdfInput.multiple=true;
-  pdfInput.addEventListener('change',()=>{const files=[...pdfInput.files];pdfInput.value='';if(files.length)addPdfs(files);});
   const pdfList=node('ul',undefined,'attach-files');pdfList.id='pdfList';
-  pdfBox.append(pdfInput,node('p','PDF 與截圖共用同一筆紀錄的容量。較大的 PDF 請放到 Google Drive，並在下方貼上連結。','field-example'),pdfList);
-  const linkBox=section('附件連結（選填）','attachLinks');
-  const links=node('textarea');links.id='attachLinks';links.rows=3;links.maxLength=3000;links.placeholder='貼上 Google Drive 分享連結，每行一個，最多 '+MAX_LINKS+' 個';
-  linkBox.append(links,node('p','請在 Google Drive 設定誰能開啟檔案。含護照號碼、訂位代碼等個資的檔案，建議只分享給自己的帳號，不要開放「知道連結的人」。','field-example'));
+  const linkBox=node('div',undefined,'attach-section'),linksLabel=node('label','檔案太大？貼上 Google Drive 連結（選填）');linksLabel.htmlFor='attachLinks';
+  const links=node('textarea');links.id='attachLinks';links.rows=3;links.maxLength=3000;links.placeholder='每行一個連結，最多 '+MAX_LINKS+' 個';
+  linkBox.append(linksLabel,links,node('p','請在 Google Drive 設定誰能開啟檔案。含護照號碼、訂位代碼等個資的檔案，建議只分享給自己的帳號，不要開放「知道連結的人」。','field-example'));
   const budget=node('p',undefined,'field-example');budget.id='attachBudget';
   const status=node('p',undefined,'field-example attach-status');status.id='attachStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-  wrap.append(imageBox,pdfBox,linkBox,budget,status);return wrap;
+  wrap.append(label,input,help,list,pdfList,linkBox,budget,status);return wrap;
 }
 function renderAttachList(){
   const list=$('attachList');if(!list)return;
@@ -1394,7 +1399,7 @@ function renderAttachList(){
     remove.addEventListener('click',()=>{attachDraft.splice(i,1);renderAttachList();const status=$('attachStatus');if(status)status.textContent='已移除，按儲存後生效。';});
     wrap.append(open,remove);list.append(wrap);
   });
-  const input=$('attachInput');if(input)input.disabled=attachDraft.length>=MAX_ATTACH;
+  syncAttachInput();
   updateAttachBudget();
 }
 function attachmentGallery(data){
