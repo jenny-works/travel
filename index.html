@@ -478,6 +478,23 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .expense-details>summary{cursor:pointer;padding:12px 0;font-weight:700}
 .expense-details-body{display:grid;gap:14px;padding:4px 0 16px}
 
+/* ---------- Screenshot attachments ---------- */
+.attach-field input[type=file]{padding:8px 10px;cursor:pointer}
+.attach-list,.attach-gallery{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.attach-thumb-wrap{position:relative}
+.attach-thumb{display:block;width:96px;height:96px;padding:0;overflow:hidden;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2)}
+.attach-thumb:hover{border-color:var(--accent)}
+.attach-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.attach-remove{position:absolute;top:-8px;right:-8px;width:32px;height:32px;padding:0;border:1px solid var(--danger-line);border-radius:50%;background:var(--surface);color:var(--danger);font-size:18px;line-height:1}
+.attach-remove:hover{background:var(--danger-soft)}
+.attach-status{min-height:1.5em}
+dialog.photo-dialog{width:min(920px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:14px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 80px #0003}
+.photo-dialog img{display:block;max-width:100%;max-height:calc(100dvh - 150px);margin:0 auto;object-fit:contain;background:#fff;border-radius:8px}
+.photo-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.photo-bar .home-modal-close{margin-left:0}
+.photo-bar button{min-width:44px;min-height:44px}
+.photo-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
 /* ---------- Responsive ---------- */
 @media(min-width:901px){
   .fab-label{display:inline}
@@ -625,6 +642,7 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 <dialog id="tripDialog" class="modal"><h2>編輯旅行資料</h2><form id="tripEditForm"><fieldset id="tripEditFields" style="border:0;padding:0;margin:0;min-width:0"><div class="field"><label for="editName">旅行名稱</label><input id="editName" required maxlength="80"></div><div class="field"><label for="editDestination">目的地</label><input id="editDestination" required maxlength="120"></div><div class="field"><label for="editStart">開始日期</label><input id="editStart" type="date"></div><div class="field"><label for="editEnd">結束日期</label><input id="editEnd" type="date"></div><div class="form-actions"><button class="primary" type="submit">儲存</button><button id="closeTripDialog" type="button" class="secondary">取消</button></div></fieldset><p id="tripEditFeedback" role="status" class="form-status"></p></form></dialog>
 <dialog id="deleteTripDialog" class="modal"><h2>刪除整趟旅行？</h2><p id="deleteTripLabel"></p><p>旅行與其中所有紀錄都會一併刪除，無法復原。</p><div class="form-actions"><button id="confirmDeleteTripBtn" type="button" class="primary">確認刪除旅行</button><button id="cancelDeleteTripBtn" type="button" class="secondary">取消</button></div><p id="deleteTripFeedback" class="form-status" role="status"></p></dialog>
 <dialog id="deleteDialog" class="modal"><h2>刪除這筆紀錄？</h2><p id="deleteLabel"></p><p>刪除後無法復原。</p><div class="form-actions"><button id="confirmDeleteBtn" type="button" class="primary">確認刪除</button><button id="cancelDeleteBtn" type="button" class="secondary">取消</button></div><p id="deleteFeedback" class="form-status" role="status"></p></dialog>
+<dialog id="photoDialog" class="photo-dialog" aria-label="截圖預覽"><img id="photoImg" alt=""><div class="photo-bar"><button id="photoPrev" type="button" class="secondary" aria-label="上一張">‹</button><span id="photoCount" class="photo-count"></span><button id="photoNext" type="button" class="secondary" aria-label="下一張">›</button><button id="photoClose" type="button" class="secondary">關閉</button></div></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div class="footer">Itinerary Manager · Made for your next adventure</div>
 <noscript>請啟用 JavaScript，才能使用 Google 登入與旅行雲端同步。</noscript>
@@ -1019,12 +1037,16 @@ function feedback(message,tone='info') {
   if(tone==='error'&&message)$('recordFeedback').scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 function abandonDraft() {
-  if(recordBusy || deleteBusy || tripEditBusy){notice('請等待目前的儲存或刪除完成，再切換頁面。');return false;}
+  if(recordBusy || deleteBusy || tripEditBusy || attachBusy){notice('請等待目前的儲存或刪除完成，再切換頁面。');return false;}
   if(isDirty() && !window.confirm('表單有尚未儲存的內容，確定放棄並切換嗎？')) return false;
   return true;
 }
 function isDirty() {
   if(quickMode && isQuickModule())return quickEntryIsDirty();
+  if(attachModules.includes(activeModule)){
+    const base=savedAttachments(entryDocs.find(item=>item.id===editingEntryId)?.data||{});
+    if(attachDraft.length!==base.length||attachDraft.some((url,i)=>url!==base[i]))return true;
+  }
   if(activeModule==='packing' && !editingEntryId && $('packingRows')){
     if([...$('packingRows').children].some(row=>row.querySelector('.packing-name').value.trim() || row.querySelector('.packing-quantity').value!=='1'))return true;
   }
@@ -1041,7 +1063,7 @@ function isDirty() {
 function closeDetail() {
   ++moduleGeneration; unsubscribeEntries?.(); unsubscribeEntries=null;
   quickMode=false;selectedTripId=null; entryDocs=[]; editingEntryId=null; recordBusy=false; entriesReady=false; deleteTarget=null;deleteBusy=false;tripEditBusy=false;
-  $('tripDialog').close(); $('deleteDialog').close();$('deleteTripDialog').close();$('routeDialog').close();routeContext=null;
+  $('tripDialog').close(); $('deleteDialog').close();$('deleteTripDialog').close();$('routeDialog').close();routeContext=null;$('photoDialog').close();
   $('tripEditFields').disabled=false;$('confirmDeleteBtn').disabled=false;$('cancelDeleteBtn').disabled=false;
   $('detailArea').hidden=true; $('overviewArea').hidden=false;
   $('moduleFields').replaceChildren(); $('recordList').replaceChildren(); feedback('');
@@ -1205,6 +1227,98 @@ function initShortcutBridge(){
   renderShortcutBanner();
 }
 
+// ---- Screenshot attachments (flights / lodging / activities) ----
+// Images are compressed in the browser to small JPEG data URLs and stored inside the entry document,
+// so no extra service is needed. Firestore limits one document to 1 MiB, hence at most 3 images of about 180 KB.
+const attachModules=['flights','lodging','activities'];
+const MAX_ATTACH=3,ATTACH_TARGET_BYTES=180*1024,ATTACH_TOTAL_CHARS=800000;
+let attachDraft=[],attachBusy=false,photoSet=[],photoIndex=0;
+const isAttachmentUrl=value=>typeof value==='string'&&value.startsWith('data:image/jpeg;base64,');
+const savedAttachments=data=>Array.isArray(data.attachments)?data.attachments.filter(isAttachmentUrl).slice(0,MAX_ATTACH):[];
+async function loadImage(file){
+  if(window.createImageBitmap){try{return await createImageBitmap(file);}catch{}}
+  return await new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file),img=new Image();
+    img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('無法讀取「'+file.name+'」，可能是此瀏覽器不支援的格式。'));};
+    img.src=url;
+  });
+}
+async function compressImage(file){
+  if(!file.type.startsWith('image/'))throw new Error('「'+file.name+'」不是圖片檔。');
+  const img=await loadImage(file),w0=img.width||img.naturalWidth,h0=img.height||img.naturalHeight;
+  if(!w0||!h0){img.close?.();throw new Error('無法讀取「'+file.name+'」。');}
+  let maxSide=1400;
+  try{
+    for(let attempt=0;attempt<6;attempt++){
+      const scale=Math.min(1,maxSide/Math.max(w0,h0)),canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(w0*scale));canvas.height=Math.max(1,Math.round(h0*scale));
+      const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      for(const quality of [0.82,0.7,0.58,0.46]){
+        const url=canvas.toDataURL('image/jpeg',quality);
+        if(url.length*0.75<=ATTACH_TARGET_BYTES)return url;
+      }
+      maxSide=Math.round(maxSide*0.8);
+    }
+  }finally{img.close?.();}
+  throw new Error('「'+file.name+'」壓縮後仍太大，請換一張較小的圖片。');
+}
+async function addAttachments(files){
+  const token=moduleGeneration,room=MAX_ATTACH-attachDraft.length,errors=[];
+  if(room<=0){$('attachStatus').textContent='已達 '+MAX_ATTACH+' 張上限，請先移除一張。';return;}
+  if(files.length>room)errors.push('最多再加 '+room+' 張，其餘未加入。');
+  attachBusy=true;$('attachStatus').textContent='正在壓縮圖片…';
+  const added=[];
+  for(const file of files.slice(0,room)){try{added.push(await compressImage(file));}catch(error){errors.push(error.message);}}
+  attachBusy=false;
+  if(token!==moduleGeneration||!$('attachStatus'))return;
+  attachDraft.push(...added);renderAttachList();
+  $('attachStatus').textContent=[added.length?'已加入 '+added.length+' 張，按儲存後才會存到雲端。':'',...errors].filter(Boolean).join(' ');
+}
+function createAttachField(){
+  const wrap=node('div',undefined,'field wide attach-field'),label=node('label','附加截圖（最多 '+MAX_ATTACH+' 張，選填）');
+  const input=node('input');input.type='file';input.id='attachInput';input.accept='image/*';input.multiple=true;label.htmlFor='attachInput';
+  input.addEventListener('change',()=>{const files=[...input.files];input.value='';if(files.length)addAttachments(files);});
+  const help=node('p','可放訂房確認信、機票或票券 QR code 的截圖。圖片會在瀏覽器內自動壓縮，每張約 180 KB 以內。','field-example');
+  const status=node('p',undefined,'field-example attach-status');status.id='attachStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+  const list=node('div',undefined,'attach-list');list.id='attachList';
+  wrap.append(label,input,help,status,list);return wrap;
+}
+function renderAttachList(){
+  const list=$('attachList');if(!list)return;
+  list.replaceChildren();
+  attachDraft.forEach((url,i)=>{
+    const wrap=node('div',undefined,'attach-thumb-wrap'),open=node('button',undefined,'attach-thumb');open.type='button';open.setAttribute('aria-label','放大第 '+(i+1)+' 張截圖');
+    const img=node('img');img.src=url;img.alt='截圖 '+(i+1);open.append(img);open.addEventListener('click',()=>openPhoto(attachDraft,i));
+    const remove=node('button','×','attach-remove');remove.type='button';remove.setAttribute('aria-label','移除第 '+(i+1)+' 張截圖');
+    remove.addEventListener('click',()=>{attachDraft.splice(i,1);renderAttachList();const status=$('attachStatus');if(status)status.textContent='已移除，按儲存後生效。';});
+    wrap.append(open,remove);list.append(wrap);
+  });
+  const input=$('attachInput');if(input)input.disabled=attachDraft.length>=MAX_ATTACH;
+}
+function attachmentGallery(data){
+  const urls=savedAttachments(data);if(!urls.length)return null;
+  const box=node('div',undefined,'attach-gallery');
+  urls.forEach((url,i)=>{
+    const button=node('button',undefined,'attach-thumb');button.type='button';button.setAttribute('aria-label','放大第 '+(i+1)+' 張截圖，共 '+urls.length+' 張');
+    const img=node('img');img.src=url;img.alt='截圖 '+(i+1);img.loading='lazy';button.append(img);button.addEventListener('click',()=>openPhoto(urls,i));box.append(button);
+  });
+  return box;
+}
+function showPhoto(){
+  $('photoImg').src=photoSet[photoIndex];$('photoImg').alt='截圖 '+(photoIndex+1);
+  $('photoCount').textContent=(photoIndex+1)+' / '+photoSet.length;
+  $('photoPrev').hidden=$('photoNext').hidden=photoSet.length<2;
+}
+function openPhoto(urls,index){photoSet=urls.slice();photoIndex=index;showPhoto();$('photoDialog').showModal();}
+function initPhotoDialog(){
+  const dialog=$('photoDialog');
+  $('photoClose').addEventListener('click',()=>dialog.close());
+  $('photoPrev').addEventListener('click',()=>{photoIndex=(photoIndex+photoSet.length-1)%photoSet.length;showPhoto();});
+  $('photoNext').addEventListener('click',()=>{photoIndex=(photoIndex+1)%photoSet.length;showPhoto();});
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+  dialog.addEventListener('close',()=>$('photoImg').removeAttribute('src'));
+}
 function mapLink(place){
   const link=node('a',place+' ↗','map-link');
   link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place);
@@ -1380,6 +1494,7 @@ function setTimeValue(key,value) {
 }
 function syncStayMin(){const d=$('entry_date'),e=$('entry_endDate');if(activeModule==='lodging'&&d&&e)e.min=d.value||'';}
 function resetRecordForm() {
+  attachDraft=[];renderAttachList();
   editingEntryId=null; $('recordForm').reset();
   if(activeModule==='itinerary'){syncAnchorExpenseFields('entry','');populateAnchorPicker('entry','',[]);}
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
@@ -1463,6 +1578,7 @@ function switchModule(key,force=false,expenseView=Object.hasOwn(itineraryCategor
     if(def.checkable && field.key==='detail')fragment.prepend(wrap);else fragment.append(wrap);
     if(field.type==='itineraryCategory')fragment.append(createAnchorPicker('entry'));
   }
+  if(attachModules.includes(key))fragment.append(createAttachField());
   $('moduleFields').classList.toggle('checklist-form',!!def.checkable);
   $('moduleFields').replaceChildren(fragment);
   if(key==='lodging'||key==='flights'){
@@ -1835,7 +1951,8 @@ function renderStopRow(item){
   if(place)panel.append(mapLink(place));
   if(data.reference)panel.append(node('p','預約編號：'+safeString(data.reference,160,'')));
   if(data.notes)panel.append(node('p',safeString(data.notes,2000,''),'stop-notes'));
-  if(!place&&!data.reference&&!data.notes)panel.append(node('p','沒有更多資料，可按「編輯」補上地點或備註。','hint'));
+  {const gallery=attachmentGallery(data);if(gallery)panel.append(gallery);}
+  if(!place&&!data.reference&&!data.notes&&!savedAttachments(data).length)panel.append(node('p','沒有更多資料，可按「編輯」補上地點或備註。','hint'));
   if(formatExpense(data)&&data.module==='itinerary'){
     const legacy=node('div',undefined,'legacy-itinerary-cost');
     legacy.append(node('span','舊行程金額：'+formatExpense(data),'expense-amount'),node('p','若已記在餐飲、娛樂等模組，可移除此處金額避免重複加總。','hint'));
@@ -2099,6 +2216,7 @@ function renderEntriesCore() {
       card.append(node('span','每日行程','expense-origin'),node('p',formatExpense(item.data)||'未填金額','expense-amount'));
       const details=node('details',undefined,'quick-extra');details.append(node('summary','查看行程資料'),dl);card.append(details);
     }else card.append(dl);
+    {const gallery=attachmentGallery(item.data);if(gallery)card.append(gallery);}
     if(item.pending)card.append(node('p','等待雲端確認…','hint'));
     const actions=node('div',undefined,'record-actions');
     const edit=node('button','編輯','secondary');edit.type='button';edit.disabled=recordBusy || item.pending;edit.addEventListener('click',()=>editEntry(item.id));
@@ -2134,6 +2252,7 @@ function editEntry(id) {
   }
   syncStayMin();
   if(activeModule==='itinerary'){const category=$('entry_itineraryCategory').value;syncAnchorExpenseFields('entry',category);populateAnchorPicker('entry',category,entryDocs);}
+  if(attachModules.includes(activeModule)){attachDraft=savedAttachments(item.data);renderAttachList();const status=$('attachStatus');if(status)status.textContent='';}
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
   $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
 }
@@ -2175,6 +2294,10 @@ function collectEntry() {
       data[field.key]=value;
     }
   }
+  if(attachModules.includes(activeModule)){
+    if(attachDraft.join('').length>ATTACH_TOTAL_CHARS)throw new Error('截圖總量過大，請移除一張或換較小的圖片。');
+    data.attachments=[...attachDraft];
+  }
   const existing=entryDocs.find(x=>x.id===editingEntryId);
   if(existing?.data.showInItinerary&&!data.date)throw Error('每日行程中的項目需要保留日期。');
   if(existing&&(activeModule==='itinerary'||existing.data.showInItinerary))for(const key of entryTextKeys){if(key==='detail'&&activeModule==='itinerary'){
@@ -2202,6 +2325,7 @@ async function mutateEntry(action,success) {
 }
 async function saveEntry(event){
   event.preventDefault();if(recordBusy || !entriesReady || !$('recordForm').reportValidity())return;
+  if(attachBusy){feedback('圖片還在壓縮，請稍候再儲存。','error');return;}
   if(quickMode && isQuickModule()){await saveQuickEntries();return;}
   let data;try{if(activeModule==='packing'){collectPackingRows();syncPackingValues();}data=collectEntry();}catch(error){feedback(error.message,'error');return;}
   const id=editingEntryId;
@@ -2330,6 +2454,7 @@ function groupsEnsure(){
   return navGroups;
 }
 function initModules(){
+  initPhotoDialog();
   initRouteDialog();
   initHomeAdd();
   initShortcutBridge();
