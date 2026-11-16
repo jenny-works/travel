@@ -488,6 +488,18 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .attach-remove{position:absolute;top:-8px;right:-8px;width:32px;height:32px;padding:0;border:1px solid var(--danger-line);border-radius:50%;background:var(--surface);color:var(--danger);font-size:18px;line-height:1}
 .attach-remove:hover{background:var(--danger-soft)}
 .attach-status{min-height:1.5em}
+.attach-section{margin-top:18px}
+.attach-section:first-child{margin-top:0}
+.attach-section>label{margin-bottom:6px}
+.attach-field textarea{min-height:72px}
+.attach-block{display:grid;gap:10px;margin-top:12px}
+.attach-block .attach-gallery{margin-top:0}
+.attach-files{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.attach-block .attach-files{margin:0}
+.attach-files li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:13px;overflow-wrap:anywhere}
+.attach-files .file-name{flex:1;min-width:0}
+.attach-files button{min-height:36px;padding:4px 12px;font-size:12px}
+.attach-files a{color:var(--accent-text);text-underline-offset:3px}
 dialog.photo-dialog{width:min(920px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:14px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 80px #0003}
 .photo-dialog img{display:block;max-width:100%;max-height:calc(100dvh - 150px);margin:0 auto;object-fit:contain;background:#fff;border-radius:8px}
 .photo-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
@@ -1043,10 +1055,7 @@ function abandonDraft() {
 }
 function isDirty() {
   if(quickMode && isQuickModule())return quickEntryIsDirty();
-  if(attachModules.includes(activeModule)){
-    const base=savedAttachments(entryDocs.find(item=>item.id===editingEntryId)?.data||{});
-    if(attachDraft.length!==base.length||attachDraft.some((url,i)=>url!==base[i]))return true;
-  }
+  if(attachModules.includes(activeModule)&&attachmentsDirty())return true;
   if(activeModule==='packing' && !editingEntryId && $('packingRows')){
     if([...$('packingRows').children].some(row=>row.querySelector('.packing-name').value.trim() || row.querySelector('.packing-quantity').value!=='1'))return true;
   }
@@ -1231,10 +1240,89 @@ function initShortcutBridge(){
 // Images are compressed in the browser to small JPEG data URLs and stored inside the entry document,
 // so no extra service is needed. Firestore limits one document to 1 MiB, hence at most 3 images of about 180 KB.
 const attachModules=['flights','lodging','activities'];
-const MAX_ATTACH=3,ATTACH_TARGET_BYTES=180*1024,ATTACH_TOTAL_CHARS=800000;
-let attachDraft=[],attachBusy=false,photoSet=[],photoIndex=0;
+const MAX_ATTACH=3,ATTACH_TARGET_BYTES=180*1024;
+// Screenshots and PDFs share one entry document, so their combined base64 text is capped (Firestore: 1 MiB per document).
+const ATTACH_TOTAL_CHARS=960000,MAX_PDF=2,MAX_PDF_KB=500,MAX_PDF_BYTES=MAX_PDF_KB*1024,MAX_LINKS=5,PDF_PREFIX='data:application/pdf;base64,';
+let attachDraft=[],pdfDraft=[],attachBusy=false,photoSet=[],photoIndex=0;
 const isAttachmentUrl=value=>typeof value==='string'&&value.startsWith('data:image/jpeg;base64,');
 const savedAttachments=data=>Array.isArray(data.attachments)?data.attachments.filter(isAttachmentUrl).slice(0,MAX_ATTACH):[];
+const savedPdfs=data=>Array.isArray(data.pdfs)?data.pdfs.filter(pdf=>pdf&&typeof pdf.name==='string'&&typeof pdf.data==='string'&&pdf.data.startsWith(PDF_PREFIX)).slice(0,MAX_PDF):[];
+const savedLinks=data=>Array.isArray(data.links)?data.links.filter(url=>typeof url==='string'&&url.startsWith('https://')).slice(0,MAX_LINKS):[];
+const hasAttachments=data=>savedAttachments(data).length+savedPdfs(data).length+savedLinks(data).length>0;
+const attachChars=()=>attachDraft.reduce((n,url)=>n+url.length,0)+pdfDraft.reduce((n,pdf)=>n+pdf.data.length,0);
+const charsToKb=chars=>Math.round(chars*0.75/1024);
+function updateAttachBudget(){const el=$('attachBudget');if(el)el.textContent='目前附件約 '+charsToKb(attachChars())+' KB，此筆紀錄上限約 '+charsToKb(ATTACH_TOTAL_CHARS)+' KB。';}
+function parseLinks(text){
+  const lines=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  if(lines.length>MAX_LINKS)throw new Error('附件連結最多 '+MAX_LINKS+' 個。');
+  const seen=new Set(),out=[];
+  for(const line of lines){
+    let url;try{url=new URL(line);}catch{throw new Error('「'+line.slice(0,40)+'」不是有效的網址。');}
+    if(url.protocol!=='https:')throw new Error('附件連結請使用 https:// 開頭的網址。');
+    if(url.href.length>500)throw new Error('有一個連結太長，請改用 Google Drive 的分享連結。');
+    if(!seen.has(url.href)){seen.add(url.href);out.push(url.href);}
+  }
+  return out;
+}
+function linkLabel(url){
+  try{const host=new URL(url).hostname;return host==='drive.google.com'||host==='docs.google.com'?'Google Drive 檔案':host;}catch{return '連結';}
+}
+function readDataUrl(file){
+  return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('無法讀取「'+file.name+'」。'));reader.readAsDataURL(file);});
+}
+function openPdf(pdf){
+  try{
+    const binary=atob(pdf.data.slice(PDF_PREFIX.length)),bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+    const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),link=document.createElement('a');
+    link.href=url;link.target='_blank';link.rel='noopener noreferrer';document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),120000);
+  }catch{toast('無法開啟這份 PDF。');}
+}
+async function addPdfs(files){
+  const token=moduleGeneration,room=MAX_PDF-pdfDraft.length,errors=[];
+  if(room<=0){$('attachStatus').textContent='已達 '+MAX_PDF+' 個 PDF 上限，請先移除一個。';return;}
+  if(files.length>room)errors.push('最多再加 '+room+' 個，其餘未加入。');
+  attachBusy=true;$('attachStatus').textContent='正在讀取 PDF…';
+  let used=attachChars();const added=[];
+  for(const file of files.slice(0,room)){
+    try{
+      if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))throw new Error('「'+file.name+'」不是 PDF 檔。');
+      if(file.size>MAX_PDF_BYTES)throw new Error('「'+file.name+'」約 '+Math.round(file.size/1024)+' KB，超過 '+MAX_PDF_KB+' KB。請改放 Google Drive，再貼上連結。');
+      const base64=(await readDataUrl(file)).split(',')[1]||'';
+      if(!base64.startsWith('JVBER'))throw new Error('「'+file.name+'」看起來不是有效的 PDF。');
+      const data=PDF_PREFIX+base64;
+      if(used+data.length>ATTACH_TOTAL_CHARS)throw new Error('此筆紀錄的附件容量已滿（約 '+charsToKb(ATTACH_TOTAL_CHARS)+' KB），「'+file.name+'」未加入。請移除其他附件，或改貼 Google Drive 連結。');
+      added.push({name:file.name.replace(/[\u0000-\u001f\u007f]/g,'').slice(0,80)||'附件.pdf',data});used+=data.length;
+    }catch(error){errors.push(error.message);}
+  }
+  attachBusy=false;
+  if(token!==moduleGeneration||!$('attachStatus'))return;
+  pdfDraft.push(...added);renderPdfList();
+  $('attachStatus').textContent=[added.length?'已加入 '+added.length+' 個 PDF，按儲存後才會存到雲端。':'',...errors].filter(Boolean).join(' ');
+}
+function renderPdfList(){
+  const list=$('pdfList');if(!list)return;
+  list.replaceChildren();
+  pdfDraft.forEach((pdf,i)=>{
+    const item=node('li');
+    item.append(node('span','📄 '+pdf.name+' · 約 '+charsToKb(pdf.data.length)+' KB','file-name'));
+    const open=node('button','開啟','secondary');open.type='button';open.addEventListener('click',()=>openPdf(pdf));
+    const remove=node('button','移除','secondary danger');remove.type='button';remove.setAttribute('aria-label','移除 '+pdf.name);
+    remove.addEventListener('click',()=>{pdfDraft.splice(i,1);renderPdfList();const status=$('attachStatus');if(status)status.textContent='已移除，按儲存後生效。';});
+    item.append(open,remove);list.append(item);
+  });
+  const input=$('pdfInput');if(input)input.disabled=pdfDraft.length>=MAX_PDF;
+  updateAttachBudget();
+}
+function attachmentsDirty(){
+  const original=entryDocs.find(item=>item.id===editingEntryId)?.data||{};
+  const images=savedAttachments(original),pdfs=savedPdfs(original);
+  if(attachDraft.length!==images.length||attachDraft.some((url,i)=>url!==images[i]))return true;
+  if(pdfDraft.length!==pdfs.length||pdfDraft.some((pdf,i)=>pdf.data!==pdfs[i].data))return true;
+  const box=$('attachLinks');
+  return !!box&&box.value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).join('\n')!==savedLinks(original).join('\n');
+}
 async function loadImage(file){
   if(window.createImageBitmap){try{return await createImageBitmap(file);}catch{}}
   return await new Promise((resolve,reject)=>{
@@ -1269,20 +1357,32 @@ async function addAttachments(files){
   if(files.length>room)errors.push('最多再加 '+room+' 張，其餘未加入。');
   attachBusy=true;$('attachStatus').textContent='正在壓縮圖片…';
   const added=[];
-  for(const file of files.slice(0,room)){try{added.push(await compressImage(file));}catch(error){errors.push(error.message);}}
+  let used=attachChars();
+  for(const file of files.slice(0,room)){try{const url=await compressImage(file);if(used+url.length>ATTACH_TOTAL_CHARS)throw new Error('此筆紀錄的附件容量已滿（約 '+charsToKb(ATTACH_TOTAL_CHARS)+' KB），「'+file.name+'」未加入。');added.push(url);used+=url.length;}catch(error){errors.push(error.message);}}
   attachBusy=false;
   if(token!==moduleGeneration||!$('attachStatus'))return;
   attachDraft.push(...added);renderAttachList();
   $('attachStatus').textContent=[added.length?'已加入 '+added.length+' 張，按儲存後才會存到雲端。':'',...errors].filter(Boolean).join(' ');
 }
 function createAttachField(){
-  const wrap=node('div',undefined,'field wide attach-field'),label=node('label','附加截圖（最多 '+MAX_ATTACH+' 張，選填）');
-  const input=node('input');input.type='file';input.id='attachInput';input.accept='image/*';input.multiple=true;label.htmlFor='attachInput';
+  const wrap=node('div',undefined,'field wide attach-field');
+  const section=(title,forId)=>{const box=node('div',undefined,'attach-section'),label=node('label',title);label.htmlFor=forId;box.append(label);return box;};
+  const imageBox=section('附加截圖（最多 '+MAX_ATTACH+' 張，選填）','attachInput');
+  const input=node('input');input.type='file';input.id='attachInput';input.accept='image/*';input.multiple=true;
   input.addEventListener('change',()=>{const files=[...input.files];input.value='';if(files.length)addAttachments(files);});
-  const help=node('p','可放訂房確認信、機票或票券 QR code 的截圖。圖片會在瀏覽器內自動壓縮，每張約 180 KB 以內。','field-example');
-  const status=node('p',undefined,'field-example attach-status');status.id='attachStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const list=node('div',undefined,'attach-list');list.id='attachList';
-  wrap.append(label,input,help,status,list);return wrap;
+  imageBox.append(input,node('p','可放訂房確認信、機票或票券 QR code 的截圖，會在瀏覽器內自動壓縮。','field-example'),list);
+  const pdfBox=section('附加 PDF（最多 '+MAX_PDF+' 個，每個 '+MAX_PDF_KB+' KB 內，選填）','pdfInput');
+  const pdfInput=node('input');pdfInput.type='file';pdfInput.id='pdfInput';pdfInput.accept='application/pdf,.pdf';pdfInput.multiple=true;
+  pdfInput.addEventListener('change',()=>{const files=[...pdfInput.files];pdfInput.value='';if(files.length)addPdfs(files);});
+  const pdfList=node('ul',undefined,'attach-files');pdfList.id='pdfList';
+  pdfBox.append(pdfInput,node('p','PDF 與截圖共用同一筆紀錄的容量。較大的 PDF 請放到 Google Drive，並在下方貼上連結。','field-example'),pdfList);
+  const linkBox=section('附件連結（選填）','attachLinks');
+  const links=node('textarea');links.id='attachLinks';links.rows=3;links.maxLength=3000;links.placeholder='貼上 Google Drive 分享連結，每行一個，最多 '+MAX_LINKS+' 個';
+  linkBox.append(links,node('p','請在 Google Drive 設定誰能開啟檔案。含護照號碼、訂位代碼等個資的檔案，建議只分享給自己的帳號，不要開放「知道連結的人」。','field-example'));
+  const budget=node('p',undefined,'field-example');budget.id='attachBudget';
+  const status=node('p',undefined,'field-example attach-status');status.id='attachStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+  wrap.append(imageBox,pdfBox,linkBox,budget,status);return wrap;
 }
 function renderAttachList(){
   const list=$('attachList');if(!list)return;
@@ -1295,6 +1395,7 @@ function renderAttachList(){
     wrap.append(open,remove);list.append(wrap);
   });
   const input=$('attachInput');if(input)input.disabled=attachDraft.length>=MAX_ATTACH;
+  updateAttachBudget();
 }
 function attachmentGallery(data){
   const urls=savedAttachments(data);if(!urls.length)return null;
@@ -1303,6 +1404,24 @@ function attachmentGallery(data){
     const button=node('button',undefined,'attach-thumb');button.type='button';button.setAttribute('aria-label','放大第 '+(i+1)+' 張截圖，共 '+urls.length+' 張');
     const img=node('img');img.src=url;img.alt='截圖 '+(i+1);img.loading='lazy';button.append(img);button.addEventListener('click',()=>openPhoto(urls,i));box.append(button);
   });
+  return box;
+}
+function attachmentBlock(data){
+  if(!hasAttachments(data))return null;
+  const box=node('div',undefined,'attach-block'),images=attachmentGallery(data);
+  if(images)box.append(images);
+  const pdfs=savedPdfs(data),links=savedLinks(data);
+  if(pdfs.length||links.length){
+    const list=node('ul',undefined,'attach-files');
+    for(const pdf of pdfs){
+      const item=node('li');item.append(node('span','📄 '+pdf.name+' · 約 '+charsToKb(pdf.data.length)+' KB','file-name'));
+      const open=node('button','開啟 PDF','secondary');open.type='button';open.addEventListener('click',()=>openPdf(pdf));item.append(open);list.append(item);
+    }
+    for(const url of links){
+      const item=node('li'),link=node('a','🔗 '+linkLabel(url)+' ↗','file-name');link.href=url;link.target='_blank';link.rel='noopener noreferrer';item.append(link);list.append(item);
+    }
+    box.append(list);
+  }
   return box;
 }
 function showPhoto(){
@@ -1494,7 +1613,7 @@ function setTimeValue(key,value) {
 }
 function syncStayMin(){const d=$('entry_date'),e=$('entry_endDate');if(activeModule==='lodging'&&d&&e)e.min=d.value||'';}
 function resetRecordForm() {
-  attachDraft=[];renderAttachList();
+  attachDraft=[];pdfDraft=[];renderAttachList();renderPdfList();{const st=$('attachStatus');if(st)st.textContent='';}
   editingEntryId=null; $('recordForm').reset();
   if(activeModule==='itinerary'){syncAnchorExpenseFields('entry','');populateAnchorPicker('entry','',[]);}
   for(const field of moduleDefinitions[activeModule].fields)if(field.type==='time')setTimeValue(field.key,'');
@@ -1951,8 +2070,8 @@ function renderStopRow(item){
   if(place)panel.append(mapLink(place));
   if(data.reference)panel.append(node('p','預約編號：'+safeString(data.reference,160,'')));
   if(data.notes)panel.append(node('p',safeString(data.notes,2000,''),'stop-notes'));
-  {const gallery=attachmentGallery(data);if(gallery)panel.append(gallery);}
-  if(!place&&!data.reference&&!data.notes&&!savedAttachments(data).length)panel.append(node('p','沒有更多資料，可按「編輯」補上地點或備註。','hint'));
+  {const block=attachmentBlock(data);if(block)panel.append(block);}
+  if(!place&&!data.reference&&!data.notes&&!hasAttachments(data))panel.append(node('p','沒有更多資料，可按「編輯」補上地點或備註。','hint'));
   if(formatExpense(data)&&data.module==='itinerary'){
     const legacy=node('div',undefined,'legacy-itinerary-cost');
     legacy.append(node('span','舊行程金額：'+formatExpense(data),'expense-amount'),node('p','若已記在餐飲、娛樂等模組，可移除此處金額避免重複加總。','hint'));
@@ -2216,7 +2335,7 @@ function renderEntriesCore() {
       card.append(node('span','每日行程','expense-origin'),node('p',formatExpense(item.data)||'未填金額','expense-amount'));
       const details=node('details',undefined,'quick-extra');details.append(node('summary','查看行程資料'),dl);card.append(details);
     }else card.append(dl);
-    {const gallery=attachmentGallery(item.data);if(gallery)card.append(gallery);}
+    {const block=attachmentBlock(item.data);if(block)card.append(block);}
     if(item.pending)card.append(node('p','等待雲端確認…','hint'));
     const actions=node('div',undefined,'record-actions');
     const edit=node('button','編輯','secondary');edit.type='button';edit.disabled=recordBusy || item.pending;edit.addEventListener('click',()=>editEntry(item.id));
@@ -2252,7 +2371,7 @@ function editEntry(id) {
   }
   syncStayMin();
   if(activeModule==='itinerary'){const category=$('entry_itineraryCategory').value;syncAnchorExpenseFields('entry',category);populateAnchorPicker('entry',category,entryDocs);}
-  if(attachModules.includes(activeModule)){attachDraft=savedAttachments(item.data);renderAttachList();const status=$('attachStatus');if(status)status.textContent='';}
+  if(attachModules.includes(activeModule)){attachDraft=savedAttachments(item.data);pdfDraft=savedPdfs(item.data).map(pdf=>({name:pdf.name,data:pdf.data}));renderAttachList();renderPdfList();$('attachLinks').value=savedLinks(item.data).join('\n');const status=$('attachStatus');if(status)status.textContent='';}
   configureChecklistForm(true);if(moduleDefinitions[activeModule].checkable)setCategoryValue(item.data.detail || '');
   $('saveRecordBtn').textContent='儲存修改';$('cancelEditBtn').hidden=false;feedback('正在編輯這筆紀錄。');if(activeModule==='packing')$('packingRows').querySelector('.packing-name').focus();else $('entry_title').focus();
 }
@@ -2295,8 +2414,10 @@ function collectEntry() {
     }
   }
   if(attachModules.includes(activeModule)){
-    if(attachDraft.join('').length>ATTACH_TOTAL_CHARS)throw new Error('截圖總量過大，請移除一張或換較小的圖片。');
+    if(attachChars()>ATTACH_TOTAL_CHARS)throw new Error('附件總量過大，請移除一些截圖或 PDF，改貼 Google Drive 連結。');
     data.attachments=[...attachDraft];
+    data.pdfs=pdfDraft.map(pdf=>({name:pdf.name,data:pdf.data}));
+    data.links=parseLinks($('attachLinks').value);
   }
   const existing=entryDocs.find(x=>x.id===editingEntryId);
   if(existing?.data.showInItinerary&&!data.date)throw Error('每日行程中的項目需要保留日期。');
