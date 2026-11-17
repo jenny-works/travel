@@ -839,6 +839,7 @@ const moduleDefinitions = {
   shopping:{label:'🛍️ 購物',description:'快速記錄購物品項與消費，一次儲存多筆。',fields:[F('title','商店／購買內容','text',true),F('date','日期','date',true),F('time','購買時間','time'),F('location','商店地點'),F('detail','購物類型'),commonNotes]},
   dining:{label:'🍽️ 餐飲',description:'連續記錄餐廳、咖啡與小吃，一次儲存多筆。',fields:[F('title','餐廳／餐點名稱','text',true),F('date','日期','date',true),F('time','用餐時間','time'),F('location','地點'),F('detail','餐別／類型'),commonNotes]},
   activities:{label:'🎡 娛樂',description:'收好景點、活動與餐廳的預約資訊。',fields:[F('title','活動／景點名稱','text',true),F('date','日期','date'),F('time','開始時間','time'),F('endTime','結束時間','time'),F('location','地點'),F('reference','預約／票券編號'),commonNotes]},
+  visa:{label:'🛂 簽證／證件',description:'集中保存簽證、護照影本、保險單等資料，可附上截圖、小型 PDF 或 Google Drive 連結。請勿在文字欄位填寫護照號碼。',fields:[F('title','名稱（例：日本電子簽證）','text',true),F('detail','類型（簽證、護照、保險…）'),F('date','有效期限／申請截止日','date'),F('reference','申請／核准編號（請勿填護照號碼）'),commonNotes]},
   todos:{label:'✅ 待辦',description:'先選類別，再一次新增多個待辦，每行一項。',checkable:true,fields:[F('title','待辦事項','text',true),F('detail','類別'),F('date','到期日期','date'),F('time','到期時間','time'),commonNotes]},
   packing:{label:'🎒 行李',description:'先選類別，再逐列填寫品名與數量，一次加入多件物品。',checkable:true,fields:[F('title','物品名稱','text',true),F('detail','類別'),F('quantity','數量','number',true),commonNotes]}
 };
@@ -1236,10 +1237,10 @@ function initShortcutBridge(){
   renderShortcutBanner();
 }
 
-// ---- Screenshot attachments (flights / lodging / activities) ----
+// ---- Attachments: screenshots, small PDFs and Drive links (flights / lodging / activities / visa) ----
 // Images are compressed in the browser to small JPEG data URLs and stored inside the entry document,
 // so no extra service is needed. Firestore limits one document to 1 MiB, hence at most 3 images of about 180 KB.
-const attachModules=['flights','lodging','activities'];
+const attachModules=['flights','lodging','activities','visa'];
 const MAX_ATTACH=3,ATTACH_TARGET_BYTES=180*1024;
 // Screenshots and PDFs share one entry document, so their combined base64 text is capped (Firestore: 1 MiB per document).
 const ATTACH_TOTAL_CHARS=960000,MAX_PDF=2,MAX_PDF_KB=500,MAX_PDF_BYTES=MAX_PDF_KB*1024,MAX_LINKS=5,PDF_PREFIX='data:application/pdf;base64,';
@@ -2481,7 +2482,7 @@ function goHome(){
   if(selectedTripId && !abandonDraft())return;
   closeDetail();notice('');renderShortcutBanner();window.scrollTo({top:0,behavior:'smooth'});
 }
-const homeCategories={places:placeCategories,itinerary:Object.keys(homeItineraryTypes),flights:['去程','回程','轉機','其他機票'],lodging:['飯店','民宿','公寓','青年旅館','其他住宿'],transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物'],activities:['景點門票','展覽','表演','體驗活動','其他娛樂'],todos:['行前準備','證件文件','預訂事項','其他待辦'],packing:['證件','衣物','盥洗用品','電子用品','藥品','其他行李']};
+const homeCategories={places:placeCategories,itinerary:Object.keys(homeItineraryTypes),flights:['去程','回程','轉機','其他機票'],lodging:['飯店','民宿','公寓','青年旅館','其他住宿'],transport:['地鐵','公車','計程車','火車','租車','其他交通'],dining:['早餐','午餐','晚餐','咖啡飲料','點心宵夜','其他餐飲'],shopping:['伴手禮','服飾','美妝藥妝','生活用品','電子用品','其他購物'],activities:['景點門票','展覽','表演','體驗活動','其他娛樂'],visa:['簽證','護照','保險','其他證件'],todos:['行前準備','證件文件','預訂事項','其他待辦'],packing:['證件','衣物','盥洗用品','電子用品','藥品','其他行李']};
 let homeBusy=false;
 function refreshHomeTrips(){
   const el=$('homeTrip'),value=el.value;el.replaceChildren(new Option('請選擇旅行',''));
@@ -2505,7 +2506,7 @@ function renderHomeFields(){
   $('homeDetails').hidden=!defined;if(!defined)return;
   for(const value of homeCategories[module])$('homeCategory').append(new Option(value,value));
   const fields=moduleDefinitions[module].fields;
-  const usesDetail=['transport','dining','shopping','todos','packing','places'].includes(module);
+  const usesDetail=['transport','dining','shopping','todos','packing','places','visa'].includes(module);
   const ordered=[...fields.filter(f=>!['amount','currency','notes'].includes(f.key)),...fields.filter(f=>f.key==='currency'),...fields.filter(f=>f.key==='amount'),...fields.filter(f=>f.key==='notes')];
   const optional=node('details',undefined,'wide'),summary=node('summary','更多資料（時間、地點、備註等）'),extra=node('div',undefined,'module-fields');optional.append(summary,extra);
   for(const field of ordered){if(field.type==='itineraryCategory')continue;if(usesDetail&&field.key==='detail')continue;if(field.required||['currency','amount'].includes(field.key)||(module==='itinerary'&&['time','endDate','endTime','location'].includes(field.key)))$('homeItemFields').append(homeField(field));else extra.append(homeField(field));}
@@ -2527,7 +2528,7 @@ function buildHomeEntry(module,category,values){
     else{if(value.length>field.max)throw Error(field.label+'內容過長。');if(field.type==='date'&&value&&!validDate(value))throw Error('請填寫有效日期。');if(field.type==='time'&&value&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(value))throw Error('時間格式不正確。');data[field.key]=value;}
   }
   if(module==='itinerary')assignItineraryCategory(data,homeItineraryTypes[category]);
-  else if(['transport','dining','shopping','todos','packing','places'].includes(module))data.detail=category;
+  else if(['transport','dining','shopping','todos','packing','places','visa'].includes(module))data.detail=category;
   else {data.notes='類別：'+category+(data.notes?'\n'+data.notes:'');if(data.notes.length>2000)throw Error('備註內容過長。');}
   validateEntrySpan(data,module);
   return data;
@@ -2600,7 +2601,7 @@ function initModules(){
     const btn=node('button',def.label,'module-tab');
     btn.type='button';btn.dataset.module=key;btn.setAttribute('aria-pressed','false');
     btn.addEventListener('click',()=>{if(activeModule!==key||expenseViewActive!==isExpense)switchModule(key);});
-    (isExpense?$('expenseNav'):groupsEnsure()[({calendar:0,itinerary:0,places:0,flights:1,lodging:1})[key]??2]).append(btn);
+    (isExpense?$('expenseNav'):groupsEnsure()[({calendar:0,itinerary:0,places:0,flights:1,lodging:1,visa:1})[key]??2]).append(btn);
   }
   for(const key of expenseTabs.filter(key=>!Object.hasOwn(itineraryCategories,key))){
     const button=node('button',moduleDefinitions[key].label,'module-tab');
