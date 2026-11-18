@@ -478,6 +478,10 @@ dialog.home-modal{width:min(720px,calc(100vw - 40px));max-width:720px;max-height
 .expense-details>summary{cursor:pointer;padding:12px 0;font-weight:700}
 .expense-details-body{display:grid;gap:14px;padding:4px 0 16px}
 
+.rate-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px}
+.rate-row input{width:8em;min-height:40px}
+.expense-twd-card{margin-bottom:12px}
+.expense-twd{font-weight:600}
 /* ---------- Screenshot attachments ---------- */
 .attach-field input[type=file]{padding:8px 10px;cursor:pointer}
 .attach-list,.attach-gallery{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
@@ -1487,6 +1491,32 @@ function formatMinor(value){
   const fraction=value%100n;
   return new Intl.NumberFormat('zh-TW').format(value/100n)+(fraction ? '.'+String(fraction).padStart(2,'0') : '');
 }
+// ---- Foreign currency -> TWD, using the exchange rate the traveller typed in for this trip ----
+// Rates are decimal strings (TWD per 1 unit of foreign currency) stored on the trip as trip.rates = {JPY:'0.215'}.
+const RATE_RE=/^(0|[1-9][0-9]{0,3})([.][0-9]{1,6})?$/;
+function rateToMicro(text){
+  if(typeof text!=='string'||!RATE_RE.test(text))return null;
+  const [whole,fraction='']=text.split('.'),micro=BigInt(whole)*1000000n+BigInt(fraction.padEnd(6,'0'));
+  return micro>0n?micro:null;
+}
+function tripRates(){const rates=tripsById.get(selectedTripId)?.rates;return rates&&typeof rates==='object'?rates:{};}
+const toTwdMinor=(minor,micro)=>(minor*micro+500000n)/1000000n;
+const formatTwd=minor=>'NT$ '+new Intl.NumberFormat('zh-TW').format((minor+50n)/100n);
+function twdApprox(currency,minor){
+  const micro=currency==='TWD'?null:rateToMicro(tripRates()[currency]);
+  return micro===null?'':' · 約 '+formatTwd(toTwdMinor(minor,micro));
+}
+async function saveTripRate(currency,text){
+  const trip=selectedTripId;if(!currentUser||!trip||!Object.hasOwn(currencyOptions,currency)||currency==='TWD')return;
+  const value=text.trim();
+  if(value!==''&&rateToMicro(value)===null){toast('匯率請填大於 0 的數字，最多 6 位小數，例如 0.215。');renderEntries();return;}
+  const current=tripsById.get(trip)||{},rates={...tripRates()};
+  if(value==='')delete rates[currency];else rates[currency]=value;
+  try{
+    await updateDoc(doc(db,'users',currentUser.uid,'trips',trip),{rates,startDate:current.startDate||'',endDate:current.endDate||'',updatedAt:serverTimestamp()});
+    if(selectedTripId===trip){renderEntries();toast(value===''?'已清除匯率。':'匯率已儲存。');}
+  }catch(error){toast(errorText(error));}
+}
 function calculateExpenseTotals(entries){
   const currencies=new Map(),seen=new Set();let filled=0,missing=0,pending=0;
   for(const item of entries){
@@ -1506,9 +1536,21 @@ function calculateExpenseTotals(entries){
 function renderExpenseTotals(){
   const stats=calculateExpenseTotals(entryDocs),section=node('section',undefined,'expense-summary');section.setAttribute('aria-label','本趟旅行消費統計');
   const heading=node('div',undefined,'detail-heading');heading.append(node('h3','💰 本趟旅行消費'),node('span',`已填 ${stats.filled} 筆 · 未填 ${stats.missing} 筆`,'count'));section.append(heading);
-  section.append(node('p','統計整趟旅行，不受目前月份影響；不同幣別分開加總，不做匯率換算。','expense-summary-note'));
+  section.append(node('p','統計整趟旅行，不受目前月份影響；不同幣別分開加總。外幣欄位填入你實際換錢的匯率（1 外幣 = 幾元台幣），就會另外折算成台幣。','expense-summary-note'));
   if(entryDocs.some(x=>x.data.module==='itinerary'&&amountToMinor(x.data.amount)!==null))section.append(node('p','含舊版每日行程金額。若已在餐飲或娛樂等模組記帳，請到每日行程移除重複的舊金額。','expense-summary-note'));
   if(!stats.filled){section.append(node('p','尚無消費金額。可到各模組新增，或編輯既有紀錄補上金額。','empty'));return section;}
+  const rates=tripRates();let twdTotal=0n,hasForeign=false;const missingRate=[];
+  for(const [currency,group] of [...stats.currencies].sort(([a],[b])=>a.localeCompare(b))){
+    if(currency==='TWD'){twdTotal+=group.total;continue;}
+    hasForeign=true;const micro=rateToMicro(rates[currency]);
+    if(micro===null)missingRate.push(currency);else twdTotal+=toTwdMinor(group.total,micro);
+  }
+  if(hasForeign){
+    const twdCard=node('div',undefined,'expense-total-card expense-twd-card');
+    twdCard.append(node('span','折合台幣總額（依你填的匯率）','expense-currency'),node('div',formatTwd(twdTotal),'expense-total-value'));
+    if(missingRate.length)twdCard.append(node('p','尚未填匯率，未計入：'+missingRate.join('、')+'。','expense-summary-note'));
+    section.append(twdCard);
+  }
   const grid=node('div',undefined,'expense-total-grid');
   for(const [currency,group] of [...stats.currencies].sort(([a],[b])=>a.localeCompare(b))){
     const card=node('div',undefined,'expense-total-card');card.append(node('span',currencyOptions[currency],'expense-currency'),node('div',formatMinor(group.total),'expense-total-value'),node('p',`${group.count} 筆消費`,'expense-summary-note'));
@@ -1518,7 +1560,17 @@ function renderExpenseTotals(){
       const button=node('button',undefined,'expense-module-total');button.type='button';button.append(node('span',moduleDefinitions[key].label+`（${subtotal.count}）`),node('strong',formatMinor(subtotal.total)));if(group.total>0n){const pct=Number(subtotal.total*1000n/group.total)/10;button.style.setProperty('--expense-share',pct+'%');}
       button.addEventListener('click',()=>switchModule(key));list.append(button);
     }
-    card.append(list);grid.append(card);
+    card.append(list);
+    if(currency!=='TWD'){
+      const row=node('div',undefined,'rate-row'),input=node('input'),label=node('label','1 '+currency+' ≈');
+      input.type='text';input.inputMode='decimal';input.maxLength=11;input.id='rate_'+currency;input.placeholder='例如 0.215';
+      input.value=typeof rates[currency]==='string'?rates[currency]:'';label.htmlFor=input.id;
+      input.addEventListener('change',()=>saveTripRate(currency,input.value));
+      row.append(label,input,node('span','台幣'));card.append(row);
+      const micro=rateToMicro(rates[currency]);
+      card.append(node('p',micro===null?'填入換匯匯率後，這裡會顯示折合台幣。':'約 '+formatTwd(toTwdMinor(group.total,micro)),'expense-summary-note expense-twd'));
+    }
+    grid.append(card);
   }
   section.append(grid);
   if(stats.pending)section.append(node('p',`含 ${stats.pending} 筆等待雲端確認的紀錄。`,'expense-summary-note'));
@@ -2241,7 +2293,7 @@ function renderExpenseCharts(){
     for(const c of currencies){const b=node('button',c,'secondary chart-currency');b.type='button';b.setAttribute('aria-pressed',String(c===expenseCurrency));b.addEventListener('click',()=>{expenseCurrency=c;expenseChartCategory='';renderEntries();});box.append(b);}
     head.append(box);
   }
-  section.append(head,node('div',currencyOptions[expenseCurrency].split(' ')[0]+' '+formatMinor(g.total),'chart-total'),node('p','整趟旅行 · '+g.count+' 筆消費 · 不同幣別分開統計，不換算匯率','chart-sub'));
+  section.append(head,node('div',currencyOptions[expenseCurrency].split(' ')[0]+' '+formatMinor(g.total),'chart-total'),node('p','整趟旅行 · '+g.count+' 筆消費'+twdApprox(expenseCurrency,g.total)+' · 各幣別分開統計','chart-sub'));
   section.append(node('h4','各類別佔比（點選查看明細）','chart-title'));
   const rows=expenseModules.filter(k=>g.modules.has(k)).sort((a,b)=>(g.modules.get(b)>g.modules.get(a)?1:g.modules.get(b)<g.modules.get(a)?-1:0));
   const max=g.modules.get(rows[0]);
